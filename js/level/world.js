@@ -106,23 +106,73 @@ var World = function()
 	this._enemies = [];
 	this._cells = [];
 
-	this._enemyTurn = -1;
+	this._enemyTurn = false;
+
+	this._chunkWidth = 11;
+	this._chunkHeight = 8;
+	this._w = 80;
+	this._h = 50;
 
 	var xx,yy;
 
-	for (var x = 0; x < 100; ++x)
+	for (var x = 0; x < this._w; ++x)
 	{
 		this._cells[x] = [];
 
-		for (var y = 0; y < 100; ++y)
+		for (var y = 0; y < this._h; ++y)
 		{
 			xx = -RenderSettings.resolution().w/2 + x * this._cellSize + this._cellSize / 2;
 			yy = RenderSettings.resolution().h/2 - y * this._cellSize + this._cellSize / 2 - this._cellSize;
-			var length = Level.getLevelDefaults().background.length;
-			var randomTexture = Level.getLevelDefaults().background[Math.floor(Math.random()*length)];
+			var texture;
 
-			this._cells[x][y] = new Cell(xx,yy,CellType.Empty,randomTexture);
+			if (x > this._chunkWidth-2 && y > this._chunkHeight-1 && x < this._w - this._chunkWidth && y < this._h - this._chunkHeight)
+			{
+				var length = Level.getLevelDefaults().background.length;
+				texture = Level.getLevelDefaults().background[Math.floor(Math.random()*length)];
+			}
+			else
+			{
+				texture = Level.getLevelDefaults().outer;
+			}
+
+			this._cells[x][y] = new Cell(xx,yy,CellType.Empty,texture);
 		}
+	}
+
+	this.spawnRandomEnemies = function()
+	{
+		for (var x = this._chunkWidth-1; x < this._w - this._chunkWidth; ++x)
+		{
+			for (var y = this._chunkHeight; y < this._h - this._chunkHeight; ++y)
+			{
+				var chance = Math.random();
+
+				if (chance < 0.05)
+				{
+					var randomEnemies = [];
+
+					for (var i in EnemyData)
+					{
+						randomEnemies.push(i);
+					}
+
+					var enemy = new Enemy(this,x,y,randomEnemies[Math.floor(Math.random()*randomEnemies.length)]);
+					enemy.spawn();
+
+					this._enemies.push(enemy);
+				}
+			}
+		}
+	}
+
+	this.chunkWidth = function()
+	{
+		return this._chunkWidth;
+	}
+
+	this.chunkHeight = function()
+	{
+		return this._chunkHeight;
 	}
 
 	/// Returns the grid indices the mouse is on
@@ -179,39 +229,30 @@ var World = function()
 
 	this.update = function(dt)
 	{
-		if (this._enemies.length === 0)
-		{
-			this._enemyTurn = -1
-			return;
-		}
-
 		for (var i = 0; i < this._enemies.length; ++i)
 		{
 			this._enemies[i].update(dt);
-		}
-
-		if (this._enemyTurn != -1)
-		{
-			this._enemies[this._enemyTurn].doTurn();
-			++this._enemyTurn;
-
-			if (this._enemyTurn >= this._enemies.length)
+			
+			if (this._enemyTurn === false)
 			{
-				this._enemyTurn = -1;
+				continue;
 			}
+			this._enemies[i].doTurn();
 		}
+
+		this._enemyTurn = false;
 	}
 
 	/// Is it the enemy turn?
 	this.isEnemyTurn = function()
 	{
-		return this._enemyTurn != -1;
+		return this._enemyTurn;
 	}
 
 	/// Starts the enemy turn
 	this.startEnemyTurn = function()
 	{
-		this._enemyTurn = 0;
+		this._enemyTurn = true;
 	}
 
 	/// Returns a cell at a given index
@@ -248,7 +289,7 @@ var World = function()
 
 		this._enemies = [];
 	}
-
+	this.spawnRandomEnemies();
 	Broadcaster.register(this,this.startEnemyTurn,Events.TurnEnd);
 }
 

@@ -22,5 +22,13 @@ var EnemyData = {
 	},
 	pig_hat: {
 		texture: "textures/characters/pigs/pig_hat.png"
+	},
+
+	snail_blue: {
+		texture: "textures/characters/snails/snail_blue.png"
+	},
+
+	snail_rainbow: {
+		texture: "textures/characters/snails/snail_rainbow.png"
 	}
 }

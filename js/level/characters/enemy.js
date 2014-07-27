@@ -5,6 +5,7 @@
 */
 var Enemy = function(world,cellX,cellY,key)
 {
+	ContentManager.load("texture", EnemyData[key].texture);
 	extend(this, new Unit(world,UnitType.Player,EnemyData[key].texture));
 
 	this.setName("Enemy");

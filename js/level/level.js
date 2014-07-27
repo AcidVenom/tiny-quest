@@ -18,6 +18,8 @@ var Level = {
 			{
 				ContentManager.unload("texture",backgrounds[i]);
 			}
+
+			ContentManager.unload("texture",this.getLevelDefaults().outer);
 		}
 	},
 
@@ -29,6 +31,8 @@ var Level = {
 		{
 			ContentManager.load("texture",backgrounds[i]);
 		}
+
+		ContentManager.load("texture",this.getLevelDefaults().outer);
 	},
 
 	setLocation: function(location)

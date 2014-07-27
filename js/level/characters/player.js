@@ -29,17 +29,17 @@ var Player = function(world,cellX,cellY)
 	this._selector.setName("Selector");
 	this._chunk = undefined;
 
-	this._chunkWidth = 11;
-	this._chunkHeight = 8;
+	this._camTimer = 0;
+	this._camStart = {x: 0, y: -32}
 
 	this.getChunk = function()
 	{
 		var cells = [];
 		var currentTile = this.currentTile();
 
-		for (var x = currentTile.x-this._chunkWidth; x < currentTile.x+this._chunkWidth+1; ++x)
+		for (var x = currentTile.x-this._world.chunkWidth(); x < currentTile.x+this._world.chunkWidth()+1; ++x)
 		{
-			for (var y = currentTile.y-this._chunkHeight; y < currentTile.y+this._chunkHeight+1; ++y)
+			for (var y = currentTile.y-this._world.chunkHeight(); y < currentTile.y+this._world.chunkHeight()+1; ++y)
 			{
 				if (x >= 0 && y >= 0 && x < this._world.width() && y < this._world.height())
 				{
@@ -72,7 +72,7 @@ var Player = function(world,cellX,cellY)
 		}
 	}
 
-	this.setTile(10, 5);
+	this.setTile(10, 8);
 	if (cellX !== undefined && cellY !== undefined)
 	{
 		this.setTile(cellX, cellY);
@@ -101,21 +101,98 @@ var Player = function(world,cellX,cellY)
 		this._destroyUnit();
 	}
 
+	this.moveSelfAndCamera = function(x,y)
+	{
+		if(this.moveTo(x,y))
+		{
+			var camTranslation = StateManager.getState().camera().translation();
+
+			this._camStart = {x: camTranslation.x, y: camTranslation.y}
+			this._camTimer = 0;
+		}
+	}
+
+	this.handleMovement = function()
+	{
+		if (Keyboard.isDown("W") && this._state == UnitState.Idle && !this._world.isEnemyTurn())
+		{
+			var index = this.currentTile();
+
+			this.moveSelfAndCamera(index.x,index.y-1);
+		}
+
+		if (Keyboard.isDown("S") && this._state == UnitState.Idle && !this._world.isEnemyTurn())
+		{
+			var index = this.currentTile();
+
+			this.moveSelfAndCamera(index.x,index.y+1);
+		}
+
+		if (Keyboard.isDown("A") && this._state == UnitState.Idle && !this._world.isEnemyTurn())
+		{
+			var index = this.currentTile();
+
+			this.moveSelfAndCamera(index.x-1,index.y);
+		}
+
+		if (Keyboard.isDown("D") && this._state == UnitState.Idle && !this._world.isEnemyTurn())
+		{
+			var index = this.currentTile();
+
+			this.moveSelfAndCamera(index.x+1,index.y);
+		}
+
+		if ((Mouse.isPressed(1) || Mouse.isDoubleClicked(1)) && this._state == UnitState.Idle && !this._world.isEnemyTurn())
+		{
+			var index = this._world.gridFromMouse();
+			
+			this.moveSelfAndCamera(index.x,index.y);
+		}
+
+		if (Mouse.isPressed(0) || Mouse.isDoubleClicked(0) && this._state == UnitState.Idle && !this._world.isEnemyTurn()) 
+		{
+			var index = this._world.gridFromMouse();
+			this.attackNode(index.x,index.y);
+		}
+	}
+
 	/// Updates the player object
 	this.update = function(dt)
 	{	
 		this.updatePosition(dt);
 
 		var translation = this.translation();
-		StateManager.getState().camera().setTranslation(translation.x,translation.y,-100);
+
+		if (this._camTimer < 1)
+		{
+			var camera = StateManager.getState().camera();
+
+			// var posX = Math.easeInOutQuintic(this._camStart.x,translation.x,this._camTimer,1);
+			// var posY = Math.easeInOutQuintic(this._camStart.y,translation.y,this._camTimer,1);
+
+			var pos = Math.lerp(this._camStart.x,this._camStart.y,translation.x-this._world.cellSize()/2,translation.y- this._jump,this._camTimer);
+
+			camera.setTranslation(pos.x,pos.y,-100);
+
+			this._camTimer += dt*2;
+		}
+
 		this._weapon.setPosition(translation.x + 12*Math.abs(this._xScale)/this._xScale, translation.y + 2 - this._wobble*1.5);
 		this._weapon.setZ(this.currentTile().y+1)
 
 		if (this._state != UnitState.Attacking)
 		{
+			this.handleMovement();
+
+			if (Keyboard.isDown("W") || Keyboard.isDown("A") || Keyboard.isDown("S") || Keyboard.isDown("D"))
+			{
+				this._selector.setAlpha(0);
+				return;
+			}
+
 			// Retrieves the mouse position, makes it relative and highlights the grid cell under the mouse
 			var mouse = this._world.gridFromMouse();
-			if (mouse.x < 0 || mouse.y < 0 || mouse.x >= this._world.width() || mouse.y >= this._world.height())
+			if (mouse.x < this._world.chunkWidth()-1 || mouse.y < this._world.chunkHeight() || mouse.x >= this._world.width()-this._world.chunkWidth() || mouse.y >= this._world.height()-this._world.chunkHeight())
 			{
 				this._selector.setAlpha(0);
 				return;
@@ -157,18 +234,6 @@ var Player = function(world,cellX,cellY)
 		else
 		{
 			this._selector.setAlpha(0);
-		}
-
-		if ((Mouse.isPressed(1) || Mouse.isDoubleClicked(1)) && this._state == UnitState.Idle && !this._world.isEnemyTurn())
-		{
-			var index = this._world.gridFromMouse();
-			this.moveTo(index.x,index.y);
-		}
-
-		if (Mouse.isPressed(0) || Mouse.isDoubleClicked(0) && this._state == UnitState.Idle && !this._world.isEnemyTurn()) 
-		{
-			var index = this._world.gridFromMouse();
-			this.attackNode(index.x,index.y);
 		}
 	}
 }

@@ -197,7 +197,7 @@ var Unit = function(world, type, texture)
 	/// Moves the unit
 	this.moveTo = function(x,y)
 	{
-		if (x < 0 || x > this._world.width() || y < 0 || y > this._world.height())
+		if (x < this._world.chunkWidth()-1 || x > this._world.width()-this._world.chunkWidth()-1 || y < this._world.chunkHeight() || y > this._world.height()-this._world.chunkHeight())
 		{
 			return false;
 		}
