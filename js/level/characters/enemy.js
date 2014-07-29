@@ -33,7 +33,7 @@ var Enemy = function(world,cellX,cellY,key)
 				result = this.moveTo(index.x-1,index.y);
 			}
 
-			if (result == false && Math.abs(target.y-index.y) > 1)
+			if (result == false && Math.abs(target.y-index.y) >= 1)
 			{
 				if (index.y < target.y)
 				{

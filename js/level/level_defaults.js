@@ -1,6 +1,16 @@
 var LevelDefaults = {
 	west_haven: {
-		background: ["textures/world/tiles/grass.png","textures/world/tiles/grass_flower.png"],
-		outer: "textures/world/tiles/outer_grass.png"
+		backgrounds: [
+			"textures/world/tiles/outer_grass.png",
+			"textures/world/tiles/grass.png",
+			"textures/world/tiles/grass_flower.png"
+		]
+	},
+
+	eterna_forest: {
+		backgrounds: [
+			"textures/world/tiles/outer_forest_grass.png",
+			"textures/world/tiles/forest_grass.png"
+		]
 	}
 }

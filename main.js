@@ -17,7 +17,7 @@ Game.Initialise = function()
 	RenderSettings.setBackBufferColor(0,0,0,1);
 	RenderSettings.setWindowSize(640,480);
 
-	Level.setLocation("west_haven");
+	Level.setLocation("eterna_forest");
 	StateManager.switchState(LevelState);
 }
 Game.Update = function(dt)

@@ -1,5 +1,6 @@
 require("js/level/characters/enemy_data");
 require("js/level/level_defaults");
+require("js/level/maps/map");
 require("js/level/characters/unit");
 require("js/level/characters/enemy");
 require("js/level/characters/player");
@@ -10,34 +11,40 @@ var Level = {
 
 	unload: function()
 	{
+		ContentManager.unload("texture", "textures/world/tiles/default_inner.png");
+		ContentManager.unload("texture", "textures/world/tiles/default_outer.png");
+
 		if (this._location !== undefined)
 		{
-			var backgrounds = this.getLevelDefaults().background;
+			var backgrounds = this.getLevelDefaults().backgrounds;
 
 			for (var i = 0; i < backgrounds.length; ++i)
 			{
 				ContentManager.unload("texture",backgrounds[i]);
 			}
-
-			ContentManager.unload("texture",this.getLevelDefaults().outer);
 		}
 	},
 
 	load: function()
 	{
-		var backgrounds = this.getLevelDefaults().background;
+		ContentManager.load("texture", "textures/world/tiles/default_inner.png");
+		ContentManager.load("texture", "textures/world/tiles/default_outer.png");
+
+		var backgrounds = this.getLevelDefaults().backgrounds;
 
 		for (var i = 0; i < backgrounds.length; ++i)
 		{
 			ContentManager.load("texture",backgrounds[i]);
 		}
-
-		ContentManager.load("texture",this.getLevelDefaults().outer);
 	},
 
 	setLocation: function(location)
 	{
-		this.unload();
+
+		if (this._location !== undefined)
+		{
+			this.unload();
+		}
 
 		if (LevelDefaults[location] === undefined)
 		{
@@ -50,7 +57,6 @@ var Level = {
 		}
 
 		this._location = location;
-
 		this.load();
 	},
 
@@ -62,6 +68,31 @@ var Level = {
 	getLevelDefaults: function()
 	{
 		return LevelDefaults[this._location];
+	},
+
+	getTile: function(type)
+	{
+		var retVal = {
+			background: undefined,
+			overlay: undefined,
+			prop: undefined
+		}
+		switch (type)
+		{
+			case 0:
+				retVal.background = this.getLevelDefaults().background;
+				break;
+			case 1:
+				retVal.background = this.getLevelDefaults().outer;
+				break;
+			default:
+				retVal.background = this.getLevelDefaults().tiles[type];
+				retVal.overlay = this.getLevelDefaults().overlays[type];
+				retVal.prop = this.getLevelDefaults().props[type];
+				break;
+		}
+
+		return retVal;
 	}
 }
 

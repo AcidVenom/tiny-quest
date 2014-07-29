@@ -127,12 +127,11 @@ var World = function()
 
 			if (x > this._chunkWidth-2 && y > this._chunkHeight-1 && x < this._w - this._chunkWidth && y < this._h - this._chunkHeight)
 			{
-				var length = Level.getLevelDefaults().background.length;
-				texture = Level.getLevelDefaults().background[Math.floor(Math.random()*length)];
+				texture = "textures/world/tiles/default_inner.png";
 			}
 			else
 			{
-				texture = Level.getLevelDefaults().outer;
+				texture = "textures/world/tiles/default_outer.png";
 			}
 
 			this._cells[x][y] = new Cell(xx,yy,CellType.Empty,texture);
