@@ -54,6 +54,9 @@ var StateManager = StateManager ||
 
 	update: function(dt)
 	{
+		if (this._currentState == undefined)
+			return;
+
 		if (this._currentState.update !== undefined)
 		{
 			this._currentState.update(dt);
@@ -62,6 +65,9 @@ var StateManager = StateManager ||
 
 	draw: function(dt)
 	{
+		if (this._currentState == undefined)
+			return;
+
 		if (this._currentState.draw !== undefined)
 		{
 			this._currentState.draw(dt);
@@ -70,6 +76,9 @@ var StateManager = StateManager ||
 
 	reload: function()
 	{
+		if (this._currentState == undefined)
+			return;
+		
 		if (this._currentState.reload !== undefined)
 		{
 			this._currentState.reload()

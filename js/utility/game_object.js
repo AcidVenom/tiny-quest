@@ -38,6 +38,5 @@ var GameObject = function(w,h,texture)
 	this.delete = function()
 	{
 		this.__quad.destroy();
-		this.__quad = null;
 	}
 }
