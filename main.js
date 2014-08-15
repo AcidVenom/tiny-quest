@@ -4,6 +4,8 @@ require("js/utility/game_object");
 require("js/utility/state_manager");
 require("js/utility/broadcaster");
 
+require("js/menu/menu_state");
+
 Game.Initialise = function()
 {
 	Game.setName("Tiny Quest");
@@ -13,6 +15,8 @@ Game.Initialise = function()
 	RenderSettings.setCullMode(RenderSettings.CullNone);
 	RenderSettings.setBackBufferColour(0,0,0,1);
 	RenderSettings.setWindowSize(640,480);
+
+	StateManager.switchState(MenuState);
 }
 Game.Update = function(dt)
 {	
