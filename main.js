@@ -5,6 +5,7 @@ require("js/utility/state_manager");
 require("js/utility/broadcaster");
 
 require("js/menu/menu_state");
+require("js/level/level_state");
 
 Game.Initialise = function()
 {

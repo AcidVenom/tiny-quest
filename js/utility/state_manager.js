@@ -28,9 +28,12 @@ var StateManager = StateManager ||
 			if (this._currentState !== undefined)
 			{
 				this._currentState.destroy();
+				Log.info("[StateManager] Destroyed the state '" + this._currentState.name + "'");
 			}
 
 			state.initialise();
+			Log.info("[StateManager] Initialised the state '" + state.name + "'");
+
 			this._currentState = state;
 
 			if (this._currentState.name !== undefined)
@@ -85,5 +88,7 @@ var StateManager = StateManager ||
 		}
 
 		Game.cleanUp();
+
+		Log.success("[StateManager] Succesfully reloaded");
 	}
 }

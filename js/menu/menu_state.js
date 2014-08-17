@@ -8,11 +8,17 @@ var MenuState = MenuState || {
 	initialise: function()
 	{
 		ContentManager.load("texture","textures/menu/background.png");
+		ContentManager.load("texture","textures/menu/background_night.png");
+
 		ContentManager.load("texture","textures/menu/logo.png");
 
 		ContentManager.load("texture","textures/menu/cloud_1.png");
 		ContentManager.load("texture","textures/menu/cloud_2.png");
 		ContentManager.load("texture","textures/menu/cloud_3.png");
+
+		ContentManager.load("texture","textures/menu/cloud_1_night.png");
+		ContentManager.load("texture","textures/menu/cloud_2_night.png");
+		ContentManager.load("texture","textures/menu/cloud_3_night.png");
 		
 		this._menu = new Menu();
 	},
@@ -35,6 +41,19 @@ var MenuState = MenuState || {
 	destroy: function()
 	{
 		ContentManager.unload("texture","textures/menu/background.png");
+		ContentManager.unload("texture","textures/menu/background_night.png");
+		
 		ContentManager.unload("texture","textures/menu/logo.png");
+
+		ContentManager.unload("texture","textures/menu/cloud_1.png");
+		ContentManager.unload("texture","textures/menu/cloud_2.png");
+		ContentManager.unload("texture","textures/menu/cloud_3.png");
+
+		ContentManager.unload("texture","textures/menu/cloud_1_night.png");
+		ContentManager.unload("texture","textures/menu/cloud_2_night.png");
+		ContentManager.unload("texture","textures/menu/cloud_3_night.png");
+
+		this._menu = null;
+		this._camera = null;
 	}
 }

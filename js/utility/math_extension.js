@@ -1,12 +1,9 @@
 // Easing functions from: http://www.timotheegroleau.com/Flash/experiments/easing_function_generator.htm
 
-/// Lerps from one position to another
-Math.lerp = function(x1, y1, x2, y2, ratio)
+/// Lerps from one value to another
+Math.lerp = function(a, b, ratio)
 {
-	var xx = x2 - x1;
-	var yy = y2 - y1;
-
-	return {x: x1 + xx * ratio, y: y1 + yy * ratio}
+	return a + (b-a) * ratio;
 }
 
 /// Eases elastic out
