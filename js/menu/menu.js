@@ -1,3 +1,5 @@
+require("js/character_creation/character_creation_state");
+
 var Menu = function()
 {
 	this._nightObjects = [];
@@ -5,6 +7,7 @@ var Menu = function()
 	this._timer = -1;
 	this._nightTimer = 0;
 
+	this._transition = false;
 	this._shouldQuit = false;
 
 	Log.debug("Started creating the menu");
@@ -17,6 +20,7 @@ var Menu = function()
 	this._fade = Widget.new();
 	
 	this._clouds = [];
+	this._destroyed = false;
 
 	this.initialise = function()
 	{
@@ -92,13 +96,6 @@ var Menu = function()
 
 	this.update = function(dt)
 	{
-		this._nightTimer += dt;
-
-		for (var i = 0; i < this._nightObjects.length; ++i)
-		{
-			this._nightObjects[i].setAlpha(Math.abs(Math.sin(this._nightTimer/3)));
-		}
-
 		for (var i = 0; i < this._clouds.length; ++i)
 		{
 			var cloud = this._clouds[i];
@@ -118,6 +115,13 @@ var Menu = function()
 
 		if (!this._shouldQuit)
 		{
+			this._nightTimer += dt;
+
+			for (var i = 0; i < this._nightObjects.length; ++i)
+			{
+				this._nightObjects[i].setAlpha(Math.abs(Math.sin(this._nightTimer/5)));
+			}
+
 			if (this._timer < 1 && this._timer > 0)
 			{
 				this._logo.setAlpha(this._timer*2);
@@ -129,6 +133,7 @@ var Menu = function()
 
 			if (Keyboard.isReleased("Enter") && this._timer > 1)
 			{
+				this._transition = true;
 				this._shouldQuit = true;
 				this._timer = 0;
 			}
@@ -136,15 +141,67 @@ var Menu = function()
 		else
 		{
 			this._timer += dt;
+			var lerp = Math.lerp(0,1,this._timer);
 
-			this._fade.setAlpha(Math.lerp(0,1,this._timer));
-			this._fade.setBlend(0,0,0.5*Math.lerp(1,0,this._timer));
-		
-			if (this._timer > 1)
+			if (lerp > 1)
 			{
-				StateManager.switchState(LevelState);
+				lerp = 1;
 			}
+
+			if (this._transition)
+			{
+				this._logo.setAlpha(1-lerp*2);
+
+				for (var i = 0; i < this._clouds.length; ++i)
+				{
+					var cloud = this._clouds[i];
+					cloud.setAlpha(1-lerp*2);
+					cloud.night.setAlpha(Math.abs(Math.sin(this._nightTimer/5))*(1-lerp*2));
+				}
+
+				if (this._timer > 0.5)
+				{
+					this._timer = 0;
+					this._transition = false;
+				}
+			}
+			else
+			{
+				this._fade.setAlpha(lerp);
+				this._fade.setBlend(0,0,0.5*Math.lerp(1,0,this._timer));
+
+				this._background.setScale(640*(1+lerp*3),0,480*(1+lerp*3));
+				this._background.night.setScale(640*(1+lerp*3),0,480*(1+lerp*3));
+			
+				if (this._timer > 1)
+				{
+					this.destroy();
+				}
+			}	
 		}
+	}
+
+	this.destroy = function()
+	{
+		this._logo.destroy();
+		this._background.destroy();
+		this._background.night.destroy();
+		this._fade.destroy();
+
+		for (var i = 0; i < this._clouds.length; ++i)
+		{
+			var cloud = this._clouds[i];
+			cloud.destroy();
+			cloud.night.destroy();
+		}
+
+		this._destroyed = true;
+		Log.debug("Destroyed the menu");
+	}
+
+	this.destroyed = function()
+	{
+		return this._destroyed;
 	}
 
 	this.initialise();

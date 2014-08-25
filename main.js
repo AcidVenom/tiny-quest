@@ -3,6 +3,7 @@ require("js/utility/helper");
 require("js/utility/game_object");
 require("js/utility/state_manager");
 require("js/utility/broadcaster");
+require("js/utility/mouse_area");
 
 require("js/menu/menu_state");
 require("js/level/level_state");
@@ -26,6 +27,7 @@ Game.Update = function(dt)
 		Game.showConsole();
 	}
 
+	MouseEventManager.check();
 	StateManager.update(dt);
 }
 

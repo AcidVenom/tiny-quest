@@ -31,6 +31,10 @@ var MenuState = MenuState || {
 	draw: function(dt)
 	{
 		Game.render(this._camera);
+		if (this._menu.destroyed())
+		{
+			StateManager.switchState(CharacterCreationState);
+		}
 	},
 
 	reload: function()
