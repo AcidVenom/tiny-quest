@@ -7,6 +7,8 @@ var CharacterCreation = function()
 	this._selection = Widget.new();
 	this._sliders = [];
 
+	this._selectionAreas = [];
+
 	this._fadeTimer = 0;
 	this._timer = 0;
 
@@ -14,6 +16,63 @@ var CharacterCreation = function()
 
 	this.initialise = function()
 	{
+		for (var i = 0; i < 5; ++i)
+		{
+			var mouseArea = new MouseArea(-132,-45-19*i,72,19);
+			var characterCreation = this;
+
+			var hover = undefined;
+
+			var leave = function()
+			{
+				characterCreation._selection.setAlpha(0);
+			}
+
+			switch (i)
+			{
+				case 0:
+					hover = function()
+					{
+						characterCreation._selection.setTranslation(-132,-45,0);
+					}
+					break;
+				case 1:
+					hover = function()
+					{
+						characterCreation._selection.setTranslation(-132,-64,0);
+					}
+					break;
+				case 2:
+					hover = function()
+					{
+						characterCreation._selection.setTranslation(-132,-83,0);
+					}
+					break;
+				case 3:
+					hover = function()
+					{
+						characterCreation._selection.setTranslation(-132,-102,0);
+					}
+					break;
+				case 4:
+					hover = function()
+					{
+						characterCreation._selection.setTranslation(-132,-121,0);
+					}
+					break;
+			}
+
+			mouseArea.on("enter",hover);
+			mouseArea.on("enter",function()
+			{
+				characterCreation._selection.setAlpha(1);
+			})
+
+			mouseArea.on("leave",leave);
+
+			this._selectionAreas.push(mouseArea);
+		}
+
 		this._fade.spawn();
 		this._fade.setBlend(0,0,0);
 		this._fade.setOffset(-0.5,0,-0.5);
@@ -44,7 +103,8 @@ var CharacterCreation = function()
 		this._selection.spawn();
 		this._selection.setScale(72,0,16);
 		this._selection.setTexture("textures/character_creation/selection.png");
-		this._selection.setTranslation(-58,-45,0);
+		this._selection.setOffset(-1,0,0);
+		this._selection.setTranslation(-132,-45,0);
 
 		this._background.spawn();
 		this._background.setTexture("textures/character_creation/background.png");

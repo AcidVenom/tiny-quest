@@ -2,10 +2,7 @@ Mouse.relativePosition = function(w,h)
 {
 	var pos = Mouse.position(Mouse.Screen);
 
-	var x = (pos.x + 1) / 2;
-	var y = (pos.y + 1) / 2;
-
-	return {x: x*w, y: y*h}
+	return {x: pos.x*(RenderSettings.resolution().w/2), y: -pos.y*(RenderSettings.resolution().h/2)}
 }
 
 var MouseEventManager = {
@@ -13,17 +10,19 @@ var MouseEventManager = {
 
 	check: function()
 	{
+		var enterNotifications = [];
+
 		for (var i = 0; i < this._listeners.length; ++i)
 		{
 			var listener = this._listeners[i];
 			var metrics = listener.metrics();
-			var pos = Mouse.relativePosition(RenderSettings.resolution().w,RenderSettings.resolution().h);
+			var pos = Mouse.relativePosition();
 			
-			if (pos.x >= metrics.x && pos.y >= metrics.y && pos.x <= metrics.x+metrics.w && pos.y <= metrics.y+metrics.h)
+			if (pos.x >= metrics.x && pos.y <= metrics.y && pos.x <= metrics.x+metrics.w && pos.y >= metrics.y-metrics.h)
 			{
 				if (!listener.hovered())
 				{
-					listener.notify("enter");
+					enterNotifications.push(listener);
 				}
 
 				if (Mouse.isPressed(0) || Mouse.isDoubleClicked(0))
@@ -49,11 +48,21 @@ var MouseEventManager = {
 				}
 			}
 		}
+
+		for (var i = 0; i < enterNotifications.length; ++i)
+		{
+			enterNotifications[i].notify("enter");
+		}
 	},
 
 	register: function(area)
 	{
 		this._listeners.push(area)
+	},
+
+	clear: function()
+	{
+		this._listeners = [];
 	}
 }
 

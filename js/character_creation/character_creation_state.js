@@ -43,6 +43,7 @@ var CharacterCreationState = {
 
 	reload: function()
 	{
+		MouseEventManager.clear();
 		this._characterCreation = new CharacterCreation();
 	}
 }
