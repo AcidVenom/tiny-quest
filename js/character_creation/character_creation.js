@@ -1,5 +1,13 @@
 require("js/character_creation/rgb_slider");
 
+require("js/data_files/character");
+require("js/data_files/classes");
+require("js/data_files/items");
+
+require("js/gameplay/item_manager");
+
+require("js/character_creation/item_slot");
+
 var CharacterCreation = function()
 {
 	this._background = Widget.new();
@@ -22,6 +30,8 @@ var CharacterCreation = function()
 	this._rgbNumbers = [];
 	this._statNumbers = [];
 
+	this._itemSlots = [];
+
 	Log.debug("Started creating the character creation menu");
 
 	this.initialise = function()
@@ -35,6 +45,8 @@ var CharacterCreation = function()
 
 		for (var i = 0; i < 5; ++i)
 		{
+			this._itemSlots.push(new ItemSlot(i));
+			
 			var number = new GuiNumber();
 			number.setValue(0);
 			number.setTranslation(34,241-i*17,0);
@@ -136,7 +148,10 @@ var CharacterCreation = function()
 			mouseArea.on("released",function()
 			{
 				Log.info("New selected class is: " + characterCreation._class);
-			})
+				Character.class = characterCreation._class;
+
+				characterCreation.changeStats();
+			});
 
 			this._selectionAreas.push(mouseArea);
 		}
@@ -187,7 +202,19 @@ var CharacterCreation = function()
 		this._background.setOffset(-0.5,0,-0.5);
 		this._background.setScale(640,0,480);
 
+		this.changeStats();
+
 		Log.success("Succesfully created the character creation menu");
+	}
+
+	this.changeStats = function()
+	{
+		var stats = Classes[Character.class].stats;
+		this._statNumbers[0].setValue(stats.attackDamage);
+		this._statNumbers[1].setValue(stats.magicDamage);
+		this._statNumbers[2].setValue(stats.rangedDamage);
+		this._statNumbers[3].setValue(stats.defense);
+		this._statNumbers[4].setValue(stats.stamina);
 	}
 
 	this.update = function(dt)
