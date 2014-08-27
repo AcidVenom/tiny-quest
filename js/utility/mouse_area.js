@@ -82,6 +82,12 @@ var MouseArea = function(x,y,w,h)
 		down: []
 	}
 
+	this.setPosition = function(x,y)
+	{
+		this._x = x;
+		this._y = y;
+	}
+
 	this.hovered = function()
 	{
 		return this._hover;

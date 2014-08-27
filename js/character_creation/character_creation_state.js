@@ -13,7 +13,7 @@ var CharacterCreationState = {
 		ContentManager.load("texture","textures/character_creation/rgb_slider.png");
 		ContentManager.load("texture","textures/character_creation/selected_class.png");
 		ContentManager.load("texture","textures/character_creation/selection.png");
-		ContentManager.load("texture","textures/character_creation/stats_tooltip.png");
+		ContentManager.load("texture","textures/character_creation/tooltip.png");
 
 		this._characterCreation = new CharacterCreation();
 	},
@@ -38,7 +38,7 @@ var CharacterCreationState = {
 		ContentManager.unload("texture","textures/character_creation/rgb_slider.png");
 		ContentManager.unload("texture","textures/character_creation/selected_class.png");
 		ContentManager.unload("texture","textures/character_creation/selection.png");
-		ContentManager.unload("texture","textures/character_creation/stats_tooltip.png");
+		ContentManager.unload("texture","textures/character_creation/tooltip.png");
 	},
 
 	reload: function()

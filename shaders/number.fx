@@ -12,7 +12,7 @@ cbuffer ConstantBuffer : register(b0)
 
 cbuffer Uniforms : register(b1)
 {
-	
+	float StripCoordinate;
 }
 
 struct VOut
@@ -42,7 +42,7 @@ SamplerState SampleType;
 
 float4 PS(VOut input) : SV_TARGET
 {
-	float4 textureColour = textures[0].Sample(SampleType, input.texcoord);
+	float4 textureColour = textures[0].Sample(SampleType, float2(input.texcoord.x/10 + StripCoordinate,input.texcoord.y));
 	float4 colour = float4(textureColour.rgb * Blend * input.colour.rgb, textureColour.a);
 	colour.a *= Alpha;
 	return colour;

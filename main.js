@@ -4,12 +4,16 @@ require("js/utility/game_object");
 require("js/utility/state_manager");
 require("js/utility/broadcaster");
 require("js/utility/mouse_area");
+require("js/utility/gui_number");
 
 require("js/menu/menu_state");
 require("js/level/level_state");
 
 Game.Initialise = function()
 {
+	ContentManager.load("texture", "textures/misc/number_strip.png");
+	ContentManager.load("shader", "shaders/number.fx");
+	
 	Game.setName("Tiny Quest");
 	RenderSettings.setResolution(640,480);
 	RenderSettings.setVsync(false);
