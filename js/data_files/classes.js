@@ -5,10 +5,10 @@ var Classes = Classes || {
 			magicDamage: 1,
 			rangedDamage: 1,
 			defense: 3,
-			stamina: 4
+			stamina: 5
 		},
 
-		startingItems: [
+		startingEquipment: [
 			"trainee_sword",
 			"trainee_shield"
 		]
@@ -17,30 +17,30 @@ var Classes = Classes || {
 	wizard: {
 		stats: {
 			attackDamage: 1,
-			magicDamage: 5,
+			magicDamage: 6,
 			rangedDamage: 1,
-			defense: 2,
-			stamina: 5
+			defense: 1,
+			stamina: 4
 		},
 
-		startingItems: [
+		startingEquipment: [
 			"twig_wand",
-			"scroll_spark"
+			["scroll_spark",1]
 		]
 	},
 
 	thief: {
 		stats: {
-			attackDamage: 3,
-			magicDamage: 0,
-			rangedDamage: 5,
-			defense: 1,
-			stamina: 5
+			attackDamage: 2,
+			magicDamage: 1,
+			rangedDamage: 4,
+			defense: 2,
+			stamina: 6
 		},
 
-		startingItems: [
+		startingEquipment: [
 			"slingshot",
-			"throwing_knife"
+			["throwing_knife",5]
 		]
 	},
 
@@ -53,7 +53,7 @@ var Classes = Classes || {
 			stamina: 3
 		},
 
-		startingItems: []
+		startingEquipment: []
 	},
 
 	hardcore: {
@@ -65,6 +65,6 @@ var Classes = Classes || {
 			stamina: 1
 		},
 
-		startingItems: []
+		startingEquipment: []
 	}
 }

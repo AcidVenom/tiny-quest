@@ -10,11 +10,13 @@ require("js/character_creation/item_slot");
 
 var CharacterCreation = function()
 {
+	this._okButton = Widget.new();
 	this._background = Widget.new();
 	this._fade = Widget.new();
 	this._hero = Widget.new();
 	this._selectedClass = Widget.new();
 	this._selection = Widget.new();
+	this._shouldQuit = false;
 
 	this._toolTip = Widget.new();
 	this._tipArea = undefined;
@@ -32,16 +34,55 @@ var CharacterCreation = function()
 
 	this._itemSlots = [];
 
+	this._destroyed = false;
+
 	Log.debug("Started creating the character creation menu");
+
+	this.destroyed = function()
+	{
+		return this._destroyed;
+	}
 
 	this.initialise = function()
 	{
+		var characterCreation = this;
+
+		this._fade.spawn();
+		this._fade.setBlend(0,0,0);
+		this._fade.setOffset(-0.5,0,-0.5);
+		this._fade.setScale(640,0,480);
+		this._fade.setAlpha(1);
+
 		this._toolTip.spawn();
 		this._toolTip.setTexture("textures/character_creation/tooltip.png");
 		this._toolTip.setScale(320,0,387);
 		this._toolTip.setOffset(-0.5,0,-0.5);
 		this._toolTip.setTranslation(10,-6,0);
 		this._toolTip.setAlpha(0);
+
+		this._okButton.spawn();
+		this._okButton.setTexture("textures/character_creation/ok_button.png");
+		this._okButton.setScale(36,0,16);
+		this._okButton.setTranslation(160,-175,0);
+
+		this._okButton.mouseArea = new MouseArea(124,-175,36,16);
+		
+		var okButton = this._okButton;
+		this._okButton.mouseArea.on("enter",function()
+		{
+			okButton.setTexture("textures/character_creation/ok_button_hover.png");
+		});
+
+		this._okButton.mouseArea.on("leave",function()
+		{
+			okButton.setTexture("textures/character_creation/ok_button.png");
+		});
+
+
+		this._okButton.mouseArea.on("released",function()
+		{
+			characterCreation._shouldQuit = true;
+		});
 
 		for (var i = 0; i < 5; ++i)
 		{
@@ -84,7 +125,6 @@ var CharacterCreation = function()
 		for (var i = 0; i < 5; ++i)
 		{
 			var mouseArea = new MouseArea(-132,-45-19*i,72,19);
-			var characterCreation = this;
 
 			var hover = undefined;
 			var release = undefined;
@@ -151,16 +191,11 @@ var CharacterCreation = function()
 				Character.class = characterCreation._class;
 
 				characterCreation.changeStats();
+				characterCreation.changeEquipment();
 			});
 
 			this._selectionAreas.push(mouseArea);
 		}
-
-		this._fade.spawn();
-		this._fade.setBlend(0,0,0);
-		this._fade.setOffset(-0.5,0,-0.5);
-		this._fade.setScale(640,0,480);
-		this._fade.setAlpha(1);
 
 		this._hero.spawn();
 		this._hero.setTexture("textures/characters/hero/hero.png");
@@ -203,6 +238,7 @@ var CharacterCreation = function()
 		this._background.setScale(640,0,480);
 
 		this.changeStats();
+		this.changeEquipment();
 
 		Log.success("Succesfully created the character creation menu");
 	}
@@ -217,32 +253,151 @@ var CharacterCreation = function()
 		this._statNumbers[4].setValue(stats.stamina);
 	}
 
+	this.changeEquipment = function()
+	{
+		var startingEquipment = Classes[Character.class].startingEquipment;
+
+		for (var i = 0; i < this._itemSlots.length; ++i)
+		{
+			this._itemSlots[i].clear();
+		}
+
+		for (var i = 0; i < startingEquipment.length; ++i)
+		{
+			var name = undefined;
+			var quantity = undefined;
+			var startEquipment = startingEquipment[i];
+
+			if (typeof(startEquipment) === "object")
+			{
+				name = startEquipment[0];
+				quantity = startEquipment[1];
+			}
+			else
+			{
+				name = startEquipment;
+			}
+
+			var item = ItemManager.getItem(name);
+			var texture = ItemManager.getItemTexture(name);
+
+			for (var i = 0; i < this._itemSlots.length; ++i)
+			{
+				var itemSlot = this._itemSlots[i];
+
+				if (itemSlot.slot() == item.slot)
+				{
+					itemSlot.changeTexture(texture);
+
+					if (quantity !== undefined)
+					{
+						itemSlot.setQuantity(quantity);
+					}
+					break;
+				}
+			}
+		}
+
+	}
+
 	this.update = function(dt)
 	{
-		if (this._fadeTimer < 1)
+		if (this._shouldQuit == false)
 		{
-			this._fadeTimer += dt;
-			this._fade.setAlpha(Math.lerp(1,0,this._fadeTimer));
-		}
+			if (this._fadeTimer < 1)
+			{
+				this._fadeTimer += dt;
+				this._fade.setAlpha(Math.lerp(1,0,this._fadeTimer));
+			}
 
-		if (this._timer < Math.PI)
-		{
-			this._timer += dt*4;
-		}
-		else
-		{
-			this._timer = 0;
-		}
+			if (this._timer < Math.PI)
+			{
+				this._timer += dt*4;
+			}
+			else
+			{
+				this._timer = 0;
+			}
 
-		this._hero.setTranslation(0,55+Math.sin(this._timer)*5,0);
+			this._hero.setTranslation(0,55+Math.sin(this._timer)*5,0);
+
+			for (var i = 0; i < this._sliders.length; ++i)
+			{
+				this._sliders[i].update(dt);
+				this._rgbNumbers[i].setValue(Math.floor((this._sliders[i].value()*255/0.8)));
+			}
+
+			this._hero.setBlend(0.2+this._sliders[0].value(),0.2+this._sliders[1].value(),0.2+this._sliders[2].value());
+		}
+		else if (this._destroyed == false)
+		{
+			if (this._fadeTimer > 0)
+			{
+				this._fadeTimer -= dt;
+				if (this._fadeTimer < 0)
+				{
+					this._fadeTimer = 0;
+				}
+				this._fade.setAlpha(Math.lerp(1,0,this._fadeTimer));
+			}
+			else
+			{
+				this.destroy();
+			}
+		}
+	}
+
+	this.destroy = function()
+	{
+		this._okButton.destroy();
+		this._background.destroy();
+		this._fade.destroy();
+		this._hero.destroy();
+		this._selectedClass.destroy();
+		this._selection.destroy();
+
+		this._okButton = null;
+		this._background = null;
+		this._fade = null;
+		this._hero = null;
+		this._selectedClass = null;
+		this._selection = null;
+
+		this._toolTip.destroy();
+		this._toolTip = null;
 
 		for (var i = 0; i < this._sliders.length; ++i)
 		{
-			this._sliders[i].update(dt);
-			this._rgbNumbers[i].setValue(Math.floor((this._sliders[i].value()*255/0.8)));
+			var slider = this._sliders[i];
+			slider.destroy();
+			slider = null;
+		}
+		
+		this._sliders = [];
+
+		for (var i = 0; i < this._rgbNumbers.length; ++i)
+		{
+			this._rgbNumbers[i].destroy();
 		}
 
-		this._hero.setBlend(0.2+this._sliders[0].value(),0.2+this._sliders[1].value(),0.2+this._sliders[2].value());
+		this._rgbNumbers = [];
+
+		for (var i = 0; i < this._statNumbers.length; ++i)
+		{
+			this._statNumbers[i].destroy();
+		}
+
+		this._statNumbers = [];
+
+		for (var i = 0; i < this._itemSlots.length; ++i)
+		{
+			this._itemSlots[i].destroy();
+			this._itemSlots[i] = null;
+		}
+
+		this._itemSlots = [];
+
+		this._destroyed = true;
 	}
 
 	this.initialise();

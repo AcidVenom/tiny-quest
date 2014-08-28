@@ -14,6 +14,8 @@ var CharacterCreationState = {
 		ContentManager.load("texture","textures/character_creation/selected_class.png");
 		ContentManager.load("texture","textures/character_creation/selection.png");
 		ContentManager.load("texture","textures/character_creation/tooltip.png");
+		ContentManager.load("texture","textures/character_creation/ok_button.png");
+		ContentManager.load("texture","textures/character_creation/ok_button_hover.png");
 
 		this._characterCreation = new CharacterCreation();
 	},
@@ -26,6 +28,11 @@ var CharacterCreationState = {
 	draw: function(dt)
 	{
 		Game.render(this._camera);
+
+		if (this._characterCreation.destroyed())
+		{
+			StateManager.switchState(LevelState);
+		}
 	},
 
 	destroy: function()
@@ -39,11 +46,12 @@ var CharacterCreationState = {
 		ContentManager.unload("texture","textures/character_creation/selected_class.png");
 		ContentManager.unload("texture","textures/character_creation/selection.png");
 		ContentManager.unload("texture","textures/character_creation/tooltip.png");
+		ContentManager.unload("texture","textures/character_creation/ok_button.png");
+		ContentManager.unload("texture","textures/character_creation/ok_button_hover.png");
 	},
 
 	reload: function()
 	{
-		MouseEventManager.clear();
 		this._characterCreation = new CharacterCreation();
 	}
 }

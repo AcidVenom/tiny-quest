@@ -22,6 +22,7 @@ Game.Initialise = function()
 	RenderSettings.setBackBufferColour(0,0,0,1);
 	RenderSettings.setWindowSize(640,480);
 
+	ItemManager.loadTextures();
 	StateManager.switchState(MenuState);
 }
 Game.Update = function(dt)

@@ -107,4 +107,12 @@ var GuiNumber = function()
 			this._guiElements[i].setBlend(r,g,b);
 		}
 	}
+
+	this.setAlpha = function(a)
+	{
+		for (var i = 0; i < this._guiElements.length; ++i)
+		{
+			this._guiElements[i].setAlpha(a);
+		}
+	}
 }

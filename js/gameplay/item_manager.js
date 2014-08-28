@@ -1,4 +1,32 @@
 var ItemManager = ItemManager || {
+	loadTextures: function()
+	{
+		for (var name in Items)
+		{
+			ContentManager.load("texture",this.getItemTexture(name));
+		}
+	},
+
+	unloadTextures: function()
+	{
+		for (var name in Items)
+		{
+			ContentManager.unload("texture",this.getItemTexture(name));
+		}
+	},
+
+	getItem: function(itemName)
+	{
+		var item = Items[itemName];
+		if (item === undefined)
+		{
+			Log.error("Item with name '" + itemName +"' does not exist");
+			return undefined;
+		}
+
+		return item;
+	},
+
 	getItemTexture: function(itemName)
 	{
 		var item = Items[itemName];

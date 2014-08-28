@@ -11,6 +11,8 @@ var StateManager = StateManager ||
 	/// Switches the current state to a new state, destroying the current one
 	switchState: function(state)
 	{
+		MouseEventManager.clear();
+		
 		if (state.name === undefined)
 		{
 			Log.error("[StateManager] State does not have a name!");
@@ -79,6 +81,8 @@ var StateManager = StateManager ||
 
 	reload: function()
 	{
+		MouseEventManager.clear();
+
 		if (this._currentState == undefined)
 			return;
 		
