@@ -21,7 +21,7 @@ enumerator("ItemSlot",[
 	"Pocket"
 ]);
 
-var Items = Items || {
+var Items = {
 	trainee_sword: {
 		type: ItemTypes.Melee,
 		class: ItemClass.Common,

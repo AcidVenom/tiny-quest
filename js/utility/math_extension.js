@@ -20,3 +20,9 @@ Math.distance = function(x1,y1,x2,y2)
 	var dy = y2 - y1;
 	return Math.sqrt(dx*dx + dy*dy);
 }
+
+/// Returns a number within a range
+Math.randomRange = function(a,b)
+{
+	return a + (b-a)*Math.random();
+}

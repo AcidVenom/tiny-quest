@@ -1,4 +1,4 @@
-var Classes = Classes || {
+var Classes = {
 	warrior: {
 		stats: {
 			attackDamage: 5,
