@@ -3,6 +3,8 @@ require("js/data_files/dungeons");
 
 var Level = function()
 {
+	this._dungeon = undefined;
+
 	this.generateDungeon = function(name)
 	{
 		Log.info("Started generating dungeon with name '" + name + "'");
@@ -14,7 +16,7 @@ var Level = function()
 			return
 		}
 
-		var dungeonGenerator = new DungeonGenerator(
+		this._dungeon = new DungeonGenerator(
 			dungeonDefinition.width,
 			dungeonDefinition.height,
 			32,32,
@@ -24,6 +26,11 @@ var Level = function()
 			dungeonDefinition.maxRoomWidth,
 			dungeonDefinition.maxRoomHeight);
 
-		dungeonGenerator.generate();
+		this._dungeon.generate();
+	}
+
+	this.draw = function(dt)
+	{
+		//this._dungeon.drawConnections(dt);
 	}
 }

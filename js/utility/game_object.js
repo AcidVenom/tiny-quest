@@ -27,12 +27,17 @@ var GameObject = function(w,h,texture)
 	this.setPosition = function(x,y)
 	{
 		var translation = this.translation();
-		this.setTranslation(x,y,translation.z);
+		this.setTranslation(-_GLOBAL_["RenderWidth"]/2+x,_GLOBAL_["RenderHeight"]/2-y,translation.z);
 	}
 
 	this.setRotation = function(x,y,z)
 	{
 		this.__quad.setRotation(-Math.PI/2+x,y,z);
+	}
+
+	this.setBlend = function(r,g,b)
+	{
+		this.__quad.setBlend(r,g,b);
 	}
 
 	this.delete = function()

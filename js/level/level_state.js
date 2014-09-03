@@ -20,12 +20,14 @@ var LevelState = LevelState || {
 
 	draw: function(dt)
 	{
+		this._level.draw(dt);
 		Game.render(this._camera);
 	},
 
 	reload: function()
 	{
 		this._level = new Level();
+		this._level.generateDungeon("debug_dungeon");
 	},
 
 	destroy: function()
