@@ -48,6 +48,7 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 		}
 
 		this.connectRooms();
+		this.placeWalls();
 
 		Log.success("Successfully generated a dungeon");
 	}
@@ -66,8 +67,8 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 			w = Math.floor(Math.randomRange(this._roomWidth.min,this._roomWidth.max));
 			h = Math.floor(Math.randomRange(this._roomHeight.min,this._roomHeight.max));
 
-			x = Math.floor(Math.randomRange(0,this._metrics.w-w));
-			y = Math.floor(Math.randomRange(0,this._metrics.h-h));
+			x = Math.floor(Math.randomRange(1,this._metrics.w-w-1));
+			y = Math.floor(Math.randomRange(2,this._metrics.h-h-1));
 
 			for (var xx = x; xx < x+w; ++xx)
 			{
@@ -101,14 +102,7 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 				{
 					for (var yy = y; yy < y+h; ++yy)
 					{
-						this._grid[xx][yy] = DungeonTiles.Room;
-						var tile = new GameObject(4,4);
-						tile.setPosition(xx*4,yy*4);
-						tile.spawn();
-
-						tile.setBlend(color[0],color[1],color[2]);
-
-						this._tiles.push(tile);
+						this.placeTile(xx,yy,DungeonTiles.Room);
 					}
 				}
 
@@ -191,11 +185,26 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 	this.placeTile = function(x,y,type)
 	{
 		this._grid[x][y] = type;
-		var tile = new GameObject(4,4);
-		tile.setPosition(x*4,y*4);
+		var tile = new GameObject(32,32);
+		tile.setPosition(x*32,y*32);
 		tile.spawn();
 
+		switch (type)
+		{
+			case DungeonTiles.Room:
+				tile.setTexture("textures/dungeons/default_dungeon/default_room.png");
+				break;
+			case DungeonTiles.Floor:
+				tile.setTexture("textures/dungeons/default_dungeon/default_floor.png");
+				break;
+			case DungeonTiles.Wall:
+				tile.setTexture("textures/dungeons/default_dungeon/default_wall.png");
+				break;
+		}
+
 		this._tiles.push(tile);
+
+		return tile;
 	}
 
 	this.connectRooms = function()
@@ -254,9 +263,12 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 						--position.x;
 					}
 					
-					if (this._grid[position.x][position.y] != DungeonTiles.Room)
+					if (this._grid[position.x][position.y-1] != DungeonTiles.Floor && this._grid[position.x][position.y+1] != DungeonTiles.Floor)
 					{
-						this.placeTile(position.x,position.y,DungeonTiles.Floor);
+						if (this._grid[position.x][position.y] != DungeonTiles.Room && this._grid[position.x][position.y] == DungeonTiles.Empty)
+						{
+							this.placeTile(position.x,position.y,DungeonTiles.Floor);
+						}
 					}
 				}
 
@@ -271,11 +283,46 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 						--position.y;
 					}
 					
-					if (this._grid[position.x][position.y] != DungeonTiles.Room)
+					if (this._grid[position.x-1][position.y] != DungeonTiles.Floor && this._grid[position.x+1][position.y] != DungeonTiles.Floor)
 					{
-						this.placeTile(position.x,position.y,DungeonTiles.Floor);
+						if (this._grid[position.x][position.y] != DungeonTiles.Room && this._grid[position.x][position.y] == DungeonTiles.Empty)
+						{
+							this.placeTile(position.x,position.y,DungeonTiles.Floor);
+						}
 					}
 				}
+			}
+		}
+	}
+
+	this.placeWall = function(x,y,offsetX,offsetY)
+	{
+		if (this._grid[x+offsetX] != undefined)
+		{
+			if (this._grid[x+offsetX][y+offsetY] != undefined)
+			{
+				if (this._grid[x][y] == DungeonTiles.Empty && this._grid[x+offsetX][y+offsetY] != DungeonTiles.Empty && this._grid[x+offsetX][y+offsetY] != DungeonTiles.Wall)
+				{
+					this.placeTile(x,y,DungeonTiles.Wall);
+				}
+			}
+		}
+	}
+
+	this.placeWalls = function()
+	{
+		for (var x = 0; x < this._grid.length; ++x)
+		{
+			for (var y = 0; y < this._grid[0].length; ++y)
+			{
+				this.placeWall(x,y,0,1);
+				this.placeWall(x,y,0,-1);
+				this.placeWall(x,y,1,0);
+				this.placeWall(x,y,-1,0);
+				this.placeWall(x,y,1,1);
+				this.placeWall(x,y,-1,1);
+				this.placeWall(x,y,-1,-1);
+				this.placeWall(x,y,1,-1);
 			}
 		}
 	}

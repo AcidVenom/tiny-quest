@@ -13,6 +13,9 @@ Game.Initialise = function()
 {
 	ContentManager.load("texture", "textures/misc/number_strip.png");
 	ContentManager.load("shader", "shaders/number.fx");
+	ContentManager.load("texture", "textures/dungeons/default_dungeon/default_room.png");
+	ContentManager.load("texture", "textures/dungeons/default_dungeon/default_floor.png");
+	ContentManager.load("texture", "textures/dungeons/default_dungeon/default_wall.png");
 	
 	Game.setName("Tiny Quest");
 	RenderSettings.setResolution(640,480);
