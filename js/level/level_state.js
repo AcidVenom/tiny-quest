@@ -28,7 +28,7 @@ var LevelState = LevelState || {
 		if (Keyboard.isDown("D"))
 			mx = 1;
 
-		this._camera.translateBy(mx,my,0);
+		this._camera.translateBy(mx*speed,my*speed,0);
 	},
 
 	draw: function(dt)

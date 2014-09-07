@@ -26,6 +26,7 @@ var Level = function()
 			dungeonDefinition.maxRoomWidth,
 			dungeonDefinition.maxRoomHeight);
 
+		this._dungeon.setDefinition(dungeonDefinition);
 		this._dungeon.generate();
 	}
 

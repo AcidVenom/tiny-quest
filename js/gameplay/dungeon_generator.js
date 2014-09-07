@@ -16,6 +16,7 @@ var Room = function(x,y,w,h)
 
 var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoomW,maxRoomH)
 {
+	this._definition = undefined;
 	this._metrics = {w: w, h: h}
 	this._tileSize = {w: tileW, h: tileH}
 
@@ -28,6 +29,11 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 
 	this._tiles = [];
 	this._rooms = [];
+
+	this.setDefinition = function(def)
+	{
+		this._definition = def;
+	}
 
 	this.generate = function()
 	{
@@ -185,20 +191,56 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 	this.placeTile = function(x,y,type)
 	{
 		this._grid[x][y] = type;
-		var tile = new GameObject(32,32);
+		var tile = undefined;
+		if (this._grid[x][y] == DungeonTiles.Wall)
+		{
+			tile = new GameObject(32,48);
+		}
+		else
+		{
+			tile = new GameObject(32,32);
+		}
 		tile.setPosition(x*32,y*32);
+		tile.setZ(y/100);
 		tile.spawn();
 
+		var wallTexture = undefined;
+		var wallSpecial = {texture: undefined, mod: undefined};
+		var floorTexture = undefined;
+		var roomTexture = undefined;
+
+		var textures = this._definition.textures;
+
+		if (textures !== undefined)
+		{
+			wallTexture = textures.wall === undefined ? "textures/dungeons/default_dungeon/default_wall.png" : textures.wall;
+			roomTexture = textures.room === undefined ? "textures/dungeons/default_dungeon/default_room.png" : textures.room;
+			floorTexture = textures.floor === undefined ? "textures/dungeons/default_dungeon/default_floor.png" : textures.floor;
+
+			if (textures.wall_special !== undefined)
+			{
+				wallSpecial.texture = textures.wall_special[0];
+				wallSpecial.mod = textures.wall_special[1];
+			}
+		}
 		switch (type)
 		{
 			case DungeonTiles.Room:
-				tile.setTexture("textures/dungeons/default_dungeon/default_room.png");
+				tile.setTexture(roomTexture);
 				break;
 			case DungeonTiles.Floor:
-				tile.setTexture("textures/dungeons/default_dungeon/default_floor.png");
+				tile.setTexture(floorTexture);
 				break;
 			case DungeonTiles.Wall:
-				tile.setTexture("textures/dungeons/default_dungeon/default_wall.png");
+				tile.setTexture(wallTexture);
+
+				if (wallSpecial.texture !== undefined && wallSpecial.mod !== undefined)
+				{
+					if (x % wallSpecial.mod == 0 && this._grid[x][y+1] != DungeonTiles.Empty)
+					{
+						tile.setTexture(wallSpecial.texture);
+					}
+				}
 				break;
 		}
 

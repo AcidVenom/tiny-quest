@@ -16,7 +16,11 @@ Game.Initialise = function()
 	ContentManager.load("texture", "textures/dungeons/default_dungeon/default_room.png");
 	ContentManager.load("texture", "textures/dungeons/default_dungeon/default_floor.png");
 	ContentManager.load("texture", "textures/dungeons/default_dungeon/default_wall.png");
-	
+	ContentManager.load("texture", "textures/dungeons/castle/dungeon_castle_wall.png");
+	ContentManager.load("texture", "textures/dungeons/castle/dungeon_castle_wall_torch.png");
+	ContentManager.load("texture", "textures/dungeons/castle/dungeon_castle_room.png");
+	ContentManager.load("texture", "textures/dungeons/castle/dungeon_castle_floor.png");
+
 	Game.setName("Tiny Quest");
 	RenderSettings.setResolution(640,480);
 	RenderSettings.setVsync(false);
