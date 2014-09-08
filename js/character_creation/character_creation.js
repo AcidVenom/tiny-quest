@@ -328,6 +328,11 @@ var CharacterCreation = function()
 			}
 
 			this._hero.setBlend(0.2+this._sliders[0].value(),0.2+this._sliders[1].value(),0.2+this._sliders[2].value());
+			var blend = this._hero.blend();
+
+			Character.blend[0] = blend.r;
+			Character.blend[1] = blend.g;
+			Character.blend[2] = blend.b;
 		}
 		else if (this._destroyed == false)
 		{

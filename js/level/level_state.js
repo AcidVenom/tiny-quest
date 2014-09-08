@@ -15,20 +15,17 @@ var LevelState = LevelState || {
 
 	update: function(dt)
 	{
-		var my = 0;
-		var mx = 0;
-		var speed = 300*dt;
+		this._level.update(dt);
+	},
 
-		if (Keyboard.isDown("W"))
-			my = 1;
-		if (Keyboard.isDown("S"))
-			my = -1;
-		if (Keyboard.isDown("A"))
-			mx = -1;
-		if (Keyboard.isDown("D"))
-			mx = 1;
+	level: function()
+	{
+		return this._level;
+	},
 
-		this._camera.translateBy(mx*speed,my*speed,0);
+	camera: function()
+	{
+		return this._camera;
 	},
 
 	draw: function(dt)

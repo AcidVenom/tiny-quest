@@ -14,6 +14,101 @@ var Room = function(x,y,w,h)
 	this.connections = [];
 }
 
+var Tile = function(x,y,type,grid,textures)
+{
+	this._type = type;
+	this._tile = undefined;
+	this._position = {x: x*32, y: y*32}
+	this._indices = {x: x, y: y}
+	this._unit = undefined;
+
+	this.position = function()
+	{
+		return this._position;
+	}
+
+	this.indices = function()
+	{
+		return this._indices;
+	}
+
+	this.setUnit = function(unit)
+	{
+		this._unit = unit;
+
+		if (this._unit.name() == "player")
+		{
+			this._tile.setBlend(0,1,0);
+		}
+		else
+		{
+			this._tile.setBlend(1,0,0);
+		}
+	}
+
+	this.removeUnit = function()
+	{
+		this._unit = undefined;
+		this._tile.setBlend(1,1,1);
+	}
+
+	this.type = function()
+	{
+		return this._type;
+	}
+	
+	if (type == DungeonTiles.Wall)
+	{
+		this._tile = new GameObject(32,48);
+	}
+	else
+	{
+		this._tile = new GameObject(32,32);
+	}
+	
+	this._tile.setPosition(x*32,y*32);
+	this._tile.setZ(y/100);
+	this._tile.spawn();
+
+	var wallTexture = undefined;
+	var wallSpecial = {texture: undefined, mod: undefined};
+	var floorTexture = undefined;
+	var roomTexture = undefined;
+
+	if (textures !== undefined)
+	{
+		wallTexture = textures.wall === undefined ? "textures/dungeons/default_dungeon/default_wall.png" : textures.wall;
+		roomTexture = textures.room === undefined ? "textures/dungeons/default_dungeon/default_room.png" : textures.room;
+		floorTexture = textures.floor === undefined ? "textures/dungeons/default_dungeon/default_floor.png" : textures.floor;
+
+		if (textures.wall_special !== undefined)
+		{
+			wallSpecial.texture = textures.wall_special[0];
+			wallSpecial.mod = textures.wall_special[1];
+		}
+	}
+	switch (type)
+	{
+		case DungeonTiles.Room:
+			this._tile.setTexture(roomTexture);
+			break;
+		case DungeonTiles.Floor:
+			this._tile.setTexture(floorTexture);
+			break;
+		case DungeonTiles.Wall:
+			this._tile.setTexture(wallTexture);
+
+			if (wallSpecial.texture !== undefined && wallSpecial.mod !== undefined)
+			{
+				if (x % wallSpecial.mod == 0 && grid[x][y+1] != DungeonTiles.Empty)
+				{
+					this._tile.setTexture(wallSpecial.texture);
+				}
+			}
+			break;
+	}
+}
+
 var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoomW,maxRoomH)
 {
 	this._definition = undefined;
@@ -26,13 +121,21 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 	this._roomHeight = {min: minRoomH, max: maxRoomH}
 
 	this._grid = [];
-
-	this._tiles = [];
 	this._rooms = [];
+
+	this.tileAt = function(x,y)
+	{
+		return this._grid[x][y];
+	}
 
 	this.setDefinition = function(def)
 	{
 		this._definition = def;
+	}
+
+	this.definition = function()
+	{
+		return this._definition;
 	}
 
 	this.generate = function()
@@ -190,61 +293,8 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 
 	this.placeTile = function(x,y,type)
 	{
-		this._grid[x][y] = type;
-		var tile = undefined;
-		if (this._grid[x][y] == DungeonTiles.Wall)
-		{
-			tile = new GameObject(32,48);
-		}
-		else
-		{
-			tile = new GameObject(32,32);
-		}
-		tile.setPosition(x*32,y*32);
-		tile.setZ(y/100);
-		tile.spawn();
-
-		var wallTexture = undefined;
-		var wallSpecial = {texture: undefined, mod: undefined};
-		var floorTexture = undefined;
-		var roomTexture = undefined;
-
-		var textures = this._definition.textures;
-
-		if (textures !== undefined)
-		{
-			wallTexture = textures.wall === undefined ? "textures/dungeons/default_dungeon/default_wall.png" : textures.wall;
-			roomTexture = textures.room === undefined ? "textures/dungeons/default_dungeon/default_room.png" : textures.room;
-			floorTexture = textures.floor === undefined ? "textures/dungeons/default_dungeon/default_floor.png" : textures.floor;
-
-			if (textures.wall_special !== undefined)
-			{
-				wallSpecial.texture = textures.wall_special[0];
-				wallSpecial.mod = textures.wall_special[1];
-			}
-		}
-		switch (type)
-		{
-			case DungeonTiles.Room:
-				tile.setTexture(roomTexture);
-				break;
-			case DungeonTiles.Floor:
-				tile.setTexture(floorTexture);
-				break;
-			case DungeonTiles.Wall:
-				tile.setTexture(wallTexture);
-
-				if (wallSpecial.texture !== undefined && wallSpecial.mod !== undefined)
-				{
-					if (x % wallSpecial.mod == 0 && this._grid[x][y+1] != DungeonTiles.Empty)
-					{
-						tile.setTexture(wallSpecial.texture);
-					}
-				}
-				break;
-		}
-
-		this._tiles.push(tile);
+		var tile = new Tile(x,y,type,this._grid,this._definition.textures);
+		this._grid[x][y] = tile;
 
 		return tile;
 	}
@@ -343,7 +393,7 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 		{
 			if (this._grid[x+offsetX][y+offsetY] != undefined)
 			{
-				if (this._grid[x][y] == DungeonTiles.Empty && this._grid[x+offsetX][y+offsetY] != DungeonTiles.Empty && this._grid[x+offsetX][y+offsetY] != DungeonTiles.Wall)
+				if (this._grid[x][y] == DungeonTiles.Empty && this._grid[x+offsetX][y+offsetY] != DungeonTiles.Empty && this._grid[x+offsetX][y+offsetY].type() != DungeonTiles.Wall)
 				{
 					this.placeTile(x,y,DungeonTiles.Wall);
 				}

@@ -52,7 +52,7 @@ var StateManager = StateManager ||
 	},
 
 	/// Returns the current state
-	getState: function(name)
+	getState: function()
 	{
 		return this._currentState;
 	},

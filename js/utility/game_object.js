@@ -30,18 +30,17 @@ var GameObject = function(w,h,texture)
 		this.setTranslation(-_GLOBAL_["RenderWidth"]/2+x,_GLOBAL_["RenderHeight"]/2-y,translation.z);
 	}
 
+	this._setRotation = this.setRotation;
+
 	this.setRotation = function(x,y,z)
 	{
-		this.__quad.setRotation(-Math.PI/2+x,y,z);
+		this._setRotation(-Math.PI/2+x,y,z);
 	}
+
+	this._setBlend = this.setBlend;
 
 	this.setBlend = function(r,g,b)
 	{
-		this.__quad.setBlend(r,g,b);
-	}
-
-	this.delete = function()
-	{
-		this.__quad.destroy();
+		this._setBlend(r,g,b);
 	}
 }

@@ -22,5 +22,7 @@ var Character = Character || {
 		},
 
 		inventory: undefined
-	}
+	},
+
+	blend: [1,1,1]
 }
