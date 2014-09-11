@@ -5,6 +5,7 @@ require("js/utility/state_manager");
 require("js/utility/broadcaster");
 require("js/utility/mouse_area");
 require("js/utility/gui_number");
+require("js/utility/astar");
 
 require("js/menu/menu_state");
 require("js/level/level_state");

@@ -34,15 +34,17 @@ var Unit = function(x,y,name)
 	extend(this,this.__gameObject);
 
 	this._setPosition = this.setPosition;
+
+	this.tile = function()
+	{
+		return this._tile;
+	}
+
 	this.setPosition = function(x,y)
 	{
-		if (this._tile !== undefined)
-		{
-			this._tile.removeUnit();
-		}
 		this._tile = this._dungeon.tileAt(x,y);
 		this._tile.setUnit(this);
-
+		
 		this._position = this._tile.position();
 		this._indices.x = x;
 		this._indices.y = y;
@@ -54,10 +56,17 @@ var Unit = function(x,y,name)
 	this.jumpTo = function(x,y)
 	{
 		var tile = this._dungeon.tileAt(x,y);
-		if (this._target == undefined && tile !== DungeonTiles.Empty && tile.type() !== DungeonTiles.Wall)
+		if (this._target == undefined && !tile.isImpassable())
 		{
 			this._jumpTimer = 0;
 			this._target = tile;
+
+			if (this._tile !== undefined)
+			{
+				this._tile.removeUnit();
+			}
+			
+			tile.setUnit(this);
 
 			if (x < this._indices.x)
 			{
@@ -95,6 +104,16 @@ var Unit = function(x,y,name)
 		return this._name;
 	}
 
+	this.onArrived = function()
+	{
+		//Log.debug("Unit " + this._name + " arrived on tile " + this._tile.indices().x + "," + this._tile.indices().y);
+	}
+
+	this.update = function(dt)
+	{
+		this.updateMovement(dt);
+	}
+
 	this.updateMovement = function(dt)
 	{
 		if (this._jumpTimer < 1)
@@ -110,6 +129,7 @@ var Unit = function(x,y,name)
 		{
 			this.setPosition(this._target.indices().x,this._target.indices().y);
 			this._target = undefined;
+			this.onArrived();
 		}
 	}
 

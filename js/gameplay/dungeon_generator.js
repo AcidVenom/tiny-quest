@@ -21,6 +21,36 @@ var Tile = function(x,y,type,grid,textures)
 	this._position = {x: x*32, y: y*32}
 	this._indices = {x: x, y: y}
 	this._unit = undefined;
+	this._visible = false;
+
+	this.hide = function()
+	{
+		this._tile.destroy();
+
+		if (this._unit !== undefined)
+		{
+			this._unit.destroy();
+		}
+
+		this._visible = false;
+	}
+
+	this.show = function()
+	{
+		this._tile.spawn();
+
+		if (this._unit !== undefined)
+		{
+			this._unit.spawn();
+		}
+
+		this._visible = true;
+	}
+
+	this.visible = function()
+	{
+		return this._visible;
+	}
 
 	this.position = function()
 	{
@@ -56,6 +86,16 @@ var Tile = function(x,y,type,grid,textures)
 	{
 		return this._type;
 	}
+
+	this.isImpassable = function()
+	{
+		return this._unit !== undefined || this._type == DungeonTiles.Wall;
+	}
+
+	this.unit = function()
+	{
+		return this._unit;
+	}
 	
 	if (type == DungeonTiles.Wall)
 	{
@@ -68,7 +108,6 @@ var Tile = function(x,y,type,grid,textures)
 	
 	this._tile.setPosition(x*32,y*32);
 	this._tile.setZ(y/100);
-	this._tile.spawn();
 
 	var wallTexture = undefined;
 	var wallSpecial = {texture: undefined, mod: undefined};
@@ -122,6 +161,8 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 
 	this._grid = [];
 	this._rooms = [];
+
+	this._chunk = undefined;
 
 	this.tileAt = function(x,y)
 	{
@@ -417,5 +458,50 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 				this.placeWall(x,y,1,-1);
 			}
 		}
+	}
+
+	this.getChunk = function(x,y,w,h)
+	{
+		var chunk = [];
+
+		var startX = Math.floor(x+0.5);
+		var startY = Math.floor(y+0.5);
+
+		if (startX < 0)
+		{
+			startX = 0;
+		}
+
+		if (startY < 0)
+		{
+			startY = 0;
+		}
+
+		var endX = startX+Math.floor(w+0.5);
+		var endY = startY+Math.floor(h+0.5);
+
+		if (endX > this._grid.length)
+		{
+			endX = this._grid.length;
+		}
+
+		if (endY > this._grid[0].length)
+		{
+			endY = this._grid[0].length;
+		}
+		
+		for (var xx = startX; xx < endX; ++xx)
+		{
+			for (var yy = startY; yy < endY; ++yy)
+			{
+				var tile = this.tileAt(xx,yy);
+				if (tile != DungeonTiles.Empty)
+				{
+					chunk.push(tile);
+				}
+			}
+		}
+
+		return chunk;
 	}
 }

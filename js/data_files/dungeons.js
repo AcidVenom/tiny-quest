@@ -14,6 +14,8 @@ var Dungeons = {
 			wall_special: ["textures/dungeons/castle/dungeon_castle_wall_torch.png",4],
 			room: "textures/dungeons/castle/dungeon_castle_room.png",
 			floor: "textures/dungeons/castle/dungeon_castle_floor.png"
-		}
+		},
+
+		viewRange: 9
 	}
 }

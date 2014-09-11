@@ -1,6 +1,8 @@
 require("js/gameplay/dungeon_generator");
+
 require("js/gameplay/characters/unit");
 require("js/gameplay/characters/player");
+require("js/gameplay/characters/enemy");
 
 require("js/data_files/dungeons");
 require("js/data_files/character_definitions");
@@ -8,7 +10,13 @@ require("js/data_files/character_definitions");
 var Level = function()
 {
 	this._dungeon = undefined;
+	this._player = undefined;
 	this._units = [];
+
+	this.player = function()
+	{
+		return this._player;
+	}
 
 	this.generateDungeon = function(name)
 	{
@@ -47,6 +55,11 @@ var Level = function()
 				if (this._dungeon.tileAt(x,y).type !== undefined && this._dungeon.tileAt(x,y).type() == DungeonTiles.Room)
 				{
 					this._units.push(new Player(x,y));
+					this._player = this._units[0];
+					this._units.push(new Enemy(x+1,y+1,"mouse_brown"));
+					this._units.push(new Enemy(x+4,y+4,"mouse_brown"));
+					this._units.push(new Enemy(x+2,y+1,"mouse_brown"));
+					this._units.push(new Enemy(x+2,y+3,"mouse_brown"));
 					found = true;
 					break;
 				}

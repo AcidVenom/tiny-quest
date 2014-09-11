@@ -52,6 +52,7 @@ var CharacterCreation = function()
 		this._fade.setOffset(-0.5,0,-0.5);
 		this._fade.setScale(640,0,480);
 		this._fade.setAlpha(1);
+		this._fade.setTranslation(0,0,1000);
 
 		this._toolTip.spawn();
 		this._toolTip.setTexture("textures/character_creation/tooltip.png");
@@ -117,7 +118,7 @@ var CharacterCreation = function()
 		{
 			var number = new GuiNumber();
 			number.setValue(255);
-			number.setTranslation(162,7-i*19,0);
+			number.setTranslation(162,7-i*19,100);
 
 			this._rgbNumbers.push(number);
 		}
