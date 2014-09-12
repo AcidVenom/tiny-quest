@@ -27,3 +27,13 @@ Math.randomRange = function(a,b)
 {
 	return a + (b-a)*Math.random();
 }
+
+/// Returns a shake on x and y coordinates
+Math.shake = function(magnitude,timer)
+{
+	var random = {x: Math.randomRange(-1,1), y: Math.randomRange(-1,1) }
+	random.x *= magnitude;
+	random.y *= magnitude;
+
+	return {x: (1-timer) * random.x, y: (1-timer) * random.y }
+}

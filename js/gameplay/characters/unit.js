@@ -84,7 +84,11 @@ var Unit = function(x,y,name)
 			{
 				this.setScale(32,32,32);
 			}
+
+			return true;
 		}
+
+		return false;
 	}
 
 	this.initialise = function()

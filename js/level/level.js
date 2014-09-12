@@ -1,5 +1,15 @@
 require("js/gameplay/dungeon_generator");
 
+enumerator("TurnTypes",[
+	"Player",
+	"Enemy"
+	]);
+
+enumerator("Events",[
+	"PlayerTurnEnded",
+	"EnemyTurnEnded"
+	]);
+
 require("js/gameplay/characters/unit");
 require("js/gameplay/characters/player");
 require("js/gameplay/characters/enemy");
@@ -9,12 +19,24 @@ require("js/data_files/character_definitions");
 
 require("js/ui/hud");
 
+
 var Level = function()
 {
 	this._dungeon = undefined;
 	this._player = undefined;
+	this._currentTurn = TurnTypes.Player;
 	this._units = [];
 	this._hud = new HUD();
+
+	this.turn = function()
+	{
+		return this._currentTurn;
+	}
+
+	this.setTurn = function(params)
+	{
+		this._currentTurn = params.turn;
+	}
 
 	this.player = function()
 	{
@@ -60,9 +82,7 @@ var Level = function()
 					this._units.push(new Player(x,y));
 					this._player = this._units[0];
 					this._units.push(new Enemy(x+1,y+1,"mouse_brown"));
-					this._units.push(new Enemy(x+4,y+4,"mouse_brown"));
-					this._units.push(new Enemy(x+2,y+1,"mouse_brown"));
-					this._units.push(new Enemy(x+2,y+3,"mouse_brown"));
+					this._units.push(new Enemy(x+4,y+4,"mouse_grey"));
 					found = true;
 					break;
 				}
@@ -78,6 +98,7 @@ var Level = function()
 	this.reload = function()
 	{
 		this._dungeon.destroy();
+		Broadcaster.clear();
 	}
 
 	this.draw = function(dt)
@@ -87,9 +108,22 @@ var Level = function()
 
 	this.update = function(dt)
 	{
+		var playerTurn = true;
 		for (var i = 0; i < this._units.length; ++i)
 		{
 			this._units[i].update(dt);
+
+			if (this._units[i].name() != "player" && this._units[i].shouldMove() == true)
+			{
+				playerTurn = false;
+			}
+		}
+
+		if (playerTurn == true)
+		{
+			this.setTurn({turn:TurnTypes.Player});
 		}
 	}
+
+	Broadcaster.register(this,Events.PlayerTurnEnded,this.setTurn)
 }

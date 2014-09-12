@@ -8,7 +8,7 @@ var Broadcaster = {
 	_listeners: [],
 
 	/// Registers a listener
-	register: function(obj,func,evt)
+	register: function(obj,evt,func)
 	{
 		if (this._events[evt] === undefined)
 		{
@@ -23,13 +23,22 @@ var Broadcaster = {
 	/// Broadcasts an event
 	broadcast: function(evt,params)
 	{
-		for (var i = 0; i < this._events[evt].length; ++i)
+		if (this._events[evt] !== undefined)
 		{
-			var func = this._events[evt][i];
-			var obj = this._listeners[evt][i];
+			for (var i = 0; i < this._events[evt].length; ++i)
+			{
+				var func = this._events[evt][i];
+				var obj = this._listeners[evt][i];
 
-			obj.func = func;
-			obj.func(params);
-		}
+				obj.func = func;
+				obj.func(params);
+			}
+		}	
+	},
+
+	clear: function()
+	{
+		this._events = [];
+		this._listeners = [];
 	}
 }

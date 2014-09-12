@@ -2,6 +2,7 @@ var Enemy = function(x,y,key)
 {
 	this._camera = LevelState.camera();
 	this.__unit = new Unit(x,y,key);
+	this._shouldMove = false;
 	
 	extend(this,this.__unit);
 
@@ -57,9 +58,14 @@ var Enemy = function(x,y,key)
 		return false;
 	}
 
+	this.move = function()
+	{
+		this._shouldMove = true;
+	}
+
 	this.update = function(dt)
 	{
-		if (Keyboard.isReleased("U"))
+		if (this._shouldMove == true)
 		{
 			var self = this;
 			var getNeighbours = function(tile)
@@ -91,7 +97,7 @@ var Enemy = function(x,y,key)
 				var lowestPath = undefined;
 				for (var i = 0; i < neighbours.length; ++i)
 				{
-					var path = AStar.getPath(this.tile(),neighbours[0],getNeighbours,32,heuristic);
+					var path = AStar.getPath(this.tile(),neighbours[i],getNeighbours,32,heuristic);
 
 					if (path.length != 0)
 					{
@@ -114,8 +120,17 @@ var Enemy = function(x,y,key)
 					this.jumpTo(lowestPath[0].indices().x,lowestPath[0].indices().y);
 				}
 			}
+
+			this._shouldMove = false;
 		}
 
 		this.updateMovement(dt);
 	}
+
+	this.shouldMove = function()
+	{
+		return this._shouldMove;
+	}
+
+	Broadcaster.register(this,Events.PlayerTurnEnded,this.move)
 }

@@ -68,6 +68,10 @@ var AStar =
 		this._closedList = [];
 		this._openList = [];
 
+		this._from = undefined;
+		this._to = undefined;
+		this._current = undefined;
+
 		return path;
 	},
 

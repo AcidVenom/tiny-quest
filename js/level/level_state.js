@@ -44,6 +44,7 @@ var LevelState = LevelState || {
 
 	reload: function()
 	{
+		this._level.reload();
 		this._level = new Level();
 		this._level.generateDungeon("debug_dungeon");
 	},
