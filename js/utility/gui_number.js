@@ -1,8 +1,16 @@
-var GuiNumber = function()
+var GuiNumber = function(parent)
 {
 	this._numberString = "";
 	this._guiElements = [];
-	this._root = Widget.new();
+
+	if (parent !== undefined)
+	{
+		this._root = Widget.new(parent);
+	}
+	else
+	{
+		this._root = Widget.new();
+	}
 
 	this.setValue = function(number)
 	{

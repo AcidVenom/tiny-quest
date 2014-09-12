@@ -65,6 +65,9 @@ var AStar =
 
 		path.reverse();
 
+		this._closedList = [];
+		this._openList = [];
+
 		return path;
 	},
 

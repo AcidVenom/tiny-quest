@@ -12,6 +12,14 @@ var Unit = function(x,y,name)
 	this._target = undefined;
 	this._jumpTimer = 1;
 
+	this._maxHealth = 100;
+	this._maxStamina = 30;
+	this._maxMana = 10;
+
+	this._health = this._maxHealth;
+	this._stamina = this._maxStamina;
+	this._mana = this._maxMana;
+
 	var unit = CharacterDefinitions[name];
 
 	if (unit === undefined)
@@ -44,7 +52,7 @@ var Unit = function(x,y,name)
 	{
 		this._tile = this._dungeon.tileAt(x,y);
 		this._tile.setUnit(this);
-		
+
 		this._position = this._tile.position();
 		this._indices.x = x;
 		this._indices.y = y;

@@ -32,6 +32,10 @@ var Enemy = function(x,y,key)
 		{
 			this.spawn();
 		}
+		else
+		{
+			this.destroy();
+		}
 	}
 
 	this.isNeighbourOfPlayer = function()
@@ -84,15 +88,30 @@ var Enemy = function(x,y,key)
 			if (!this.isNeighbourOfPlayer())
 			{
 				var neighbours = getNeighbours(LevelState.level().player().tile());
-			
-				if (neighbours.length > 0)
+				var lowestPath = undefined;
+				for (var i = 0; i < neighbours.length; ++i)
 				{
 					var path = AStar.getPath(this.tile(),neighbours[0],getNeighbours,32,heuristic);
 
 					if (path.length != 0)
 					{
-						this.jumpTo(path[0].indices().x,path[0].indices().y);
+						if (lowestPath === undefined)
+						{
+							lowestPath = path;
+						}
+						else
+						{
+							if (path.length < lowestPath.length)
+							{
+								lowestPath = path;
+							}
+						}
 					}
+				}
+
+				if (lowestPath !== undefined)
+				{
+					this.jumpTo(lowestPath[0].indices().x,lowestPath[0].indices().y);
 				}
 			}
 		}

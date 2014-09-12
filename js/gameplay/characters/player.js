@@ -6,7 +6,7 @@ var Player = function(x,y)
 	extend(this,this.__unit);
 
 	this._timer = 0;
-	this._chunk = undefined;
+	this._chunk = [];
 	this._viewWidth = this._dungeon.definition().viewRange;
 	this._viewHeight = this._dungeon.definition().viewRange;
 

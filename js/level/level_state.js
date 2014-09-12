@@ -7,6 +7,14 @@ var LevelState = LevelState || {
 
 	initialise: function()
 	{
+		ContentManager.load("texture", "textures/ui/frames.png");
+		ContentManager.load("texture", "textures/ui/hp_bar.png");
+		ContentManager.load("texture", "textures/ui/hp_icon.png");
+		ContentManager.load("texture", "textures/ui/stamina_bar.png");
+		ContentManager.load("texture", "textures/ui/stamina_icon.png");
+		ContentManager.load("texture", "textures/ui/mana_icon.png");
+		ContentManager.load("texture", "textures/ui/mana_bar.png");
+
 		this._camera = Camera.new("orthographic");
 		this._level = new Level();
 
@@ -42,6 +50,6 @@ var LevelState = LevelState || {
 
 	destroy: function()
 	{
-
+		this._dungeon.destroy();
 	}
 }

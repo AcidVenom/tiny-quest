@@ -179,8 +179,34 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 		return this._definition;
 	}
 
+	this.destroy = function()
+	{
+		for (var key in this._definition.textures)
+		{
+			if (key != "wall_special")
+			{
+				ContentManager.unload("texture",this._definition.textures[key]);
+			}
+			else
+			{
+				ContentManager.unload("texture",this._definition.textures[key][0]);
+			}
+		}
+	}
+
 	this.generate = function()
 	{
+		for (var key in this._definition.textures)
+		{
+			if (key != "wall_special")
+			{
+				ContentManager.load("texture",this._definition.textures[key]);
+			}
+			else
+			{
+				ContentManager.load("texture",this._definition.textures[key][0]);
+			}
+		}
 		for (var x = 0; x < this._metrics.w; ++x)
 		{
 			this._grid[x] = [];

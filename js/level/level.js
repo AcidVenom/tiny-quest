@@ -7,11 +7,14 @@ require("js/gameplay/characters/enemy");
 require("js/data_files/dungeons");
 require("js/data_files/character_definitions");
 
+require("js/ui/hud");
+
 var Level = function()
 {
 	this._dungeon = undefined;
 	this._player = undefined;
 	this._units = [];
+	this._hud = new HUD();
 
 	this.player = function()
 	{
@@ -70,6 +73,11 @@ var Level = function()
 	this.dungeon = function()
 	{
 		return this._dungeon;
+	}
+
+	this.reload = function()
+	{
+		this._dungeon.destroy();
 	}
 
 	this.draw = function(dt)
