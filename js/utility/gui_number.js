@@ -80,10 +80,11 @@ var GuiNumber = function(parent)
 			}
 			
 			guiElement.setUniform("float","StripCoordinate",val);
+			guiElement.spawn();
 		}
 		for (var i = 0; i < this._guiElements.length; ++i)
 		{
-			this._guiElements[i].spawn();
+			this._guiElements[i].setAlpha(1)
 		}
 
 		if (this._guiElements.length > this._numberString.length)
@@ -92,7 +93,7 @@ var GuiNumber = function(parent)
 
 			for (var i = this._guiElements.length-1; i > this._guiElements.length-1-toRemove; --i)
 			{
-				this._guiElements[i].destroy();
+				this._guiElements[i].setAlpha(0)
 			}
 		}
 	}

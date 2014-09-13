@@ -58,7 +58,7 @@ var CharacterCreation = function()
 		this._toolTip.setTexture("textures/character_creation/tooltip.png");
 		this._toolTip.setScale(320,0,387);
 		this._toolTip.setOffset(-0.5,0,-0.5);
-		this._toolTip.setTranslation(10,-6,0);
+		this._toolTip.setTranslation(10,-6,101);
 		this._toolTip.setAlpha(0);
 
 		this._okButton.spawn();
