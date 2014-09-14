@@ -348,62 +348,9 @@ var CharacterCreation = function()
 			}
 			else
 			{
-				this.destroy();
+				this._destroyed = true;
 			}
 		}
-	}
-
-	this.destroy = function()
-	{
-		this._okButton.destroy();
-		this._background.destroy();
-		this._fade.destroy();
-		this._hero.destroy();
-		this._selectedClass.destroy();
-		this._selection.destroy();
-
-		this._okButton = null;
-		this._background = null;
-		this._fade = null;
-		this._hero = null;
-		this._selectedClass = null;
-		this._selection = null;
-
-		this._toolTip.destroy();
-		this._toolTip = null;
-
-		for (var i = 0; i < this._sliders.length; ++i)
-		{
-			var slider = this._sliders[i];
-			slider.destroy();
-			slider = null;
-		}
-		
-		this._sliders = [];
-
-		for (var i = 0; i < this._rgbNumbers.length; ++i)
-		{
-			this._rgbNumbers[i].destroy();
-		}
-
-		this._rgbNumbers = [];
-
-		for (var i = 0; i < this._statNumbers.length; ++i)
-		{
-			this._statNumbers[i].destroy();
-		}
-
-		this._statNumbers = [];
-
-		for (var i = 0; i < this._itemSlots.length; ++i)
-		{
-			this._itemSlots[i].destroy();
-			this._itemSlots[i] = null;
-		}
-
-		this._itemSlots = [];
-
-		this._destroyed = true;
 	}
 
 	this.initialise();

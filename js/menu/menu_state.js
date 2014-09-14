@@ -44,6 +44,9 @@ var MenuState = MenuState || {
 
 	destroy: function()
 	{
+		this._menu = null;
+		this._camera = null;
+		
 		ContentManager.unload("texture","textures/menu/background.png");
 		ContentManager.unload("texture","textures/menu/background_night.png");
 		
@@ -56,8 +59,5 @@ var MenuState = MenuState || {
 		ContentManager.unload("texture","textures/menu/cloud_1_night.png");
 		ContentManager.unload("texture","textures/menu/cloud_2_night.png");
 		ContentManager.unload("texture","textures/menu/cloud_3_night.png");
-
-		this._menu = null;
-		this._camera = null;
 	}
 }
