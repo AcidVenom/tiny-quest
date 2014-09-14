@@ -16,7 +16,7 @@ var LevelState = LevelState || {
 		ContentManager.load("texture", "textures/ui/mana_bar.png");
 
 		this._camera = Camera.new("orthographic");
-		this._level = new Level();
+		this._level = new Level(this._camera);
 
 		this._level.generateDungeon("debug_dungeon");
 	},
@@ -45,7 +45,7 @@ var LevelState = LevelState || {
 	reload: function()
 	{
 		this._level.reload();
-		this._level = new Level();
+		this._level = new Level(this._camera);
 		this._level.generateDungeon("debug_dungeon");
 	},
 

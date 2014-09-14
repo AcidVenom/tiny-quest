@@ -82,6 +82,7 @@ var StateManager = StateManager ||
 	reload: function()
 	{
 		MouseEventManager.clear();
+		Broadcaster.clear();
 
 		if (this._currentState == undefined)
 			return;

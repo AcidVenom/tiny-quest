@@ -1,7 +1,7 @@
-var Enemy = function(x,y,key)
+var Enemy = function(level,x,y,key)
 {
-	this._camera = LevelState.camera();
-	this.__unit = new Unit(x,y,key);
+	this.__unit = new Unit(level,x,y,key);
+	this._camera = level.camera();
 	this._shouldMove = false;
 	
 	extend(this,this.__unit);
@@ -20,7 +20,7 @@ var Enemy = function(x,y,key)
 	{
 		var x = this._indices.x;
 
-		if (x < LevelState.level().player().tile().indices().x)
+		if (x < this._level.player().tile().indices().x)
 		{
 			this.setScale(32,32,32);
 		}
@@ -37,11 +37,13 @@ var Enemy = function(x,y,key)
 		{
 			this.destroy();
 		}
+
+		this._shouldMove = false;
 	}
 
 	this.isNeighbourOfPlayer = function()
 	{
-		var pos = LevelState.level().player().tile().indices();
+		var pos = this._level.player().tile().indices();
 		var x = pos.x;
 		var y = pos.y;
 
@@ -65,6 +67,8 @@ var Enemy = function(x,y,key)
 
 	this.update = function(dt)
 	{
+		this.updateMovement(dt);
+		
 		if (this._shouldMove == true)
 		{
 			var self = this;
@@ -93,7 +97,7 @@ var Enemy = function(x,y,key)
 
 			if (!this.isNeighbourOfPlayer())
 			{
-				var neighbours = getNeighbours(LevelState.level().player().tile());
+				var neighbours = getNeighbours(this._level.player().tile());
 				var lowestPath = undefined;
 				for (var i = 0; i < neighbours.length; ++i)
 				{
@@ -120,11 +124,11 @@ var Enemy = function(x,y,key)
 					this.jumpTo(lowestPath[0].indices().x,lowestPath[0].indices().y);
 				}
 			}
-
-			this._shouldMove = false;
+			else
+			{
+				this._shouldMove = false;
+			}
 		}
-
-		this.updateMovement(dt);
 	}
 
 	this.shouldMove = function()
