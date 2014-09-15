@@ -26,14 +26,19 @@ var Level = function(camera)
 	this._player = undefined;
 	this._currentTurn = TurnTypes.Player;
 	this._units = [];
-	this._hud = new HUD();
+	this._hud = undefined;
 	this._camera = camera;
 	this._shakeDuration = 0;
 	this._shakeMagnitude = 0;
 
 	this.camera = function()
 	{
-		return this._camera
+		return this._camera;
+	}
+
+	this.hud = function()
+	{
+		return this._hud;
 	}
 	
 	this.turn = function()
@@ -60,6 +65,7 @@ var Level = function(camera)
 
 	this.generateDungeon = function(name)
 	{
+		CharacterDefinitions.updatePlayerStats();
 		Log.info("Started generating dungeon with name '" + name + "'");
 		var dungeonDefinition = Dungeons[name];
 
@@ -96,6 +102,7 @@ var Level = function(camera)
 				{
 					this._units.push(new Player(this,x,y));
 					this._player = this._units[0];
+					this._hud = new HUD(this._player);
 					this._units.push(new Enemy(this,x+1,y+1,"mouse_brown"));
 					this._units.push(new Enemy(this,x+4,y+4,"mouse_grey"));
 					found = true;
@@ -143,6 +150,8 @@ var Level = function(camera)
 			this._shakeTimer += dt/this._shakeDuration;
 			shake = Math.shake(this._shakeMagnitude,this._shakeTimer);
 		}
+
+		this._hud.update(dt);
 
 		translation = this._camera.translation();
 		this._camera.setTranslation(translation.x+shake.x,translation.y+shake.y,translation.z);

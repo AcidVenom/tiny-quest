@@ -11,6 +11,49 @@ var LoadedUnitTextures = {}
 var UnitIDs = {
 }
 
+var OverheadBar = function()
+{
+	this._frame = new GameObject(36,8);
+	this._frame.setTexture("textures/ui/overhead_frame.png");
+
+	this._bar = new GameObject(34,6);
+	this._bar.setTexture("textures/ui/overhead_bar.png");
+
+	this._bar.setZ(130);
+	this._frame.setZ(120);
+
+	this._bar.spawn();
+	this._frame.spawn();
+
+	this._bar.setOffset(0,0.5,0.5);
+	this._frame.setOffset(0.5,0.5,0.5);
+
+	this._z = 120;
+
+	this.setZ = function(z)
+	{
+		this._z = z;
+	}
+
+	this.setPosition = function(x,y)
+	{
+		this._frame.setTranslation(x,y+16,this._z);
+		this._bar.setTranslation(x-17,y+16,this._z + 10);
+	}
+
+	this.setMinMax = function(min,max)
+	{
+		this._bar.setScale(min/max*34,0,6);
+	}
+
+	this.update = function(dt,unit)
+	{
+		var translation = unit.translation();
+		this.setPosition(translation.x,translation.y);
+		this.setMinMax(unit.health(),unit.maxHealth());
+	}
+}
+
 var Unit = function(level,x,y,name)
 {
 	if (UnitIDs[name] === undefined)
@@ -33,18 +76,25 @@ var Unit = function(level,x,y,name)
 	this._jumpTimer = 1;
 	this._attackTimer = 1;
 	this._wobbleTimer = 0;
+	this._attacked = false;
 
-	this._maxHealth = 100;
-	this._maxStamina = 30;
+	this._overHead = undefined;
+
+	this._state = UnitStates.Idle;
+
+	var unit = CharacterDefinitions[name];
+
+	this._maxHealth = unit.hp;
+	this._maxStamina = unit.stamina;
 	this._maxMana = 10;
 
 	this._health = this._maxHealth;
 	this._stamina = this._maxStamina;
 	this._mana = this._maxMana;
 
-	this._state = UnitStates.Idle;
-
-	var unit = CharacterDefinitions[name];
+	this._attackDamage = unit.attackDamage;
+	this._rangedDamage = unit.rangedDamage;
+	this._defense = unit.defense;
 
 	if (unit === undefined)
 	{
@@ -70,9 +120,44 @@ var Unit = function(level,x,y,name)
 
 	this._setPosition = this.setPosition;
 
+	this.maxHealth = function()
+	{
+		return this._maxHealth;
+	}
+
+	this.health = function()
+	{
+		return this._health;
+	}
+
+	this.maxStamina = function()
+	{
+		return this._maxStamina;
+	}
+
+	this.stamina = function()
+	{
+		return this._stamina;
+	}
+
+	this.maxMana = function()
+	{
+		return this._maxMana;
+	}
+
+	this.mana = function()
+	{
+		return this._mana;
+	}
+
 	this.tile = function()
 	{
 		return this._tile;
+	}
+
+	this.position = function()
+	{
+		return this._position;
 	}
 
 	this.setPosition = function(x,y)
@@ -118,26 +203,6 @@ var Unit = function(level,x,y,name)
 		return false;
 	}
 
-	this.initialise = function()
-	{
-		this.setOffset(0.5,0.5,0.5);
-		if (name == "player")
-		{
-			this.setBlend(Character.blend[0],Character.blend[1],Character.blend[2]);
-		}
-
-		if (this._dungeon.tileAt(x,y) == DungeonTiles.Empty)
-		{
-			Log.error("Tried to place unit on an empty dungeon tile");
-		}
-		else
-		{
-			this.setPosition(x,y);
-		}
-
-		Log.success("Created a unit with name " + name);
-	}
-
 	this.name = function()
 	{
 		return this._name;
@@ -163,6 +228,7 @@ var Unit = function(level,x,y,name)
 		var tile = this._dungeon.tileAt(x,y);
 		if (this._state == UnitStates.Idle && tile.unit() !== undefined)
 		{
+			this._attacked = false;
 			this._state = UnitStates.Attacking;
 			this._target = tile;
 			this._attackTimer = 0;
@@ -176,10 +242,24 @@ var Unit = function(level,x,y,name)
 
 	this.damage = function(amount)
 	{
+		if (this._health - amount < 0)
+		{
+			this._health = 0;
+		}
+		else
+		{
+			this._health -= amount;
+		}
 		this._state = UnitStates.Hit;
 		this.setUniform("float", "Hit", 1);
 		this._damageTimer = 0;
 		this._level.shakeCamera(2,0.15);
+		this.onHit(amount);
+	}
+
+	this.onHit = function(damage)
+	{
+
 	}
 
 	this.update = function(dt)
@@ -223,9 +303,10 @@ var Unit = function(level,x,y,name)
 				}
 				this._setPosition(x+16,y-16-10);
 
-				if (this._attackTimer > Math.PI/2 && this._target.unit().state() != UnitStates.Hit)
+				if (this._attackTimer > Math.PI/2 && this._attacked == false)
 				{
-					this._target.unit().damage(10);
+					this._target.unit().damage(this._attackDamage);
+					this._attacked = true;
 				}
 			}
 			else
@@ -259,6 +340,30 @@ var Unit = function(level,x,y,name)
 
 			this._setPosition(x+16,y-16-10-Math.abs(Math.sin(this._wobbleTimer)*3));
 		}
+
+		this._overHead.update(dt,this);
+	}
+
+	this.initialise = function()
+	{
+		this.setOffset(0.5,0.5,0.5);
+		if (name == "player")
+		{
+			this.setBlend(Character.blend[0],Character.blend[1],Character.blend[2]);
+		}
+
+		if (this._dungeon.tileAt(x,y) == DungeonTiles.Empty)
+		{
+			Log.error("Tried to place unit on an empty dungeon tile");
+		}
+		else
+		{
+			this.setPosition(x,y);
+		}
+
+		this._overHead = new OverheadBar();
+
+		Log.success("Created a unit with name " + name);
 	}
 
 	this.initialise();

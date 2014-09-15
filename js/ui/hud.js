@@ -1,9 +1,10 @@
 require("js/ui/bar");
 
-var HUD = function()
+var HUD = function(player)
 {
 	this._barFrame = undefined;
 	this._bars = [];
+	this._player = player;
 
 	this.initialise = function()
 	{
@@ -19,6 +20,18 @@ var HUD = function()
 		{
 			this._bars.push(new UIBar(-242,272+i*-20,i));
 		}
+	}
+
+	this.barAt = function(idx)
+	{
+		return this._bars[idx];
+	}
+
+	this.update = function(dt)
+	{
+		this._bars[0].setMinMax(this._player.health(),this._player.maxHealth());
+		this._bars[1].setMinMax(this._player.stamina(),this._player.maxStamina());
+		this._bars[2].setMinMax(this._player.mana(),this._player.maxMana());
 	}
 
 	this.initialise();

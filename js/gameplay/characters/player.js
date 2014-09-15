@@ -1,5 +1,5 @@
 var Player = function(level,x,y)
-{
+{	
 	this._camera = level.camera();
 	this.__unit = new Unit(level,x,y,"player");
 	
@@ -9,6 +9,8 @@ var Player = function(level,x,y)
 	this._chunk = [];
 	this._viewWidth = this._dungeon.definition().viewRange;
 	this._viewHeight = this._dungeon.definition().viewRange;
+	this._heart = undefined;
+	this._heartScale = 1;
 
 	this.updateView = function(w,h)
 	{
@@ -32,6 +34,12 @@ var Player = function(level,x,y)
 		this._chunk = chunk;
 	}
 
+	this.onHit = function()
+	{
+		this._heart = this._level.hud().barAt(0).indicator();
+		this._heartScale = 1.5;
+	}
+
 	this.onArrived = function()
 	{
 		this.updateView(this._viewWidth,this._viewHeight);
@@ -47,6 +55,21 @@ var Player = function(level,x,y)
 	this.update = function(dt)
 	{
 		this.updateMovement(dt);
+
+		if (this._heart !== undefined)
+		{
+			if (this._heartScale > 1)
+			{
+				this._heartScale -= dt;
+				var scale = 17*this._heartScale;
+				this._heart.setScale(scale,scale,scale);
+			}
+			else
+			{
+				this._heartScale = 1;
+				this._heart.setScale(17,17,17);
+			}
+		}
 
 		var translation = this._camera.translation();
 		var distance = Math.distance(translation.x,translation.y,this.translation().x,this.translation().y);
@@ -101,4 +124,5 @@ var Player = function(level,x,y)
 	}
 
 	this.updateView(this._viewWidth,this._viewHeight);
+	this._overHead.setZ(140);
 }

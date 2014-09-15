@@ -14,6 +14,8 @@ var LevelState = LevelState || {
 		ContentManager.load("texture", "textures/ui/stamina_icon.png");
 		ContentManager.load("texture", "textures/ui/mana_icon.png");
 		ContentManager.load("texture", "textures/ui/mana_bar.png");
+		ContentManager.load("texture", "textures/ui/overhead_frame.png");
+		ContentManager.load("texture", "textures/ui/overhead_bar.png");
 
 		this._camera = Camera.new("orthographic");
 		this._level = new Level(this._camera);

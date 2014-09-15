@@ -41,6 +41,11 @@ var Enemy = function(level,x,y,key)
 		this._shouldMove = false;
 	}
 
+	this.onAttacked = function()
+	{
+		this._shouldMove = false;
+	}
+
 	this.isNeighbourOfPlayer = function()
 	{
 		var pos = this._level.player().tile().indices();
@@ -117,6 +122,10 @@ var Enemy = function(level,x,y,key)
 							}
 						}
 					}
+					else
+					{
+						this._shouldMove = false;
+					}
 				}
 
 				if (lowestPath !== undefined)
@@ -126,7 +135,7 @@ var Enemy = function(level,x,y,key)
 			}
 			else
 			{
-				this._shouldMove = false;
+				this.attackNode(this._level.player().tile().indices().x,this._level.player().tile().indices().y);
 			}
 		}
 	}
