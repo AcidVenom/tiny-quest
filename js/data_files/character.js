@@ -14,11 +14,11 @@ var Character = Character || {
 	{
 		equipped:
 		{
-			mainHand: "trainee_sword",
-			offHand: "trainee_shield",
-			helmet: "none",
-			body: "none",
-			consumable: "none"
+			mainHand: undefined,
+			offHand: undefined,
+			helmet: undefined,
+			body: undefined,
+			pocket: undefined
 		},
 
 		inventory: undefined

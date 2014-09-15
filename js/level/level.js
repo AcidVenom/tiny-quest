@@ -137,6 +137,12 @@ var Level = function(camera)
 				playerTurn = false;
 			}
 			this._units[i].update(dt);
+
+			if (this._units[i].removed())
+			{
+				this._units.splice(i,1);
+				--i;
+			}
 		}
 
 		if (playerTurn == true)

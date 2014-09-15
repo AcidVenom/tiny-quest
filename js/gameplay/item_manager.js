@@ -1,3 +1,5 @@
+require("js/data_files/items");
+
 var ItemManager = ItemManager || {
 	loadTextures: function()
 	{
@@ -47,6 +49,18 @@ var ItemManager = ItemManager || {
 			case ItemClass.Rare: return "rare"; break;
 			case ItemClass.Artifact: return "artifact"; break;
 			case ItemClass.Legendary: return "legendary"; break;
+		}
+	},
+
+	getItemSlotName: function(itemSlot)
+	{
+		switch(itemSlot)
+		{
+			case ItemSlotType.MainHand: return "mainHand"; break;
+			case ItemSlotType.OffHand: return "offHand"; break;
+			case ItemSlotType.Helmet: return "helmet"; break;
+			case ItemSlotType.Body: return "body"; break;
+			case ItemSlotType.Pocket: return "pocket"; break;
 		}
 	}
 }

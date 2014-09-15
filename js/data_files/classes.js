@@ -4,7 +4,7 @@ var Classes = {
 			attackDamage: 5,
 			magicDamage: 1,
 			rangedDamage: 1,
-			defense: 3,
+			defense: 2,
 			stamina: 5
 		},
 
@@ -34,7 +34,7 @@ var Classes = {
 			attackDamage: 2,
 			magicDamage: 1,
 			rangedDamage: 4,
-			defense: 2,
+			defense: 1,
 			stamina: 6
 		},
 
@@ -49,8 +49,8 @@ var Classes = {
 			attackDamage: 2,
 			magicDamage: 2,
 			rangedDamage: 2,
-			defense: 3,
-			stamina: 3
+			defense: 2,
+			stamina: 2
 		},
 
 		startingEquipment: []

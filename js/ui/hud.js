@@ -9,7 +9,7 @@ var HUD = function(player)
 	this.initialise = function()
 	{
 		this._barFrame = Widget.new();
-		this._barFrame.setScale(128,0,56);
+		this._barFrame.setScale(198,0,56);
 		this._barFrame.setTexture("textures/ui/frames.png");
 		this._barFrame.setAnchorLeft();
 		this._barFrame.setAnchorTop();

@@ -13,7 +13,7 @@ enumerator("ItemClass",[
 	"Legendary"
 ]);
 
-enumerator("ItemSlot",[
+enumerator("ItemSlotType",[
 	"MainHand",
 	"OffHand",
 	"Helmet",
@@ -25,7 +25,7 @@ var Items = {
 	trainee_sword: {
 		type: ItemTypes.Melee,
 		class: ItemClass.Common,
-		slot: ItemSlot.MainHand,
+		slot: ItemSlotType.MainHand,
 		damage: 2,
 		stackable: false
 	},
@@ -33,7 +33,7 @@ var Items = {
 	trainee_shield: {
 		type: ItemTypes.Equipment,
 		class: ItemClass.Common,
-		slot: ItemSlot.OffHand,
+		slot: ItemSlotType.OffHand,
 		defense: 2,
 		stackable: false
 	},
@@ -41,7 +41,7 @@ var Items = {
 	slingshot: {
 		type: ItemTypes.Ranged,
 		class: ItemClass.Common,
-		slot: ItemSlot.MainHand,
+		slot: ItemSlotType.MainHand,
 		damage: 2,
 		stackable: false
 	},
@@ -49,14 +49,14 @@ var Items = {
 	throwing_knife: {
 		type: ItemTypes.Consumable,
 		class: ItemClass.Common,
-		slot: ItemSlot.Pocket,
+		slot: ItemSlotType.Pocket,
 		stackable: true
 	},
 
 	twig_wand: {
 		type: ItemTypes.Ranged,
 		class: ItemClass.Common,
-		slot: ItemSlot.MainHand,
+		slot: ItemSlotType.MainHand,
 		damage: 2,
 		stackable: false
 	},
@@ -64,7 +64,7 @@ var Items = {
 	scroll_spark: {
 		type: ItemTypes.Consumable,
 		class: ItemClass.Common,
-		slot: ItemSlot.Pocket,
+		slot: ItemSlotType.Pocket,
 		stackable: true
 	}
 }

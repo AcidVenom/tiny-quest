@@ -2,7 +2,6 @@ require("js/character_creation/rgb_slider");
 
 require("js/data_files/character");
 require("js/data_files/classes");
-require("js/data_files/items");
 
 require("js/gameplay/item_manager");
 
@@ -263,6 +262,11 @@ var CharacterCreation = function()
 			this._itemSlots[i].clear();
 		}
 
+		for (var i in Character.items.equipped)
+		{
+			Character.items.equipped[i] = undefined;
+		}
+
 		for (var i = 0; i < startingEquipment.length; ++i)
 		{
 			var name = undefined;
@@ -281,6 +285,14 @@ var CharacterCreation = function()
 
 			var item = ItemManager.getItem(name);
 			var texture = ItemManager.getItemTexture(name);
+
+			Log.fatal(ItemManager.getItemSlotName(item.slot));
+			Character.items.equipped[ItemManager.getItemSlotName(item.slot)] = item;
+
+			if (quantity != undefined)
+			{
+				Character.items.equipped[ItemManager.getItemSlotName(item.slot)].quantity = quantity;
+			}
 
 			for (var i = 0; i < this._itemSlots.length; ++i)
 			{

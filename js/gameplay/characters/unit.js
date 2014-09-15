@@ -4,7 +4,8 @@ enumerator("UnitStates",[
 	"Moving",
 	"Attacking",
 	"Idle",
-	"Hit"
+	"Hit",
+	"Dying"
 	])
 
 var LoadedUnitTextures = {}
@@ -29,6 +30,13 @@ var OverheadBar = function()
 	this._frame.setOffset(0.5,0.5,0.5);
 
 	this._z = 120;
+	this._alpha = 0;
+
+	this.destroy = function()
+	{
+		this._frame.destroy();
+		this._bar.destroy();
+	}
 
 	this.setZ = function(z)
 	{
@@ -76,7 +84,9 @@ var Unit = function(level,x,y,name)
 	this._jumpTimer = 1;
 	this._attackTimer = 1;
 	this._wobbleTimer = 0;
+	this._deathTimer = 0;
 	this._attacked = false;
+	this._removed = false;
 
 	this._overHead = undefined;
 
@@ -165,7 +175,8 @@ var Unit = function(level,x,y,name)
 		this._tile = this._dungeon.tileAt(x,y);
 		this._tile.setUnit(this);
 
-		this._position = this._tile.position();
+		this._position.x = this._tile.position().x;
+		this._position.y = this._tile.position().y;
 		this._indices.x = x;
 		this._indices.y = y;
 
@@ -242,19 +253,26 @@ var Unit = function(level,x,y,name)
 
 	this.damage = function(amount)
 	{
-		if (this._health - amount < 0)
+		var damage = amount - this._defense
+
+		if (damage <= 0)
+		{
+			damage = 1;
+		}
+		
+		if (this._health - damage < 0)
 		{
 			this._health = 0;
 		}
 		else
 		{
-			this._health -= amount;
+			this._health -= damage;
 		}
 		this._state = UnitStates.Hit;
 		this.setUniform("float", "Hit", 1);
 		this._damageTimer = 0;
 		this._level.shakeCamera(2,0.15);
-		this.onHit(amount);
+		this.onHit(damage);
 	}
 
 	this.onHit = function(damage)
@@ -269,7 +287,31 @@ var Unit = function(level,x,y,name)
 
 	this.updateMovement = function(dt)
 	{
-		if (this._state == UnitStates.Moving)
+		if (this._health == 0 && this._state != UnitStates.Dying)
+		{
+			this._alpha = 1;
+			this._state = UnitStates.Dying;
+		}
+
+		if (this._state == UnitStates.Dying)
+		{
+			if (this._deathTimer < Math.PI)
+			{
+				this._deathTimer += dt*5;
+				this._alpha = Math.PI - this._deathTimer;
+
+				var alpha = Math.floor(Math.sin(this._deathTimer*10)+1);
+				this.setAlpha(alpha*this._alpha);
+
+				this._setPosition(this._position.x+16,this._position.y-16-10);
+			}
+			else if (this._removed == false)
+			{
+				Log.fatal("Unit with name " + this.worldName() + " died");
+				this.removeFromPlay();
+			}
+		}
+		else if (this._state == UnitStates.Moving)
 		{
 			if (this._jumpTimer < 1)
 			{
@@ -364,6 +406,22 @@ var Unit = function(level,x,y,name)
 		this._overHead = new OverheadBar();
 
 		Log.success("Created a unit with name " + name);
+	}
+
+	this.removeFromPlay = function()
+	{
+		if (this._tile)
+		{
+			this._tile.removeUnit();
+		}
+		this._removed = true;
+		this._overHead.destroy();
+		this.destroy();
+	}
+
+	this.removed = function()
+	{
+		return this._removed;
 	}
 
 	this.initialise();
