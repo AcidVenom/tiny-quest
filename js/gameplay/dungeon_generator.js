@@ -166,6 +166,10 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 
 	this.tileAt = function(x,y)
 	{
+		if (x < 0 || y < 0 || x >= this._metrics.w || y >= this._metrics.h)
+		{
+			return undefined;
+		}
 		return this._grid[x][y];
 	}
 

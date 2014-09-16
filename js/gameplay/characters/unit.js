@@ -8,6 +8,11 @@ enumerator("UnitStates",[
 	"Dying"
 	])
 
+enumerator("AttackType",[
+	"Melee",
+	"Ranged"
+	])
+
 var LoadedUnitTextures = {}
 var UnitIDs = {
 }
@@ -87,6 +92,7 @@ var Unit = function(level,x,y,name)
 	this._deathTimer = 0;
 	this._attacked = false;
 	this._removed = false;
+	this._attackType = {type: AttackType.Melee, texture: undefined};
 
 	this._overHead = undefined;
 
@@ -234,10 +240,34 @@ var Unit = function(level,x,y,name)
 
 	}
 
-	this.attackNode = function(x,y)
+	this.getAttackType = function(type,x,y,texture,range)
 	{
+		return {
+			type: type,
+			direction: {x: x / Math.abs(x), y: y / Math.abs(y)},
+			texture: texture,
+			range: range
+		}
+	}
+
+	this.attackNode = function(x,y,attackType)
+	{
+		if (attackType === undefined)
+		{
+			this._attackType = {
+				type: AttackType.Melee,
+				direction: undefined, 
+				texture: undefined,
+				range: undefined
+			}
+		}
+		else
+		{
+			this._attackType = attackType;
+		}
+
 		var tile = this._dungeon.tileAt(x,y);
-		if (this._state == UnitStates.Idle && tile.unit() !== undefined)
+		if (this._state == UnitStates.Idle)
 		{
 			this._attacked = false;
 			this._state = UnitStates.Attacking;
@@ -336,9 +366,16 @@ var Unit = function(level,x,y,name)
 			{
 				var timer = Math.abs(Math.sin(this._attackTimer))
 				this._attackTimer += dt*15;
-				var x = Math.lerp(this._position.x,this._target.position().x,timer);
-				var y = Math.lerp(this._position.y,this._target.position().y,timer);
 
+				var x = this._position.x;
+				var y = this._position.y;
+
+				if (this._attackType.type == AttackType.Melee)
+				{
+					x = Math.lerp(this._position.x,this._target.position().x,timer);
+					y = Math.lerp(this._position.y,this._target.position().y,timer);
+				}
+				
 				if (x < this._position.x)
 				{
 					this.setScale(-32,32,32);
@@ -347,8 +384,11 @@ var Unit = function(level,x,y,name)
 
 				if (this._attackTimer > Math.PI/2 && this._attacked == false)
 				{
-					this._target.unit().damage(this._attackDamage);
-					this._attacked = true;
+					if (this._target.unit() !== undefined)
+					{
+						this._target.unit().damage(this._attackDamage);
+						this._attacked = true;
+					}
 				}
 			}
 			else

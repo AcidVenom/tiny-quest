@@ -286,7 +286,6 @@ var CharacterCreation = function()
 			var item = ItemManager.getItem(name);
 			var texture = ItemManager.getItemTexture(name);
 
-			Log.fatal(ItemManager.getItemSlotName(item.slot));
 			Character.items.equipped[ItemManager.getItemSlotName(item.slot)] = item;
 
 			if (quantity != undefined)

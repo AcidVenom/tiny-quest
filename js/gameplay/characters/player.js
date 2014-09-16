@@ -11,6 +11,9 @@ var Player = function(level,x,y)
 	this._viewHeight = this._dungeon.definition().viewRange;
 	this._heart = undefined;
 	this._heartScale = 1;
+	this._ranging = false;
+	this._rangeSquares = [];
+	this._rangeTo = {x: 3, y: 0}
 
 	this.updateView = function(w,h)
 	{
@@ -48,13 +51,17 @@ var Player = function(level,x,y)
 
 	this.onAttacked = function(target)
 	{
-		Log.fatal("Player attacked target " + target.worldName());
+		if (target !== undefined)
+		{
+			Log.fatal("Player attacked target " + target.worldName());
+		}
 		Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
 	}
 
 	this.update = function(dt)
 	{
 		this.updateMovement(dt);
+		Log.fatal(this._state);
 
 		if (this._heart !== undefined)
 		{
@@ -88,19 +95,117 @@ var Player = function(level,x,y)
 
 			if (Keyboard.isDown("S"))
 			{
-				jumpTo = {x: this._indices.x, y: this._indices.y+1};
+				if (this._ranging == false)
+				{
+					jumpTo = {x: this._indices.x, y: this._indices.y+1};
+				}
+				else
+				{
+					this._rangeTo = {x: 0, y: 3}
+				}
 			}
 			if (Keyboard.isDown("W"))
 			{
-				jumpTo = {x: this._indices.x, y: this._indices.y-1};
+				if (this._ranging == false)
+				{
+					jumpTo = {x: this._indices.x, y: this._indices.y-1};
+				}
+				else
+				{
+					this._rangeTo = {x: 0, y: -3}
+				}
 			}
 			if (Keyboard.isDown("A"))
 			{
-				jumpTo = {x: this._indices.x-1, y: this._indices.y};
+				if (this._ranging == false)
+				{
+					jumpTo = {x: this._indices.x-1, y: this._indices.y};
+				}
+				else
+				{
+					this._rangeTo = {x: -3, y: 0}
+				}
 			}
 			if (Keyboard.isDown("D"))
 			{
-				jumpTo = {x: this._indices.x+1, y: this._indices.y};
+				if (this._ranging == false)
+				{
+					jumpTo = {x: this._indices.x+1, y: this._indices.y};
+				}
+				else
+				{
+					this._rangeTo = {x: 3, y: 0}
+				}
+			}
+
+			if (Keyboard.isPressed("Space") && this._state == UnitStates.Idle)
+			{
+				this._ranging = true;
+			}
+
+			if (this._ranging == true && this._rangeSquares.length == 0)
+			{
+				for (var i = 0; i < 3; ++i)
+				{
+					var square = new GameObject(32,32);
+					square.setBlend(140/255,198/255,1);
+
+					square.spawn();
+					square.setZ(1000);
+					square.setAlpha(0.2);
+
+					this._rangeSquares.push(square);
+				}
+			}
+			else if (this._ranging == true)
+			{
+				var x = this._position.x;
+				var y = this._position.y;
+
+				for (var i = 0; i < 3; ++i)
+				{
+					var square = this._rangeSquares[i];
+					if (this._rangeTo.y == 0)
+					{
+						x = this._position.x+(32*this._rangeTo.x / Math.abs(this._rangeTo.x) * (i+1));
+					}
+					else
+					{
+						y = this._position.y+(32*this._rangeTo.y / Math.abs(this._rangeTo.y) * (i+1));
+					}
+					square.setPosition(x,y);
+
+					var xx = Math.floor(x/32);
+					var yy = Math.floor(y/32);
+
+					var tile = this._dungeon.tileAt(xx,yy);
+					if (tile === undefined || tile == DungeonTiles.Empty || tile.type() == DungeonTiles.Wall)
+					{
+						square.setAlpha(0);
+					}
+					else
+					{
+						square.setAlpha(0.2);
+					}
+				}
+			}
+
+			if (Keyboard.isReleased("Space"))
+			{
+				var x = this._indices.x + this._rangeTo.x;
+				var y = this._indices.y + this._rangeTo.y;
+
+				this._rangeTo = {x: 3, y: 0}
+
+				for (var i = 0; i < this._rangeSquares.length; ++i)
+				{
+					this._rangeSquares[i].destroy();
+				}
+
+				this._rangeSquares = [];
+				this._ranging = false;
+
+				this.attackNode(x, y, this.getAttackType(AttackType.Ranged, x, y, undefined, 3));
 			}
 
 			if (jumpTo !== undefined && this._state == UnitStates.Idle)
