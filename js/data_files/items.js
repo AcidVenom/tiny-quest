@@ -43,6 +43,7 @@ var Items = {
 		class: ItemClass.Common,
 		slot: ItemSlotType.MainHand,
 		damage: 2,
+		range: 4,
 		stackable: false
 	},
 

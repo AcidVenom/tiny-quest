@@ -37,10 +37,18 @@ var OverheadBar = function()
 	this._z = 120;
 	this._alpha = 0;
 
+	this._equipped = {}
+
 	this.destroy = function()
 	{
 		this._frame.destroy();
 		this._bar.destroy();
+	}
+
+	this.spawn = function()
+	{
+		this._frame.spawn();
+		this._bar.spawn();
 	}
 
 	this.setZ = function(z)
@@ -85,9 +93,9 @@ var Unit = function(level,x,y,name)
 	this._position = {x: 0, y: 0}
 	this._indices = {x: 0, y: 0}
 	this._target = undefined;
-	this._damageTimer = 1;
-	this._jumpTimer = 1;
-	this._attackTimer = 1;
+	this._damageTimer = 0;
+	this._jumpTimer = 0;
+	this._attackTimer = 0;
 	this._wobbleTimer = 0;
 	this._deathTimer = 0;
 	this._attacked = false;
@@ -110,6 +118,8 @@ var Unit = function(level,x,y,name)
 
 	this._attackDamage = unit.attackDamage;
 	this._rangedDamage = unit.rangedDamage;
+	this._magicDamage = unit.magicDamage;
+
 	this._defense = unit.defense;
 
 	if (unit === undefined)
@@ -193,7 +203,7 @@ var Unit = function(level,x,y,name)
 	this.jumpTo = function(x,y)
 	{
 		var tile = this._dungeon.tileAt(x,y);
-		if (!tile.isImpassable() && this._state == UnitStates.Idle)
+		if (!tile.isImpassable() && this._state == UnitStates.Idle || x == this._indices.x && y == this._indices.y)
 		{
 			this._jumpTimer = 0;
 			this._target = tile;
@@ -240,13 +250,11 @@ var Unit = function(level,x,y,name)
 
 	}
 
-	this.getAttackType = function(type,x,y,texture,range)
+	this.getAttackType = function(type,texture)
 	{
 		return {
 			type: type,
-			direction: {x: x / Math.abs(x), y: y / Math.abs(y)},
-			texture: texture,
-			range: range
+			texture: texture
 		}
 	}
 
@@ -256,9 +264,7 @@ var Unit = function(level,x,y,name)
 		{
 			this._attackType = {
 				type: AttackType.Melee,
-				direction: undefined, 
-				texture: undefined,
-				range: undefined
+				texture: undefined
 			}
 		}
 		else
@@ -283,7 +289,7 @@ var Unit = function(level,x,y,name)
 
 	this.damage = function(amount)
 	{
-		var damage = amount - this._defense
+		var damage = amount - this._defense;
 
 		if (damage <= 0)
 		{
@@ -299,10 +305,17 @@ var Unit = function(level,x,y,name)
 			this._health -= damage;
 		}
 		this._state = UnitStates.Hit;
+
 		this.setUniform("float", "Hit", 1);
 		this._damageTimer = 0;
 		this._level.shakeCamera(2,0.15);
+
 		this.onHit(damage);
+
+		if (this._name == "mouse_brown")
+		{
+			Log.watch("HIT", this);
+		}
 	}
 
 	this.onHit = function(damage)
@@ -339,6 +352,22 @@ var Unit = function(level,x,y,name)
 			{
 				Log.fatal("Unit with name " + this.worldName() + " died");
 				this.removeFromPlay();
+			}
+		}
+		else if (this._state == UnitStates.Hit)
+		{
+			if (this._damageTimer < Math.PI/2)
+			{
+				this._damageTimer += dt*7;
+				var x = this._position.x;
+				var y = this._position.y;
+
+				this._setPosition(x+16,y-16-10-Math.sin(this._damageTimer*2)*20);
+			}
+			else
+			{
+				this._state = UnitStates.Idle;
+				this.setUniform("float", "Hit", 0);
 			}
 		}
 		else if (this._state == UnitStates.Moving)
@@ -386,7 +415,29 @@ var Unit = function(level,x,y,name)
 				{
 					if (this._target.unit() !== undefined)
 					{
-						this._target.unit().damage(this._attackDamage);
+						var dmgMod = 0;
+
+						if (this._equipped !== undefined)
+						{
+							dmgMod = this._equipped.mainHand.damage;
+							if (dmgMod === undefined)
+							{
+								dmgMod = 0;
+							}
+						}
+						
+						if (this._attackType.type == AttackType.Melee)
+						{
+							this._target.unit().damage(this._attackDamage + dmgMod);
+						}
+						else if (this._attackType.type == AttackType.Ranged)
+						{
+							this._target.unit().damage(this._rangedDamage + dmgMod);
+						}
+						else if (this._attackType.type == AttackType.Magic)
+						{
+							this._target.unit().damage(this._magicDamage + dmgMod);
+						}
 						this._attacked = true;
 					}
 				}
@@ -394,24 +445,8 @@ var Unit = function(level,x,y,name)
 			else
 			{
 				this.setScale(32,32,32);
+				this._state = UnitStates.Idle;
 				this.onAttacked(this._target.unit());
-				this._state = UnitStates.Idle;
-			}
-		}
-		else if (this._state == UnitStates.Hit)
-		{
-			if (this._damageTimer < Math.PI/2)
-			{
-				this._damageTimer += dt*7;
-				var x = this._position.x;
-				var y = this._position.y;
-
-				this._setPosition(x+16,y-16-10-Math.sin(this._damageTimer*2)*20);
-			}
-			else
-			{
-				this._state = UnitStates.Idle;
-				this.setUniform("float", "Hit", 0);
 			}
 		}
 		else
@@ -443,7 +478,10 @@ var Unit = function(level,x,y,name)
 			this.setPosition(x,y);
 		}
 
+		this._tile = this._dungeon.tileAt(x,y);
 		this._overHead = new OverheadBar();
+
+		this.jumpTo(x,y);
 
 		Log.success("Created a unit with name " + name);
 	}

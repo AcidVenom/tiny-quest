@@ -32,10 +32,12 @@ var Enemy = function(level,x,y,key)
 		if (this._tile.visible())
 		{
 			this.spawn();
+			this._overHead.spawn();
 		}
 		else
 		{
 			this.destroy();
+			this._overHead.destroy();
 		}
 
 		this._shouldMove = false;

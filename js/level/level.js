@@ -103,7 +103,7 @@ var Level = function(camera)
 					this._units.push(new Player(this,x,y));
 					this._player = this._units[0];
 					this._hud = new HUD(this._player);
-					this._units.push(new Enemy(this,x+1,y+1,"mouse_brown"));
+					this._units.push(new Enemy(this,x+1,y,"mouse_brown"));
 					this._units.push(new Enemy(this,x+4,y+4,"mouse_grey"));
 					found = true;
 					break;

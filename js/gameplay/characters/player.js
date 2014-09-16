@@ -13,7 +13,10 @@ var Player = function(level,x,y)
 	this._heartScale = 1;
 	this._ranging = false;
 	this._rangeSquares = [];
-	this._rangeTo = {x: 3, y: 0}
+	this._rangeTo = {x: 1, y: 0}
+	this._rangedIndex = {x: 0, y: 0}
+	this._range = 0;
+	this._equipped = Character.items.equipped;
 
 	this.updateView = function(w,h)
 	{
@@ -61,7 +64,6 @@ var Player = function(level,x,y)
 	this.update = function(dt)
 	{
 		this.updateMovement(dt);
-		Log.fatal(this._state);
 
 		if (this._heart !== undefined)
 		{
@@ -101,7 +103,7 @@ var Player = function(level,x,y)
 				}
 				else
 				{
-					this._rangeTo = {x: 0, y: 3}
+					this._rangeTo = {x: 0, y: 1}
 				}
 			}
 			if (Keyboard.isDown("W"))
@@ -112,7 +114,7 @@ var Player = function(level,x,y)
 				}
 				else
 				{
-					this._rangeTo = {x: 0, y: -3}
+					this._rangeTo = {x: 0, y: -1}
 				}
 			}
 			if (Keyboard.isDown("A"))
@@ -123,7 +125,7 @@ var Player = function(level,x,y)
 				}
 				else
 				{
-					this._rangeTo = {x: -3, y: 0}
+					this._rangeTo = {x: -1, y: 0}
 				}
 			}
 			if (Keyboard.isDown("D"))
@@ -134,18 +136,24 @@ var Player = function(level,x,y)
 				}
 				else
 				{
-					this._rangeTo = {x: 3, y: 0}
+					this._rangeTo = {x: 1, y: 0}
 				}
 			}
 
-			if (Keyboard.isPressed("Space") && this._state == UnitStates.Idle)
+			if (Keyboard.isDown("Space") && this._state == UnitStates.Idle)
 			{
 				this._ranging = true;
+				this._range = Character.items.equipped["mainHand"].range;
+
+				if (this._range == undefined)
+				{
+					this._ranging = false;
+				}
 			}
 
 			if (this._ranging == true && this._rangeSquares.length == 0)
 			{
-				for (var i = 0; i < 3; ++i)
+				for (var i = 0; i < this._range; ++i)
 				{
 					var square = new GameObject(32,32);
 					square.setBlend(140/255,198/255,1);
@@ -162,16 +170,16 @@ var Player = function(level,x,y)
 				var x = this._position.x;
 				var y = this._position.y;
 
-				for (var i = 0; i < 3; ++i)
+				for (var i = 0; i < this._range; ++i)
 				{
 					var square = this._rangeSquares[i];
 					if (this._rangeTo.y == 0)
 					{
-						x = this._position.x+(32*this._rangeTo.x / Math.abs(this._rangeTo.x) * (i+1));
+						x = this._position.x+(32*this._rangeTo.x * (i+1));
 					}
 					else
 					{
-						y = this._position.y+(32*this._rangeTo.y / Math.abs(this._rangeTo.y) * (i+1));
+						y = this._position.y+(32*this._rangeTo.y * (i+1));
 					}
 					square.setPosition(x,y);
 
@@ -179,23 +187,37 @@ var Player = function(level,x,y)
 					var yy = Math.floor(y/32);
 
 					var tile = this._dungeon.tileAt(xx,yy);
-					if (tile === undefined || tile == DungeonTiles.Empty || tile.type() == DungeonTiles.Wall)
+
+					if (tile !== undefined && tile !== DungeonTiles.Empty && tile.unit() !== undefined)
 					{
-						square.setAlpha(0);
+						for (var j = i+1; j < this._range; ++j)
+						{
+							this._rangeSquares[j].setAlpha(0);
+						}
+						this._rangedIndex = {x: xx, y: yy}
+						break;
+					}
+					else if (tile === undefined || tile === DungeonTiles.Empty || tile.type() == DungeonTiles.Wall)
+					{
+						for (var j = i; j < this._range; ++j)
+						{
+							this._rangeSquares[j].setAlpha(0);
+						}
+						break;
 					}
 					else
 					{
-						square.setAlpha(0.2);
+						this._rangeSquares[i].setAlpha(0.2);
 					}
+
+					this._rangedIndex = {x: xx, y: yy}
 				}
 			}
 
-			if (Keyboard.isReleased("Space"))
+			if (Keyboard.isReleased("Space") && this._ranging == true)
 			{
-				var x = this._indices.x + this._rangeTo.x;
-				var y = this._indices.y + this._rangeTo.y;
-
-				this._rangeTo = {x: 3, y: 0}
+				var x = this._rangedIndex.x;
+				var y = this._rangedIndex.y;
 
 				for (var i = 0; i < this._rangeSquares.length; ++i)
 				{
@@ -205,7 +227,7 @@ var Player = function(level,x,y)
 				this._rangeSquares = [];
 				this._ranging = false;
 
-				this.attackNode(x, y, this.getAttackType(AttackType.Ranged, x, y, undefined, 3));
+				this.attackNode(x, y, this.getAttackType(AttackType.Ranged,undefined));
 			}
 
 			if (jumpTo !== undefined && this._state == UnitStates.Idle)
