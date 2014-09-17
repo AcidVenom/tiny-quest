@@ -103,10 +103,28 @@ var Level = function(camera)
 					this._units.push(new Player(this,x,y));
 					this._player = this._units[0];
 					this._hud = new HUD(this._player);
-					this._units.push(new Enemy(this,x+1,y,"mouse_brown"));
-					this._units.push(new Enemy(this,x+4,y+4,"mouse_grey"));
 					found = true;
 					break;
+				}
+			}
+		}
+
+		for (var x = 0; x < dungeonDefinition.width; ++x)
+		{
+			for (var y = 0; y < dungeonDefinition.height; ++y)
+			{
+				if (this._dungeon.tileAt(x,y).type !== undefined && this._dungeon.tileAt(x,y).type() == DungeonTiles.Room)
+				{
+					var shouldPlace = Math.random();
+					if (shouldPlace < 0.05)
+					{
+						var randomTable = ["mouse_brown", "mouse_grey", "beetle_brown"];
+
+						var rand = Math.floor(Math.random()*randomTable.length);
+						var result = randomTable[rand];
+
+						this._units.push(new Enemy(this,x,y,result));
+					}
 				}
 			}
 		}
@@ -132,7 +150,7 @@ var Level = function(camera)
 		var playerTurn = true;
 		for (var i = 0; i < this._units.length; ++i)
 		{
-			if (this._units[i].name() != "player" && this._units[i].shouldMove() == true)
+			if (this._units[i].type() != UnitTypes.Player && this._units[i].shouldMove() == true)
 			{
 				playerTurn = false;
 			}

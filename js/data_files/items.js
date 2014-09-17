@@ -44,7 +44,8 @@ var Items = {
 		slot: ItemSlotType.MainHand,
 		damage: 2,
 		range: 4,
-		stackable: false
+		stackable: false,
+		projectile: true
 	},
 
 	throwing_knife: {

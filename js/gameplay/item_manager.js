@@ -6,6 +6,11 @@ var ItemManager = ItemManager || {
 		for (var name in Items)
 		{
 			ContentManager.load("texture",this.getItemTexture(name));
+
+			if (Items[name].projectile == true)
+			{
+				ContentManager.load("texture","textures/items/projectiles/" + name + "_projectile.png");
+			}
 		}
 	},
 
@@ -14,6 +19,11 @@ var ItemManager = ItemManager || {
 		for (var name in Items)
 		{
 			ContentManager.unload("texture",this.getItemTexture(name));
+
+			if (Items[name].projectile == true)
+			{
+				ContentManager.unload("texture","items/projectiles/" + name + "_projectile.png");
+			}
 		}
 	},
 

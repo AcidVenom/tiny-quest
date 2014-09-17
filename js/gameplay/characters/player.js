@@ -1,7 +1,7 @@
 var Player = function(level,x,y)
 {	
 	this._camera = level.camera();
-	this.__unit = new Unit(level,x,y,"player");
+	this.__unit = new Unit(level,x,y,UnitTypes.Player,"player");
 	
 	extend(this,this.__unit);
 
@@ -17,6 +17,7 @@ var Player = function(level,x,y)
 	this._rangedIndex = {x: 0, y: 0}
 	this._range = 0;
 	this._equipped = Character.items.equipped;
+	this._foundTarget = false;
 
 	this.updateView = function(w,h)
 	{
@@ -38,6 +39,17 @@ var Player = function(level,x,y)
 		}
 
 		this._chunk = chunk;
+	}
+
+	this.getProjectile = function()
+	{
+		for (var name in Items)
+		{
+			if (Items[name] == this._equipped.mainHand)
+			{
+				return "textures/items/projectiles/" + name + "_projectile.png";
+			}
+		}
 	}
 
 	this.onHit = function()
@@ -126,6 +138,7 @@ var Player = function(level,x,y)
 				else
 				{
 					this._rangeTo = {x: -1, y: 0}
+					this.setScale(-32,32,32);
 				}
 			}
 			if (Keyboard.isDown("D"))
@@ -137,6 +150,7 @@ var Player = function(level,x,y)
 				else
 				{
 					this._rangeTo = {x: 1, y: 0}
+					this.setScale(32,32,32);
 				}
 			}
 
@@ -169,6 +183,7 @@ var Player = function(level,x,y)
 			{
 				var x = this._position.x;
 				var y = this._position.y;
+				this._foundTarget = false;
 
 				for (var i = 0; i < this._range; ++i)
 				{
@@ -195,6 +210,7 @@ var Player = function(level,x,y)
 							this._rangeSquares[j].setAlpha(0);
 						}
 						this._rangedIndex = {x: xx, y: yy}
+						this._foundTarget = true;
 						break;
 					}
 					else if (tile === undefined || tile === DungeonTiles.Empty || tile.type() == DungeonTiles.Wall)
@@ -227,7 +243,10 @@ var Player = function(level,x,y)
 				this._rangeSquares = [];
 				this._ranging = false;
 
-				this.attackNode(x, y, this.getAttackType(AttackType.Ranged,undefined));
+				if (this._foundTarget == true)
+				{
+					this.attackNode(x, y, this.getAttackType(AttackType.Ranged,undefined));
+				}
 			}
 
 			if (jumpTo !== undefined && this._state == UnitStates.Idle)

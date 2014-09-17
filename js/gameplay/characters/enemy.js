@@ -1,8 +1,9 @@
 var Enemy = function(level,x,y,key)
 {
-	this.__unit = new Unit(level,x,y,key);
+	this.__unit = new Unit(level,x,y,UnitTypes.Enemy,key);
 	this._camera = level.camera();
 	this._shouldMove = false;
+	this._maxRange = 8;
 	
 	extend(this,this.__unit);
 
@@ -102,7 +103,10 @@ var Enemy = function(level,x,y,key)
 				return Math.distance(fromPos.x,fromPos.y,toPos.x,toPos.y);
 			}
 
-			if (!this.isNeighbourOfPlayer())
+			var range = Math.abs(this._level.player().tile().indices().x - this._indices.x);
+			range += Math.abs(this._level.player().tile().indices().y - this._indices.y);
+
+			if (!this.isNeighbourOfPlayer() && range < this._maxRange)
 			{
 				var neighbours = getNeighbours(this._level.player().tile());
 				var lowestPath = undefined;
@@ -134,10 +138,18 @@ var Enemy = function(level,x,y,key)
 				{
 					this.jumpTo(lowestPath[0].indices().x,lowestPath[0].indices().y);
 				}
+				else
+				{
+					this._shouldMove = false;
+				}
+			}
+			else if (range < this._maxRange)
+			{
+				this.attackNode(this._level.player().tile().indices().x,this._level.player().tile().indices().y);
 			}
 			else
 			{
-				this.attackNode(this._level.player().tile().indices().x,this._level.player().tile().indices().y);
+				this._shouldMove = false;
 			}
 		}
 	}

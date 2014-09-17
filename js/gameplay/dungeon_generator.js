@@ -66,7 +66,7 @@ var Tile = function(x,y,type,grid,textures)
 	{
 		this._unit = unit;
 
-		if (this._unit.name() == "player")
+		if (this._unit.type() == UnitTypes.Player)
 		{
 			this._tile.setBlend(0,1,0);
 		}

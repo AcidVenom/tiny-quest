@@ -33,6 +33,18 @@ var CharacterDefinitions = {
 		rangedDamage: 0,
 		magicDamage: 0,
 		defense: 1
+	},
+
+	beetle_brown:
+	{
+		texture: "textures/characters/beetles/beetle_brown.png",
+		hp: 10,
+		stamina: 2,
+		mana: 0,
+		attackDamage: 6,
+		rangedDamage: 0,
+		magicDamage: 0,
+		defense: 3
 	}
 }
 

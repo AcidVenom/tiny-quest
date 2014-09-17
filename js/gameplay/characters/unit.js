@@ -8,6 +8,11 @@ enumerator("UnitStates",[
 	"Dying"
 	])
 
+enumerator("UnitTypes",[
+	"Player",
+	"Enemy"
+	])
+
 enumerator("AttackType",[
 	"Melee",
 	"Ranged"
@@ -75,7 +80,7 @@ var OverheadBar = function()
 	}
 }
 
-var Unit = function(level,x,y,name)
+var Unit = function(level,x,y,type,name)
 {
 	if (UnitIDs[name] === undefined)
 	{
@@ -101,6 +106,7 @@ var Unit = function(level,x,y,name)
 	this._attacked = false;
 	this._removed = false;
 	this._attackType = {type: AttackType.Melee, texture: undefined};
+	this._type = type;
 
 	this._overHead = undefined;
 
@@ -121,6 +127,7 @@ var Unit = function(level,x,y,name)
 	this._magicDamage = unit.magicDamage;
 
 	this._defense = unit.defense;
+	this._projectile = undefined;
 
 	if (unit === undefined)
 	{
@@ -145,6 +152,11 @@ var Unit = function(level,x,y,name)
 	this.setUniform("float", "Hit", 0);
 
 	this._setPosition = this.setPosition;
+
+	this.type = function()
+	{
+		return this._type;
+	}
 
 	this.maxHealth = function()
 	{
@@ -275,11 +287,25 @@ var Unit = function(level,x,y,name)
 		var tile = this._dungeon.tileAt(x,y);
 		if (this._state == UnitStates.Idle)
 		{
+			if (this._attackType.type == AttackType.Ranged)
+			{
+				this._projectile = new GameObject(16,16);
+				this._projectile.setTexture(this.getProjectile());
+				this._projectile.spawn();
+				this._projectile.setZ(900);
+				this._projectile.setPosition(this._position.x+8,this._position.y-18);
+			}
 			this._attacked = false;
 			this._state = UnitStates.Attacking;
 			this._target = tile;
 			this._attackTimer = 0;
 		}
+	}
+
+	this.getProjectile = function()
+	{
+		Log.warning("Override this.getProjectile for an appropriate projectile, defaulting");
+		return "textures/items/projectiles/slingshot_projectile.png";
 	}
 
 	this.state = function()
@@ -311,11 +337,6 @@ var Unit = function(level,x,y,name)
 		this._level.shakeCamera(2,0.15);
 
 		this.onHit(damage);
-
-		if (this._name == "mouse_brown")
-		{
-			Log.watch("HIT", this);
-		}
 	}
 
 	this.onHit = function(damage)
@@ -404,6 +425,13 @@ var Unit = function(level,x,y,name)
 					x = Math.lerp(this._position.x,this._target.position().x,timer);
 					y = Math.lerp(this._position.y,this._target.position().y,timer);
 				}
+				else if (this._projectile !== undefined)
+				{
+					var xx = Math.lerp(this._position.x+8,this._target.position().x+8,timer);
+					var yy = Math.lerp(this._position.y-18,this._target.position().y-18,timer);
+
+					this._projectile.setPosition(xx,yy);
+				}
 				
 				if (x < this._position.x)
 				{
@@ -432,13 +460,19 @@ var Unit = function(level,x,y,name)
 						}
 						else if (this._attackType.type == AttackType.Ranged)
 						{
-							this._target.unit().damage(this._rangedDamage + dmgMod);
+							this._target.unit().damage(Math.floor(this._rangedDamage / 2) + dmgMod);
 						}
 						else if (this._attackType.type == AttackType.Magic)
 						{
 							this._target.unit().damage(this._magicDamage + dmgMod);
 						}
 						this._attacked = true;
+					}
+
+					if (this._projectile !== undefined)
+					{
+						this._projectile.destroy();
+						this._projectile = undefined;
 					}
 				}
 			}
@@ -464,7 +498,7 @@ var Unit = function(level,x,y,name)
 	this.initialise = function()
 	{
 		this.setOffset(0.5,0.5,0.5);
-		if (name == "player")
+		if (this._type == UnitTypes.Player)
 		{
 			this.setBlend(Character.blend[0],Character.blend[1],Character.blend[2]);
 		}
