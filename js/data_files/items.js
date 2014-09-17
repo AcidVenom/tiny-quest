@@ -2,7 +2,8 @@ enumerator("ItemTypes",[
 	"Melee",
 	"Ranged",
 	"Equipment",
-	"Consumable"
+	"Consumable",
+	"Misc"
 ]);
 
 enumerator("ItemClass",[
@@ -18,7 +19,8 @@ enumerator("ItemSlotType",[
 	"OffHand",
 	"Helmet",
 	"Body",
-	"Pocket"
+	"Pocket",
+	"None"
 ]);
 
 var Items = {
@@ -68,5 +70,19 @@ var Items = {
 		class: ItemClass.Common,
 		slot: ItemSlotType.Pocket,
 		stackable: true
+	},
+
+	coins: {
+		type: ItemTypes.Misc,
+		class: ItemClass.Common,
+		slot: ItemSlotType.None,
+		stackable: true
+	},
+
+	rat_meat: {
+		type: ItemTypes.Misc,
+		class: ItemClass.Common,
+		slot: ItemSlotType.None,
+		stackable: false
 	}
 }

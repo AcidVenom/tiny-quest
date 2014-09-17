@@ -20,7 +20,10 @@ var CharacterDefinitions = {
 		attackDamage: 2,
 		rangedDamage: 0,
 		magicDamage: 0,
-		defense: 1
+		defense: 1,
+		drops: [
+			["rat_meat","Always"]
+		]
 	},
 
 	mouse_brown:
@@ -32,7 +35,41 @@ var CharacterDefinitions = {
 		attackDamage: 4,
 		rangedDamage: 0,
 		magicDamage: 0,
-		defense: 1
+		defense: 1,
+		drops: [
+			["coins",1,3],
+			["rat_meat","Always"]
+		]
+	},
+
+	slime_blue:
+	{
+		texture: "textures/characters/slimes/slime_blue.png",
+		hp: 15,
+		stamina: 2,
+		mana: 0,
+		attackDamage: 2,
+		rangedDamage: 0,
+		magicDamage: 0,
+		defense: 2,
+		drops: [
+			["coins",1,[1,9]]
+		]
+	},
+
+	slime_green:
+	{
+		texture: "textures/characters/slimes/slime_green.png",
+		hp: 12,
+		stamina: 2,
+		mana: 0,
+		attackDamage: 3,
+		rangedDamage: 0,
+		magicDamage: 0,
+		defense: 2,
+		drops: [
+			["coins",1,[1,9]]
+		]
 	},
 
 	beetle_brown:

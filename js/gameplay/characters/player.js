@@ -61,6 +61,12 @@ var Player = function(level,x,y)
 	this.onArrived = function()
 	{
 		this.updateView(this._viewWidth,this._viewHeight);
+
+		if (this._tile.hasDrops())
+		{
+			this._tile.pickUpDrops();
+		}
+		
 		Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
 	}
 
@@ -68,7 +74,7 @@ var Player = function(level,x,y)
 	{
 		if (target !== undefined)
 		{
-			Log.fatal("Player attacked target " + target.worldName());
+			Log.debug("Player attacked target " + target.worldName());
 		}
 		Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
 	}

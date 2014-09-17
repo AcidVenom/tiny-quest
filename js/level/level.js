@@ -118,7 +118,7 @@ var Level = function(camera)
 					var shouldPlace = Math.random();
 					if (shouldPlace < 0.05)
 					{
-						var randomTable = ["mouse_brown", "mouse_grey", "beetle_brown"];
+						var randomTable = ["mouse_brown", "mouse_grey", "slime_blue", "slime_green"];
 
 						var rand = Math.floor(Math.random()*randomTable.length);
 						var result = randomTable[rand];

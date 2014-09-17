@@ -113,6 +113,7 @@ var Unit = function(level,x,y,type,name)
 	this._state = UnitStates.Idle;
 
 	var unit = CharacterDefinitions[name];
+	this._definition = unit;
 
 	this._maxHealth = unit.hp;
 	this._maxStamina = unit.stamina;
@@ -371,7 +372,7 @@ var Unit = function(level,x,y,type,name)
 			}
 			else if (this._removed == false)
 			{
-				Log.fatal("Unit with name " + this.worldName() + " died");
+				Log.info("Unit with name " + this.worldName() + " died");
 				this.removeFromPlay();
 			}
 		}
@@ -522,6 +523,55 @@ var Unit = function(level,x,y,type,name)
 
 	this.removeFromPlay = function()
 	{
+		if (this._type == UnitTypes.Enemy)
+		{
+			var dropTable = this._definition.drops
+
+			if (dropTable !== undefined)
+			{
+				var tuples = [];
+				var drops = [];
+				for (var i = 0; i < dropTable.length; ++i)
+				{
+					var drop = dropTable[i];
+					if (drop[1] == "Always")
+					{
+						drops.push({
+							name: drop[0],
+							quantity: drop[2] || 1
+						});
+					}
+					else
+					{
+						tuples.push(drop);
+					}
+				}
+
+				if (tuples.length > 0)
+				{
+					var drop = WeightedCollection.retrieveAsTuple(tuples);
+					drops.push({
+						name: drop[0],
+						quantity: drop[2] || 1
+					});
+				}
+
+				for (var i = 0; i < drops.length; ++i)
+				{
+					var drop = drops[i];
+					var quantity = drop.quantity
+					if (typeof(drop.quantity) == "object")
+					{
+						var min = drop.quantity[0];
+						var max = drop.quantity[1];
+
+						quantity = Math.floor(Math.randomRange(min,max));
+					}
+					Log.debug("Received drop: " + drop.name + " x" + quantity);
+					this._tile.addDrop({name: drop.name, quantity: quantity});
+				}
+			}
+		}
 		if (this._tile)
 		{
 			this._tile.removeUnit();

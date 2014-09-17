@@ -22,6 +22,7 @@ var Tile = function(x,y,type,grid,textures)
 	this._indices = {x: x, y: y}
 	this._unit = undefined;
 	this._visible = false;
+	this._drops = [];
 
 	this.hide = function()
 	{
@@ -30,6 +31,10 @@ var Tile = function(x,y,type,grid,textures)
 		if (this._unit !== undefined)
 		{
 			this._unit.destroy();
+		}
+		for (var i = 0; i < this._drops.length; ++i)
+		{
+			this._drops[i].destroy();
 		}
 
 		this._visible = false;
@@ -42,6 +47,10 @@ var Tile = function(x,y,type,grid,textures)
 		if (this._unit !== undefined)
 		{
 			this._unit.spawn();
+		}
+		for (var i = 0; i < this._drops.length; ++i)
+		{
+			this._drops[i].spawn();
 		}
 
 		this._visible = true;
@@ -60,6 +69,36 @@ var Tile = function(x,y,type,grid,textures)
 	this.indices = function()
 	{
 		return this._indices;
+	}
+
+	this.addDrop = function(drop)
+	{
+		var obj = new GameObject(20,20,ItemManager.getItemTexture(drop.name));
+		obj.setOffset(-0.5,0,-0.5);
+		obj.setPosition(this._position.x,this._position.y);
+		obj.setZ(this._indices.y/100+0.0002+0.0002*this._drops.length)
+		obj.spawn();
+		obj.quantity = drop.quantity;
+		obj.name = drop.name;
+
+		this._drops.push(obj);
+	}
+
+	this.hasDrops = function()
+	{
+		return this._drops.length > 0;
+	}
+
+	this.pickUpDrops = function()
+	{
+		for (var i = this._drops.length-1; i >= 0; --i)
+		{
+			Log.debug("Picked up " + this._drops[i].name);
+			this._drops[i].setAlpha(0);
+			this._drops[i].destroy();
+		}
+
+		this._drops = [];
 	}
 
 	this.setUnit = function(unit)
