@@ -40,10 +40,7 @@ var Tile = function(x,y,type,grid,textures)
 				this._drops[i].destroy();
 			}
 
-			if (this.hasDrops() == true)
-			{
-				this._lootOverlay.destroy();
-			}
+			this._lootOverlay.destroy();
 
 			this._visible = false;
 		}
@@ -98,9 +95,8 @@ var Tile = function(x,y,type,grid,textures)
 		obj.quantity = drop.quantity;
 		obj.name = drop.name;
 
-		if (this._drops.length == 0)
+		if (!this.hasDrops())
 		{
-			Log.fatal("Spawned overlay");
 			this._lootOverlay.spawn();
 		}
 
