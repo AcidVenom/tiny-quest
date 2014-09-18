@@ -560,6 +560,7 @@ var Unit = function(level,x,y,type,name)
 				{
 					var drop = drops[i];
 					var quantity = drop.quantity
+
 					if (typeof(drop.quantity) == "object")
 					{
 						var min = drop.quantity[0];
@@ -568,7 +569,7 @@ var Unit = function(level,x,y,type,name)
 						quantity = Math.floor(Math.randomRange(min,max));
 					}
 					Log.debug("Received drop: " + drop.name + " x" + quantity);
-					this._tile.addDrop({name: drop.name, quantity: quantity});
+					this._tile.addDrop({name: drop.name, quantity: quantity, rarity: ItemManager.getItem(drop.name).class});
 				}
 			}
 		}

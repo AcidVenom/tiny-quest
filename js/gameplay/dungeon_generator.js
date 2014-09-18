@@ -24,6 +24,7 @@ var Tile = function(x,y,type,grid,textures)
 	this._visible = false;
 	this._drops = [];
 	this._lootOverlay = undefined;
+	this._bestItem = -1;
 
 	this.hide = function()
 	{
@@ -94,13 +95,33 @@ var Tile = function(x,y,type,grid,textures)
 		obj.spawn();
 		obj.quantity = drop.quantity;
 		obj.name = drop.name;
+		obj.rarity = drop.rarity;
 
 		if (!this.hasDrops())
 		{
 			this._lootOverlay.spawn();
 		}
 
+		if (obj.rarity > this._bestItem)
+		{
+			var col = this.rarityToColour(obj.rarity);
+			this._lootOverlay.setBlend(col[0],col[1],col[2]);
+		}
+
 		this._drops.push(obj);
+	}
+
+	this.rarityToColour = function(rarity)
+	{
+		switch(rarity)
+		{
+			case ItemClass.Common: return [1,1,1]; break;
+			case ItemClass.Uncommon: return [0,1,0]; break;
+			case ItemClass.Rare: return [0,0,1]; break;
+			case ItemClass.Artifact: return [1,1,0]; break;
+			case ItemClass.Legendary: return [1,0,0]; break;
+			default: return [0,0,0]; break;
+		}
 	}
 
 	this.hasDrops = function()
@@ -117,6 +138,7 @@ var Tile = function(x,y,type,grid,textures)
 			this._drops[i].destroy();
 		}
 
+		this._bestItem = -1;
 		this._lootOverlay.destroy();
 
 		this._drops = [];
