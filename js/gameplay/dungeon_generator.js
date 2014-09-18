@@ -23,37 +23,54 @@ var Tile = function(x,y,type,grid,textures)
 	this._unit = undefined;
 	this._visible = false;
 	this._drops = [];
+	this._lootOverlay = undefined;
 
 	this.hide = function()
 	{
-		this._tile.destroy();
-
-		if (this._unit !== undefined)
+		if (this._visible == true)
 		{
-			this._unit.destroy();
-		}
-		for (var i = 0; i < this._drops.length; ++i)
-		{
-			this._drops[i].destroy();
-		}
+			this._tile.destroy();
 
-		this._visible = false;
+			if (this._unit !== undefined)
+			{
+				this._unit.destroy();
+			}
+			for (var i = 0; i < this._drops.length; ++i)
+			{
+				this._drops[i].destroy();
+			}
+
+			if (this.hasDrops() == true)
+			{
+				this._lootOverlay.destroy();
+			}
+
+			this._visible = false;
+		}
 	}
 
 	this.show = function()
 	{
-		this._tile.spawn();
-
-		if (this._unit !== undefined)
+		if (this._visible == false)
 		{
-			this._unit.spawn();
-		}
-		for (var i = 0; i < this._drops.length; ++i)
-		{
-			this._drops[i].spawn();
-		}
+			this._tile.spawn();
 
-		this._visible = true;
+			if (this._unit !== undefined)
+			{
+				this._unit.spawn();
+			}
+			for (var i = 0; i < this._drops.length; ++i)
+			{
+				this._drops[i].spawn();
+			}
+
+			if(this.hasDrops() == true)
+			{
+				this._lootOverlay.spawn();
+			}
+
+			this._visible = true;
+		}
 	}
 
 	this.visible = function()
@@ -81,6 +98,12 @@ var Tile = function(x,y,type,grid,textures)
 		obj.quantity = drop.quantity;
 		obj.name = drop.name;
 
+		if (this._drops.length == 0)
+		{
+			Log.fatal("Spawned overlay");
+			this._lootOverlay.spawn();
+		}
+
 		this._drops.push(obj);
 	}
 
@@ -97,6 +120,8 @@ var Tile = function(x,y,type,grid,textures)
 			this._drops[i].setAlpha(0);
 			this._drops[i].destroy();
 		}
+
+		this._lootOverlay.destroy();
 
 		this._drops = [];
 	}
@@ -185,6 +210,10 @@ var Tile = function(x,y,type,grid,textures)
 			}
 			break;
 	}
+
+	this._lootOverlay = new GameObject(32,32,"textures/items/loot_overlay.png");
+	this._lootOverlay.setPosition(this._position.x,this._position.y);
+	this._lootOverlay.setZ(this._indices.y/100+0.0005);
 }
 
 var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoomW,maxRoomH)

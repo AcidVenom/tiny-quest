@@ -18,6 +18,8 @@ var Player = function(level,x,y)
 	this._range = 0;
 	this._equipped = Character.items.equipped;
 	this._foundTarget = false;
+	this._camera.setTranslation(this.translation().x,this.translation().y,this._camera.translation().z);
+	this._translateFrom = {x: this._camera.translation().x, y: this._camera.translation().y}
 
 	this.updateView = function(w,h)
 	{
@@ -100,13 +102,13 @@ var Player = function(level,x,y)
 
 		var translation = this._camera.translation();
 		var distance = Math.distance(translation.x,translation.y,this.translation().x,this.translation().y);
-		if (distance > 0.05)
+		if (this._timer < 1)
 		{
-			var x = Math.lerp(translation.x,this.translation().x,this._timer)
-			var y = Math.lerp(translation.y,this.translation().y,this._timer)
-			
+			var x = Math.lerp(this._translateFrom.x,this.translation().x,this._timer)
+			var y = Math.lerp(this._translateFrom.y,this.translation().y,this._timer)
+
 			this._camera.setTranslation(x,y,translation.z);
-			this._timer += dt * distance / 1000;
+			this._timer += dt * distance / 50;
 		}
 
 		if (this._level.turn() == TurnTypes.Player)
@@ -270,6 +272,8 @@ var Player = function(level,x,y)
 				else
 				{
 					this._timer = 0;
+					var trans = this._camera.translation();
+					this._translateFrom = {x: trans.x, y: trans.y}
 				}
 			}
 		}
