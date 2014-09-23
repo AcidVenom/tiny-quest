@@ -62,5 +62,12 @@ var UIBar = function(x,y,type)
 		return this._indicator;
 	}
 
+	this.destroy = function()
+	{
+		this._indicator.destroy();
+		this._bar.destroy();
+		this._number.destroy();
+	}
+
 	this.initialise();
 }

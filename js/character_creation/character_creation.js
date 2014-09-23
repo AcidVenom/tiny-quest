@@ -3,10 +3,6 @@ require("js/character_creation/rgb_slider");
 require("js/data_files/character");
 require("js/data_files/classes");
 
-require("js/gameplay/item_manager");
-
-require("js/character_creation/item_slot");
-
 var CharacterCreation = function()
 {
 	this._okButton = Widget.new();
@@ -31,16 +27,11 @@ var CharacterCreation = function()
 	this._rgbNumbers = [];
 	this._statNumbers = [];
 
-	this._itemSlots = [];
-
 	this._destroyed = false;
 
-	Log.debug("Started creating the character creation menu");
+	this._hairSlots = [];
 
-	this.destroyed = function()
-	{
-		return this._destroyed;
-	}
+	Log.debug("Started creating the character creation menu");
 
 	this.initialise = function()
 	{
@@ -86,8 +77,6 @@ var CharacterCreation = function()
 
 		for (var i = 0; i < 5; ++i)
 		{
-			this._itemSlots.push(new ItemSlot(i));
-			
 			var number = new GuiNumber();
 			number.setValue(0);
 			number.setTranslation(34,241-i*17,0);
@@ -191,7 +180,6 @@ var CharacterCreation = function()
 				Character.class = characterCreation._class;
 
 				characterCreation.changeStats();
-				characterCreation.changeEquipment();
 			});
 
 			this._selectionAreas.push(mouseArea);
@@ -201,6 +189,14 @@ var CharacterCreation = function()
 		this._hero.setTexture("textures/characters/hero/hero.png");
 		this._hero.setScale(32,0,32);
 		this._hero.setOffset(-0.5,0,-0.5);
+
+		var hair = Widget.new();
+		hair.setScale(32,0,32);
+		hair.setAlpha(0);
+		hair.setOffset(-0.5,0,-0.5);
+		hair.spawn();
+
+		this._hero.hair = hair;
 
 		var characterCreation = this;
 		this._tipArea = new MouseArea(42,209,12,11);
@@ -237,10 +233,93 @@ var CharacterCreation = function()
 		this._background.setOffset(-0.5,0,-0.5);
 		this._background.setScale(640,0,480);
 
+		for (var i = 1; i <= 5; ++i)
+		{
+			var hair = Widget.new();
+			hair.setTranslation(-19+(i-1)*37,-130,5);
+			hair.setScale(32,0,32);
+			hair.setTexture("textures/characters/hero/hero_hair_" + String(i) + ".png");
+			hair.spawn();
+
+			var selection = Widget.new();
+			selection.setTranslation(-17+(i-1)*37,-130,10);
+			selection.setScale(36,0,36);
+			selection.setTexture("textures/character_creation/selection_hair.png");
+			selection.spawn();
+			selection.setAlpha(0);
+
+			var selected = Widget.new();
+			selected.setTranslation(-17+(i-1)*37,-130,10);
+			selected.setScale(36,0,36);
+			selected.setTexture("textures/character_creation/selected_hair.png");
+			selected.spawn();
+			selected.setAlpha(0);
+
+			hair.selected = selected;
+			hair.selection = selection;
+			hair.idx = i;
+
+			var mouseArea = new MouseArea(-36-19+(i-1)*37, -130, 36, 36, hair);
+
+			hair.mouseArea = mouseArea;
+
+			mouseArea.on("enter", function(self)
+			{
+				self.selection.setAlpha(1);
+			});
+
+			mouseArea.on("leave", function(self)
+			{
+				self.selection.setAlpha(0);
+			});
+
+			var characterCreation = this;
+			mouseArea.on("released", function(self)
+			{
+				var change = true;
+				if (self.selected.alpha() == 1)
+				{
+					characterCreation.changeHair(0);
+					self.selected.setAlpha(0);
+					change = false;
+				}
+				characterCreation.clearHairSelection();
+
+				if (change == true)
+				{
+					characterCreation.changeHair(self.idx);
+					self.selected.setAlpha(1);
+				}
+			});
+
+			this._hairSlots.push(hair);
+		}
+
 		this.changeStats();
-		this.changeEquipment();
 
 		Log.success("Succesfully created the character creation menu");
+	}
+
+	this.changeHair = function(idx)
+	{
+		this._hero.hair.setAlpha(1);
+		switch(idx)
+		{
+			case 0:
+				this._hero.hair.setAlpha(0);
+				break;
+			default:
+				this._hero.hair.setTexture("textures/characters/hero/hero_hair_" + String(idx) + ".png");
+				break;
+		}
+	}
+
+	this.clearHairSelection = function()
+	{
+		for (var i = 0; i < this._hairSlots.length; ++i)
+		{
+			this._hairSlots[i].selected.setAlpha(0);
+		}
 	}
 
 	this.changeStats = function()
@@ -251,65 +330,6 @@ var CharacterCreation = function()
 		this._statNumbers[2].setValue(stats.rangedDamage);
 		this._statNumbers[3].setValue(stats.defense);
 		this._statNumbers[4].setValue(stats.stamina);
-	}
-
-	this.changeEquipment = function()
-	{
-		var startingEquipment = Classes[Character.class].startingEquipment;
-
-		for (var i = 0; i < this._itemSlots.length; ++i)
-		{
-			this._itemSlots[i].clear();
-		}
-
-		for (var i in Character.items.equipped)
-		{
-			Character.items.equipped[i] = undefined;
-		}
-
-		for (var i = 0; i < startingEquipment.length; ++i)
-		{
-			var name = undefined;
-			var quantity = undefined;
-			var startEquipment = startingEquipment[i];
-
-			if (typeof(startEquipment) === "object")
-			{
-				name = startEquipment[0];
-				quantity = startEquipment[1];
-			}
-			else
-			{
-				name = startEquipment;
-			}
-
-			var item = ItemManager.getItem(name);
-			var texture = ItemManager.getItemTexture(name);
-
-			Character.items.equipped[ItemManager.getItemSlotName(item.slot)] = item;
-
-			if (quantity != undefined)
-			{
-				Character.items.equipped[ItemManager.getItemSlotName(item.slot)].quantity = quantity;
-			}
-
-			for (var i = 0; i < this._itemSlots.length; ++i)
-			{
-				var itemSlot = this._itemSlots[i];
-
-				if (itemSlot.slot() == item.slot)
-				{
-					itemSlot.changeTexture(texture);
-
-					if (quantity !== undefined)
-					{
-						itemSlot.setQuantity(quantity);
-					}
-					break;
-				}
-			}
-		}
-
 	}
 
 	this.update = function(dt)
@@ -331,7 +351,8 @@ var CharacterCreation = function()
 				this._timer = 0;
 			}
 
-			this._hero.setTranslation(0,55+Math.sin(this._timer)*5,0);
+			this._hero.setTranslation(0,55+Math.sin(this._timer)*5,10);
+			this._hero.hair.setTranslation(0,55+Math.sin(this._timer)*5,11);
 
 			for (var i = 0; i < this._sliders.length; ++i)
 			{
@@ -360,6 +381,7 @@ var CharacterCreation = function()
 			else
 			{
 				this._destroyed = true;
+				StateManager.switchState(LevelState);
 			}
 		}
 	}

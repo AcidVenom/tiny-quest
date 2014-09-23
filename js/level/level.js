@@ -66,6 +66,7 @@ var Level = function(camera)
 	this.generateDungeon = function(name)
 	{
 		CharacterDefinitions.updatePlayerStats();
+
 		Log.info("Started generating dungeon with name '" + name + "'");
 		var dungeonDefinition = Dungeons[name];
 
@@ -140,11 +141,6 @@ var Level = function(camera)
 		this._dungeon.destroy();
 	}
 
-	this.draw = function(dt)
-	{
-		
-	}
-
 	this.update = function(dt)
 	{
 		var playerTurn = true;
@@ -179,6 +175,17 @@ var Level = function(camera)
 
 		translation = this._camera.translation();
 		this._camera.setTranslation(translation.x+shake.x,translation.y+shake.y,translation.z);
+	}
+
+	this.destroy = function()
+	{
+		this._hud.destroy();
+		for (var i = 0; i < this._units.length; ++i)
+		{
+			this._units[i].destroy();
+		}
+
+		this._dungeon.destroy();
 	}
 
 	Broadcaster.register(this,Events.PlayerTurnEnded,this.setTurn)

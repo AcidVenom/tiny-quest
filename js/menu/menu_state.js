@@ -1,11 +1,12 @@
 require("js/menu/menu");
 
-var MenuState = MenuState || {
-	name: "Menu",
-	_menu: undefined,
-	_camera: Camera.new("orthographic"),
+var MenuState = function()
+{
+	this.name = "Menu"
+	this._menu = undefined
+	this._camera = undefined;
 
-	initialise: function()
+	this.initialise = function()
 	{
 		ContentManager.load("texture","textures/menu/background.png");
 		ContentManager.load("texture","textures/menu/background_night.png");
@@ -20,33 +21,27 @@ var MenuState = MenuState || {
 		ContentManager.load("texture","textures/menu/cloud_2_night.png");
 		ContentManager.load("texture","textures/menu/cloud_3_night.png");
 		
+		this._camera = Camera.new("orthographic")
 		this._menu = new Menu();
-	},
+	}
 
-	update: function(dt)
+	this.update = function(dt)
 	{
 		this._menu.update(dt);
-	},
+	}
 
-	draw: function(dt)
+	this.draw = function(dt)
 	{
 		Game.render(this._camera);
-		if (this._menu.destroyed())
-		{
-			StateManager.switchState(CharacterCreationState);
-		}
-	},
+	}
 
-	reload: function()
+	this.reload = function()
 	{
 		this._menu = new Menu();
-	},
+	}
 
-	destroy: function()
+	this.destroy = function()
 	{
-		this._menu = null;
-		this._camera = null;
-		
 		ContentManager.unload("texture","textures/menu/background.png");
 		ContentManager.unload("texture","textures/menu/background_night.png");
 		

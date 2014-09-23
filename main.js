@@ -31,7 +31,6 @@ Game.Initialise = function()
 	_GLOBAL_["RenderWidth"] = 640;
 	_GLOBAL_["RenderHeight"] = 480;
 
-	ItemManager.loadTextures();
 	StateManager.switchState(MenuState);
 }
 Game.Update = function(dt)

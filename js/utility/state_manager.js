@@ -7,21 +7,30 @@ var StateManager = StateManager ||
 {
 	/// The current state
 	_currentState: undefined,
+	_pendingState: undefined,
 
 	/// Switches the current state to a new state, destroying the current one
 	switchState: function(state)
 	{
+		this._pendingState = state;
+	},
+
+	doSwitch: function()
+	{
 		MouseEventManager.clear();
+		Broadcaster.clear();
+
+		var newState = new this._pendingState();
 		
-		if (state.name === undefined)
+		if (newState.name === undefined)
 		{
 			Log.error("[StateManager] State does not have a name!");
 		}
-		else if (state.initialise === undefined)
+		else if (newState.initialise === undefined)
 		{
 			assert("[StateManager] State does not have an initialise function!");
 		}
-		else if (state.destroy === undefined)
+		else if (newState.destroy === undefined)
 		{
 			assert("[StateManager] State does not have a destroy function!");
 		}
@@ -30,13 +39,19 @@ var StateManager = StateManager ||
 			if (this._currentState !== undefined)
 			{
 				this._currentState.destroy();
-				Log.info("[StateManager] Destroyed the state '" + this._currentState.name + "'");
+				var name = this._currentState.name;
+				for (var i in this._currentState)
+				{
+					this._currentState[i] = null;
+				}
+				delete this._currentState;
+				Log.info("[StateManager] Destroyed the state '" + name + "'");
 			}
 
-			state.initialise();
-			Log.info("[StateManager] Initialised the state '" + state.name + "'");
+			newState.initialise();
+			Log.info("[StateManager] Initialised the state '" + newState.name + "'");
 
-			this._currentState = state;
+			this._currentState = newState;
 
 			if (this._currentState.name !== undefined)
 			{
@@ -48,6 +63,7 @@ var StateManager = StateManager ||
 			}
 		}
 
+		this._pendingState = undefined;
 		Game.cleanUp();
 	},
 
@@ -70,6 +86,11 @@ var StateManager = StateManager ||
 
 	draw: function(dt)
 	{
+		if (this._pendingState !== undefined)
+		{
+			this.doSwitch();
+		}
+		
 		if (this._currentState == undefined)
 			return;
 
@@ -89,7 +110,7 @@ var StateManager = StateManager ||
 		
 		if (this._currentState.reload !== undefined)
 		{
-			this._currentState.reload()
+			this._currentState.reload();
 		}
 
 		Game.cleanUp();

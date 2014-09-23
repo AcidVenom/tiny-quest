@@ -36,10 +36,6 @@ var Tile = function(x,y,type,grid,textures)
 			{
 				this._unit.destroy();
 			}
-			for (var i = 0; i < this._drops.length; ++i)
-			{
-				this._drops[i].destroy();
-			}
 
 			this._lootOverlay.destroy();
 
@@ -56,10 +52,6 @@ var Tile = function(x,y,type,grid,textures)
 			if (this._unit !== undefined)
 			{
 				this._unit.spawn();
-			}
-			for (var i = 0; i < this._drops.length; ++i)
-			{
-				this._drops[i].spawn();
 			}
 
 			if(this.hasDrops() == true)
@@ -88,40 +80,12 @@ var Tile = function(x,y,type,grid,textures)
 
 	this.addDrop = function(drop)
 	{
-		var obj = new GameObject(20,20,ItemManager.getItemTexture(drop.name));
-		obj.setOffset(-0.5,0,-0.5);
-		obj.setPosition(this._position.x,this._position.y);
-		obj.setZ(this._indices.y/100+0.0002+0.0002*this._drops.length)
-		obj.spawn();
-		obj.quantity = drop.quantity;
-		obj.name = drop.name;
-		obj.rarity = drop.rarity;
-
-		if (!this.hasDrops())
-		{
-			this._lootOverlay.spawn();
-		}
-
-		if (obj.rarity > this._bestItem)
-		{
-			var col = this.rarityToColour(obj.rarity);
-			this._lootOverlay.setBlend(col[0],col[1],col[2]);
-		}
-
-		this._drops.push(obj);
+		
 	}
 
 	this.rarityToColour = function(rarity)
 	{
-		switch(rarity)
-		{
-			case ItemClass.Common: return [1,1,1]; break;
-			case ItemClass.Uncommon: return [0,1,0]; break;
-			case ItemClass.Rare: return [0,0,1]; break;
-			case ItemClass.Artifact: return [1,1,0]; break;
-			case ItemClass.Legendary: return [1,0,0]; break;
-			default: return [0,0,0]; break;
-		}
+		
 	}
 
 	this.hasDrops = function()
@@ -131,17 +95,7 @@ var Tile = function(x,y,type,grid,textures)
 
 	this.pickUpDrops = function()
 	{
-		for (var i = this._drops.length-1; i >= 0; --i)
-		{
-			Log.debug("Picked up " + this._drops[i].name);
-			this._drops[i].setAlpha(0);
-			this._drops[i].destroy();
-		}
-
-		this._bestItem = -1;
-		this._lootOverlay.destroy();
-
-		this._drops = [];
+		
 	}
 
 	this.setUnit = function(unit)
@@ -270,6 +224,20 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 	}
 
 	this.destroy = function()
+	{
+		for (var x = 0; x < this._grid.length; ++x)
+		{
+			for (var y = 0; y < this._grid[0].length; ++y)
+			{
+				if (this._grid[x][y] != DungeonTiles.Empty)
+				{
+					this._grid[x][y].hide();
+				}
+			}
+		}
+	}
+
+	this.unload = function()
 	{
 		for (var key in this._definition.textures)
 		{

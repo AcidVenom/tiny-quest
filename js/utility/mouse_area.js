@@ -15,49 +15,49 @@ var MouseEventManager = {
 		for (var i = 0; i < this._listeners.length; ++i)
 		{
 			var listener = this._listeners[i];
-			var metrics = listener.metrics();
+			var metrics = listener.area.metrics();
 			var pos = Mouse.relativePosition();
 			
 			if (pos.x >= metrics.x && pos.y <= metrics.y && pos.x <= metrics.x+metrics.w && pos.y >= metrics.y-metrics.h)
 			{
-				if (!listener.hovered())
+				if (!listener.area.hovered())
 				{
 					enterNotifications.push(listener);
 				}
 
 				if (Mouse.isPressed(0) || Mouse.isDoubleClicked(0))
 				{
-					listener.notify("pressed");
+					listener.area.notify("pressed",listener.callee);
 				}
 
 				if (Mouse.isDown(0))
 				{
-					listener.notify("down");
+					listener.area.notify("down",listener.callee);
 				}
 
 				if (Mouse.isReleased(0))
 				{
-					listener.notify("released");
+					listener.area.notify("released",listener.callee);
 				}
 			}
 			else
 			{
-				if (listener.hovered())
+				if (listener.area.hovered())
 				{
-					listener.notify("leave");
+					listener.area.notify("leave",listener.callee);
 				}
 			}
 		}
 
 		for (var i = 0; i < enterNotifications.length; ++i)
 		{
-			enterNotifications[i].notify("enter");
+			enterNotifications[i].area.notify("enter",enterNotifications[i].callee);
 		}
 	},
 
-	register: function(area)
+	register: function(area,callee)
 	{
-		this._listeners.push(area)
+		this._listeners.push({area: area, callee: callee});
 	},
 
 	clear: function()
@@ -66,7 +66,7 @@ var MouseEventManager = {
 	}
 }
 
-var MouseArea = function(x,y,w,h)
+var MouseArea = function(x,y,w,h,callee)
 {
 	this._x = x;
 	this._y = y;
@@ -109,7 +109,7 @@ var MouseArea = function(x,y,w,h)
 		return {x: this._x, y: this._y, w: this._w, h: this._h}
 	}
 
-	this.notify = function(type)
+	this.notify = function(type,callee)
 	{
 		if (type === "enter")
 		{
@@ -121,16 +121,16 @@ var MouseArea = function(x,y,w,h)
 			this._hover = false;
 		}
 		
-		this.callback(type);
+		this.callback(type,callee);
 	}
 
-	this.callback = function(type)
+	this.callback = function(type,callee)
 	{
 		for (var i = 0; i < this._callbacks[type].length; ++i)
 		{
-			this._callbacks[type][i]();
+			this._callbacks[type][i](callee);
 		}
 	}
 
-	MouseEventManager.register(this);
+	MouseEventManager.register(this,callee);
 }

@@ -10,19 +10,5 @@ var Character = Character || {
 		stamina: 0
 	},
 
-	items:
-	{
-		equipped:
-		{
-			mainHand: undefined,
-			offHand: undefined,
-			helmet: undefined,
-			body: undefined,
-			pocket: undefined
-		},
-
-		inventory: undefined
-	},
-
 	blend: [1,1,1]
 }

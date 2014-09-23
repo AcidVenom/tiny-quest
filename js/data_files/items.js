@@ -1,88 +1,59 @@
-enumerator("ItemTypes",[
-	"Melee",
-	"Ranged",
-	"Equipment",
-	"Consumable",
-	"Misc"
-]);
+/*
+	Structure:
+	texture: "path/to/texture.png",
+	stackable: true/false,
+	
+	---------------------
+	either:
 
-enumerator("ItemClass",[
-	"Common",
-	"Uncommon",
-	"Rare",
-	"Artifact",
-	"Legendary"
-]);
+	equip = {
+		slot: ItemSlot.MainHand, (Or any other slot)
+		attackDamage: 1,		 (The bonus this item gives, can be all stats)
+		range: true/false		 (If this item can be ranged with)
+	}
 
-enumerator("ItemSlotType",[
-	"MainHand",
-	"OffHand",
-	"Helmet",
-	"Body",
-	"Pocket",
-	"None"
-]);
+	----------------------
+	or:
+
+	use = {
+		health = 2
+		stamina = 2
+	}
+
+	----------------------
+	or:
+
+	Nothing, useless
+
+	----------------------
+	
+	canSell: true/false
+	value: 100
+
+*/
 
 var Items = {
-	trainee_sword: {
-		type: ItemTypes.Melee,
-		class: ItemClass.Common,
-		slot: ItemSlotType.MainHand,
-		damage: 2,
-		stackable: false
-	},
-
-	trainee_shield: {
-		type: ItemTypes.Equipment,
-		class: ItemClass.Common,
-		slot: ItemSlotType.OffHand,
-		defense: 2,
-		stackable: false
-	},
-
-	slingshot: {
-		type: ItemTypes.Ranged,
-		class: ItemClass.Common,
-		slot: ItemSlotType.MainHand,
-		damage: 2,
-		range: 4,
+	trainee_sword = {
+		texture: "textures/items/trainee_sword.png",
 		stackable: false,
-		projectile: true
-	},
+		equip = {
+			slot: ItemSlot.MainHand,
+			attackDamage: 2,
+			range: false
+		}
 
-	throwing_knife: {
-		type: ItemTypes.Consumable,
-		class: ItemClass.Common,
-		slot: ItemSlotType.Pocket,
-		stackable: true
-	},
+		canSell: true,
+		value: 4
+	}
 
-	twig_wand: {
-		type: ItemTypes.Ranged,
-		class: ItemClass.Common,
-		slot: ItemSlotType.MainHand,
-		damage: 2,
-		stackable: false
-	},
+	rat_meat = {
+		texture: "textures/items/rat_meat.png",
+		stackable: false,
+		use = {
+			health = 3;
+		}
 
-	scroll_spark: {
-		type: ItemTypes.Consumable,
-		class: ItemClass.Common,
-		slot: ItemSlotType.Pocket,
-		stackable: true
-	},
-
-	coins: {
-		type: ItemTypes.Misc,
-		class: ItemClass.Common,
-		slot: ItemSlotType.None,
-		stackable: true
-	},
-
-	rat_meat: {
-		type: ItemTypes.Misc,
-		class: ItemClass.Common,
-		slot: ItemSlotType.None,
-		stackable: false
+		canSell = true,
+		value: 1
 	}
 }

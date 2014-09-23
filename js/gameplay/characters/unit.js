@@ -19,8 +19,7 @@ enumerator("AttackType",[
 	])
 
 var LoadedUnitTextures = {}
-var UnitIDs = {
-}
+var UnitIDs = {}
 
 var OverheadBar = function()
 {
@@ -41,8 +40,6 @@ var OverheadBar = function()
 
 	this._z = 120;
 	this._alpha = 0;
-
-	this._equipped = {}
 
 	this.destroy = function()
 	{
@@ -314,6 +311,30 @@ var Unit = function(level,x,y,type,name)
 		return this._state;
 	}
 
+	this.increaseHealth = function(amount)
+	{
+		if (this._health + amount > this._maxHealth)
+		{
+			this._health = this._maxHealth;
+		}
+		else
+		{
+			this._health += amount;
+		}
+	}
+
+	this.decreaseHealth = function(amount)
+	{
+		if (this._health - amount < 0)
+		{
+			this._health = 0;
+		}
+		else
+		{
+			this._health -= amount;
+		}
+	}
+
 	this.damage = function(amount)
 	{
 		var damage = amount - this._defense;
@@ -323,14 +344,8 @@ var Unit = function(level,x,y,type,name)
 			damage = 1;
 		}
 		
-		if (this._health - damage < 0)
-		{
-			this._health = 0;
-		}
-		else
-		{
-			this._health -= damage;
-		}
+		this.decreaseHealth(damage);
+		
 		this._state = UnitStates.Hit;
 
 		this.setUniform("float", "Hit", 1);
@@ -444,28 +459,17 @@ var Unit = function(level,x,y,type,name)
 				{
 					if (this._target.unit() !== undefined)
 					{
-						var dmgMod = 0;
-
-						if (this._equipped !== undefined)
-						{
-							dmgMod = this._equipped.mainHand.damage;
-							if (dmgMod === undefined)
-							{
-								dmgMod = 0;
-							}
-						}
-						
 						if (this._attackType.type == AttackType.Melee)
 						{
-							this._target.unit().damage(this._attackDamage + dmgMod);
+							this._target.unit().damage(this._attackDamage);
 						}
 						else if (this._attackType.type == AttackType.Ranged)
 						{
-							this._target.unit().damage(Math.floor(this._rangedDamage / 2) + dmgMod);
+							this._target.unit().damage(Math.floor(this._rangedDamage / 2));
 						}
 						else if (this._attackType.type == AttackType.Magic)
 						{
-							this._target.unit().damage(this._magicDamage + dmgMod);
+							this._target.unit().damage(this._magicDamage);
 						}
 						this._attacked = true;
 					}
@@ -525,53 +529,7 @@ var Unit = function(level,x,y,type,name)
 	{
 		if (this._type == UnitTypes.Enemy)
 		{
-			var dropTable = this._definition.drops
-
-			if (dropTable !== undefined)
-			{
-				var tuples = [];
-				var drops = [];
-				for (var i = 0; i < dropTable.length; ++i)
-				{
-					var drop = dropTable[i];
-					if (drop[1] == "Always")
-					{
-						drops.push({
-							name: drop[0],
-							quantity: drop[2] || 1
-						});
-					}
-					else
-					{
-						tuples.push(drop);
-					}
-				}
-
-				if (tuples.length > 0)
-				{
-					var drop = WeightedCollection.retrieveAsTuple(tuples);
-					drops.push({
-						name: drop[0],
-						quantity: drop[2] || 1
-					});
-				}
-
-				for (var i = 0; i < drops.length; ++i)
-				{
-					var drop = drops[i];
-					var quantity = drop.quantity
-
-					if (typeof(drop.quantity) == "object")
-					{
-						var min = drop.quantity[0];
-						var max = drop.quantity[1];
-
-						quantity = Math.floor(Math.randomRange(min,max));
-					}
-					Log.debug("Received drop: " + drop.name + " x" + quantity);
-					this._tile.addDrop({name: drop.name, quantity: quantity, rarity: ItemManager.getItem(drop.name).class});
-				}
-			}
+			//Drop something here
 		}
 		if (this._tile)
 		{

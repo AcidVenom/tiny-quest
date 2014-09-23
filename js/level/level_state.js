@@ -1,11 +1,12 @@
 require("js/level/level");
 
-var LevelState = LevelState || {
-	name: "Level",
-	_camera: null,
-	_level: undefined,
+var LevelState = function()
+{
+	this.name = "Level",
+	this._camera = undefined,
+	this._level = undefined,
 
-	initialise: function()
+	this.initialise = function()
 	{
 		ContentManager.load("texture", "textures/ui/frames.png");
 		ContentManager.load("texture", "textures/ui/hp_bar.png");
@@ -23,38 +24,43 @@ var LevelState = LevelState || {
 		this._level = new Level(this._camera);
 
 		this._level.generateDungeon("debug_dungeon");
-	},
+	}
 
-	update: function(dt)
+	this.update = function(dt)
 	{
 		this._level.update(dt);
-	},
+	}
 
-	level: function()
+	this.level = function()
 	{
 		return this._level;
-	},
+	}
 
-	camera: function()
+	this.camera = function()
 	{
 		return this._camera;
-	},
+	}
 
-	draw: function(dt)
+	this.draw = function(dt)
 	{
-		this._level.draw(dt);
 		Game.render(this._camera);
-	},
+	}
 
-	reload: function()
+	this.reload = function()
 	{
+		LoadedUnitTextures = {}
+		UnitIDs = {}
+		this._level.destroy();
 		this._level.reload();
 		this._level = new Level(this._camera);
 		this._level.generateDungeon("debug_dungeon");
-	},
+	}
 
-	destroy: function()
+	this.destroy = function()
 	{
-		this._dungeon.destroy();
+		LoadedUnitTextures = {}
+		UnitIDs = {}
+		this._level.destroy();
+		this._level.dungeon().unload();
 	}
 }

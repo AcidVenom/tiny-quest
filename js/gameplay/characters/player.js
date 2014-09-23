@@ -16,10 +16,10 @@ var Player = function(level,x,y)
 	this._rangeTo = {x: 1, y: 0}
 	this._rangedIndex = {x: 0, y: 0}
 	this._range = 0;
-	this._equipped = Character.items.equipped;
 	this._foundTarget = false;
 	this._camera.setTranslation(this.translation().x,this.translation().y,this._camera.translation().z);
 	this._translateFrom = {x: this._camera.translation().x, y: this._camera.translation().y}
+	this._actualHealth = this._health;
 
 	this.updateView = function(w,h)
 	{
@@ -43,32 +43,34 @@ var Player = function(level,x,y)
 		this._chunk = chunk;
 	}
 
-	this.getProjectile = function()
+	this.onHit = function(damage)
 	{
-		for (var name in Items)
+		this.sizeHeart(1.5);
+		this._actualHealth -= damage;
+
+		if (this._actualHealth < 0)
 		{
-			if (Items[name] == this._equipped.mainHand)
-			{
-				return "textures/items/projectiles/" + name + "_projectile.png";
-			}
+			this._actualHealth = 0;
 		}
 	}
 
-	this.onHit = function()
+	this.sizeHeart = function(scale)
 	{
 		this._heart = this._level.hud().barAt(0).indicator();
-		this._heartScale = 1.5;
+		this._heartScale = scale;
 	}
 
 	this.onArrived = function()
 	{
 		this.updateView(this._viewWidth,this._viewHeight);
+		this._actualHealth += 0.6;
 
-		if (this._tile.hasDrops())
+		if (this._actualHealth > this._maxHealth)
 		{
-			this._tile.pickUpDrops();
+			this._actualHealth = this._maxHealth;
 		}
-		
+
+		this._health = Math.floor(this._actualHealth);
 		Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
 	}
 
@@ -114,6 +116,11 @@ var Player = function(level,x,y)
 		if (this._level.turn() == TurnTypes.Player)
 		{
 			var jumpTo = undefined;
+
+			if (Keyboard.isPressed("Escape"))
+			{
+				StateManager.switchState(CharacterCreationState);
+			}
 
 			if (Keyboard.isDown("S"))
 			{
@@ -165,7 +172,7 @@ var Player = function(level,x,y)
 			if (Keyboard.isDown("Space") && this._state == UnitStates.Idle)
 			{
 				this._ranging = true;
-				this._range = Character.items.equipped["mainHand"].range;
+				this._range = 3;
 
 				if (this._range == undefined)
 				{
