@@ -232,6 +232,7 @@ var CharacterCreation = function()
 		this._background.setTexture("textures/character_creation/background.png");
 		this._background.setOffset(-0.5,0,-0.5);
 		this._background.setScale(640,0,480);
+		this._background.setTranslation(0,0,-10);
 
 		for (var i = 1; i <= 5; ++i)
 		{
