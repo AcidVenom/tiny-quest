@@ -304,6 +304,7 @@ var CharacterCreation = function()
 	this.changeHair = function(idx)
 	{
 		this._hero.hair.setAlpha(1);
+		Character.hair = idx;
 		switch(idx)
 		{
 			case 0:

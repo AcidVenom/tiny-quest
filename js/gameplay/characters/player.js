@@ -20,6 +20,18 @@ var Player = function(level,x,y)
 	this._camera.setTranslation(this.translation().x,this.translation().y,this._camera.translation().z);
 	this._translateFrom = {x: this._camera.translation().x, y: this._camera.translation().y}
 	this._actualHealth = this._health;
+	this._hair = new GameObject(32,32);
+	this._hair.setOffset(0.5,0,0.5);
+	this._hair.setShader("shaders/unitshading.fx");
+	this._oldHit = 0;
+
+	this.setBlend(Character.blend[0],Character.blend[1],Character.blend[2]);
+
+	if (Character.hair != 0)
+	{
+		this._hair.spawn();
+		this._hair.setTexture("textures/characters/hero/hero_hair_" + String(Character.hair) + ".png");
+	}
 
 	this.updateView = function(w,h)
 	{
@@ -45,6 +57,10 @@ var Player = function(level,x,y)
 
 	this.onHit = function(damage)
 	{
+		this._timer = 0;
+		var trans = this._camera.translation();
+		this._translateFrom = {x: trans.x, y: trans.y}
+
 		this.sizeHeart(1.5);
 		this._actualHealth -= damage;
 
@@ -116,11 +132,6 @@ var Player = function(level,x,y)
 		if (this._level.turn() == TurnTypes.Player)
 		{
 			var jumpTo = undefined;
-
-			if (Keyboard.isPressed("Escape"))
-			{
-				StateManager.switchState(CharacterCreationState);
-			}
 
 			if (Keyboard.isDown("S"))
 			{
@@ -283,6 +294,23 @@ var Player = function(level,x,y)
 					this._translateFrom = {x: trans.x, y: trans.y}
 				}
 			}
+		}
+
+		var translation = this.translation();
+		this._hair.setTranslation(translation.x,translation.y,translation.z+0.01);
+
+		var scale = this.scale();
+		this._hair.setScale(scale.x,scale.y,scale.z);
+
+		this._hair.setAlpha(this.alpha());
+
+		var rotation = this.rotation();
+		this._hair.setRotation(0,0,-rotation.z)
+
+		if (this._oldHit != this._hit)
+		{
+			this._hair.setUniform("float", "Hit", this._hit);
+			this._oldHit = this._hit;
 		}
 	}
 

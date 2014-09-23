@@ -175,6 +175,11 @@ var Level = function(camera)
 
 		translation = this._camera.translation();
 		this._camera.setTranslation(translation.x+shake.x,translation.y+shake.y,translation.z);
+
+		if (Keyboard.isPressed("Escape"))
+		{
+			StateManager.switchState(CharacterCreationState);
+		}
 	}
 
 	this.destroy = function()

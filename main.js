@@ -11,6 +11,7 @@ require("js/utility/weighted_collection");
 require("js/menu/menu_state");
 require("js/level/level_state");
 
+Game.speed = 1;
 Game.Initialise = function()
 {
 	ContentManager.load("texture", "textures/misc/number_strip.png");
@@ -40,8 +41,24 @@ Game.Update = function(dt)
 		Game.showConsole();
 	}
 
+	var oldSpeed = Game.speed;
+	if (Keyboard.isReleased("Plus"))
+	{
+		Game.speed *= 1.5;
+	}
+
+	if (Keyboard.isReleased("Minus"))
+	{
+		Game.speed /= 1.5;
+	}
+
+	if (Game.speed != oldSpeed)
+	{
+		Log.debug("Changed game speed to: " + String(Game.speed));
+	}
+
 	MouseEventManager.check();
-	StateManager.update(dt);
+	StateManager.update(dt*Game.speed);
 }
 
 Game.Draw = function(dt)

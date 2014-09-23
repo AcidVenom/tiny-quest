@@ -10,5 +10,6 @@ var Character = Character || {
 		stamina: 0
 	},
 
-	blend: [1,1,1]
+	blend: [1,1,1],
+	hair: 0
 }

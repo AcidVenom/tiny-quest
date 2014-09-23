@@ -104,6 +104,7 @@ var Unit = function(level,x,y,type,name)
 	this._removed = false;
 	this._attackType = {type: AttackType.Melee, texture: undefined};
 	this._type = type;
+	this._hit = 0;
 
 	this._overHead = undefined;
 
@@ -148,6 +149,7 @@ var Unit = function(level,x,y,type,name)
 
 	this.setShader("shaders/unitshading.fx");
 	this.setUniform("float", "Hit", 0);
+	this._hit = 0;
 
 	this._setPosition = this.setPosition;
 
@@ -349,8 +351,9 @@ var Unit = function(level,x,y,type,name)
 		this._state = UnitStates.Hit;
 
 		this.setUniform("float", "Hit", 1);
+		this._hit = 1;
 		this._damageTimer = 0;
-		this._level.shakeCamera(2,0.15);
+		this._level.shakeCamera(5,0.4);
 
 		this.onHit(damage);
 	}
@@ -405,21 +408,24 @@ var Unit = function(level,x,y,type,name)
 			{
 				this._state = UnitStates.Idle;
 				this.setUniform("float", "Hit", 0);
+				this._hit = 0;
 			}
 		}
 		else if (this._state == UnitStates.Moving)
 		{
 			if (this._jumpTimer < 1)
 			{
-				this._jumpTimer += dt*5;
+				this._jumpTimer += dt*4.5;
 				var x = Math.lerp(this._position.x,this._target.position().x,this._jumpTimer);
 				var y = Math.lerp(this._position.y,this._target.position().y,this._jumpTimer);
 
-				this._setPosition(x+16,y-16-10-Math.sin(this._jumpTimer*Math.PI)*15);
-				this.setZ(y/32/100+0.001)
+				this.setRotation(0,0,Math.sin(this._jumpTimer*Math.PI*2)*0.4*(-this.scale().x/32));
+				this._setPosition(x+16,y-16-10-Math.sin(this._jumpTimer*Math.PI)*20);
+				this.setZ(y/32/100+0.004)
 			}
 			else
 			{
+				this.setRotation(0,0,0);
 				this.setPosition(this._target.indices().x,this._target.indices().y);
 				this._state = UnitStates.Idle;
 				this._wobbleTimer = 0;
@@ -503,10 +509,6 @@ var Unit = function(level,x,y,type,name)
 	this.initialise = function()
 	{
 		this.setOffset(0.5,0.5,0.5);
-		if (this._type == UnitTypes.Player)
-		{
-			this.setBlend(Character.blend[0],Character.blend[1],Character.blend[2]);
-		}
 
 		if (this._dungeon.tileAt(x,y) == DungeonTiles.Empty)
 		{

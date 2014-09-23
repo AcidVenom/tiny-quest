@@ -47,10 +47,6 @@ var CharacterCreationState = function()
 	this.destroy = function()
 	{
 		ContentManager.unload("texture","textures/characters/hero/hero.png");
-		for (var i = 1; i <= 5; ++i)
-		{
-			ContentManager.unload("texture","textures/characters/hero/hero_hair_" + String(i) + ".png");
-		}
 		ContentManager.unload("texture","textures/character_creation/background.png");
 		ContentManager.unload("texture","textures/character_creation/rgb_slider.png");
 		ContentManager.unload("texture","textures/character_creation/selected_class.png");
