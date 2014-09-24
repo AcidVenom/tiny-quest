@@ -183,6 +183,7 @@ var CharacterCreation = function()
 			});
 
 			this._selectionAreas.push(mouseArea);
+			this._selection.setAlpha(0);
 		}
 
 		this._hero.spawn();
@@ -220,7 +221,7 @@ var CharacterCreation = function()
 		this._selectedClass.spawn();
 		this._selectedClass.setScale(21,0,20);
 		this._selectedClass.setTexture("textures/character_creation/selected_class.png");
-		this._selectedClass.setTranslation(-129,-43,0);
+		this._selectedClass.setTranslation(-129,-43-19*this.classIndex(Character.class),0);
 
 		this._selection.spawn();
 		this._selection.setScale(72,0,16);
@@ -298,7 +299,45 @@ var CharacterCreation = function()
 
 		this.changeStats();
 
+		for (var i = 0; i < this._sliders.length; ++i)
+		{
+			this._sliders[i].setValue(Character.sliderRgb[i]*1.25);
+		}
+
+		this.changeHair(Character.hair);
+
+		if (Character.hair - 1 > -1)
+		{
+			this._hairSlots[Character.hair-1].selected.setAlpha(1);
+		}
+
 		Log.success("Succesfully created the character creation menu");
+	}
+
+	this.classIndex = function(c)
+	{
+		switch(c)
+		{
+			case "warrior":
+				return 0;
+			break;
+
+			case "thief":
+				return 1;
+			break;
+
+			case "wizard":
+				return 2;
+			break;
+
+			case "newborn":
+				return 3;
+			break;
+
+			case "hardcore":
+				return 4;
+			break;
+		}
 	}
 
 	this.changeHair = function(idx)
@@ -360,6 +399,7 @@ var CharacterCreation = function()
 			{
 				this._sliders[i].update(dt);
 				this._rgbNumbers[i].setValue(Math.floor((this._sliders[i].value()*255/0.8)));
+				Character.sliderRgb[i] = this._sliders[i].value()
 			}
 
 			this._hero.setBlend(0.2+this._sliders[0].value(),0.2+this._sliders[1].value(),0.2+this._sliders[2].value());

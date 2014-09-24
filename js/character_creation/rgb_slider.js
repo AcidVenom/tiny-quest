@@ -71,6 +71,14 @@ var RgbSlider = function(idx)
 		}
 	}
 
+	this.setValue = function(value)
+	{
+		this._value = value*0.8;
+		var x = -37 + value*129;
+		this._slider.setTranslation(x+5, this._height, 0);
+		this._mouseArea.setPosition(x+5-10, this._height, 0);
+	}
+
 	this.destroy = function()
 	{
 		this._slider.destroy();
