@@ -14,3 +14,16 @@ var Character = Character || {
 	sliderRgb: [0.8,0.8,0.8],
 	hair: 0
 }
+
+Character.calculateStats = function()
+{
+	var stats = Classes[Character.class].stats;
+
+	return {
+		attackDamage: stats.attackDamage + Character.statIncreases.attackDamage,
+		magicDamage: stats.magicDamage + Character.statIncreases.magicDamage,
+		rangedDamage: stats.rangedDamage + Character.statIncreases.rangedDamage,
+		defense: stats.defense + Character.statIncreases.defense,
+		stamina: stats.stamina + Character.statIncreases.stamina
+	}
+}

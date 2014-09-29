@@ -10,7 +10,9 @@ var Player = function(level,x,y)
 	this._viewWidth = this._dungeon.definition().viewRange;
 	this._viewHeight = this._dungeon.definition().viewRange;
 	this._heart = undefined;
+	this._plus = undefined;
 	this._heartScale = 1;
+	this._plusScale = 1;
 	this._ranging = false;
 	this._rangeSquares = [];
 	this._rangeTo = {x: 1, y: 0}
@@ -31,6 +33,16 @@ var Player = function(level,x,y)
 	{
 		this._hair.spawn();
 		this._hair.setTexture("textures/characters/hero/hero_hair_" + String(Character.hair) + ".png");
+	}
+
+	this.updateStats = function()
+	{
+		var stats = Character.calculateStats();
+		this._attackDamage = stats.attackDamage;
+		this._rangedDamage = stats.rangedDamage;
+		this._magicDamage = stats.magicDamage;
+		this._maxStamina = stats.stamina;
+		this._defense = stats.defense;
 	}
 
 	this.updateView = function(w,h)
@@ -76,6 +88,12 @@ var Player = function(level,x,y)
 		this._heartScale = scale;
 	}
 
+	this.sizePlus = function(scale)
+	{
+		this._plus = this._level.hud().barAt(1).indicator();
+		this._plusScale = scale;
+	}
+
 	this.onArrived = function()
 	{
 		this.updateView(this._viewWidth,this._viewHeight);
@@ -99,6 +117,15 @@ var Player = function(level,x,y)
 		Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
 	}
 
+	this.onStaminaChanged = function(empty)
+	{
+		this.sizePlus(1.5);
+		if (empty == true)
+		{
+			Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
+		}
+	}
+
 	this.update = function(dt)
 	{
 		this.updateMovement(dt);
@@ -115,18 +142,39 @@ var Player = function(level,x,y)
 			{
 				this._heartScale = 1;
 				this._heart.setScale(17,17,17);
+				this._heart = undefined;
+			}
+		}
+
+		if (this._plus !== undefined)
+		{
+			if (this._plusScale > 1)
+			{
+				this._plusScale -= dt;
+				var scale = 17*this._plusScale;
+				this._plus.setScale(scale,scale,scale);
+			}
+			else
+			{
+				this._plusScale = 1;
+				this._plus.setScale(17,17,17);
+				this._plus = undefined;
 			}
 		}
 
 		var translation = this._camera.translation();
 		var distance = Math.distance(translation.x,translation.y,this.translation().x,this.translation().y);
-		if (this._timer < 1)
+		if (this._timer < 1 && this._level.shaking() == false)
 		{
 			var x = Math.lerp(this._translateFrom.x,this.translation().x,this._timer)
 			var y = Math.lerp(this._translateFrom.y,this.translation().y,this._timer)
 
 			this._camera.setTranslation(x,y,translation.z);
 			this._timer += dt * distance / 50;
+		}
+		else
+		{
+			this._timer = 1;
 		}
 
 		if (this._level.turn() == TurnTypes.Player)
@@ -315,5 +363,7 @@ var Player = function(level,x,y)
 	}
 
 	this.updateView(this._viewWidth,this._viewHeight);
+	this.updateStats();
+	this._stamina = this._maxStamina;
 	this._overHead.setZ(140);
 }

@@ -2,13 +2,13 @@ var CharacterDefinitions = {
 	player: 
 	{
 		texture: "textures/characters/hero/hero.png",
-		hp: 25,
-		stamina: Classes[Character.class].stats.stamina,
-		mana: Classes[Character.class].stats.mana,
-		attackDamage: Classes[Character.class].stats.attackDamage,
-		rangedDamage: Classes[Character.class].stats.rangedDamage,
-		magicDamage: Classes[Character.class].stats.magicDamage,
-		defense: Classes[Character.class].stats.defense
+		hp: 20,
+		stamina: 0,
+		mana: 0,
+		attackDamage: 0,
+		rangedDamage: 0,
+		magicDamage: 0,
+		defense: 0
 	},
 
 	mouse_grey:
@@ -83,16 +83,4 @@ var CharacterDefinitions = {
 		magicDamage: 0,
 		defense: 3
 	}
-}
-
-CharacterDefinitions.updatePlayerStats = function()
-{
-	var definition = CharacterDefinitions["player"];
-
-	definition.stamina = Classes[Character.class].stats.stamina;
-	definition.mana = Classes[Character.class].stats.mana;
-	definition.attackDamage = Classes[Character.class].stats.attackDamage;
-	definition.rangedDamage = Classes[Character.class].stats.rangedDamage;
-	definition.magicDamage = Classes[Character.class].stats.magicDamage;
-	definition.defense = Classes[Character.class].stats.defense;
 }

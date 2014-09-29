@@ -3,7 +3,7 @@ var Enemy = function(level,x,y,key)
 	this.__unit = new Unit(level,x,y,UnitTypes.Enemy,key);
 	this._camera = level.camera();
 	this._shouldMove = false;
-	this._maxRange = 12;
+	this._maxRange = 9;
 	
 	extend(this,this.__unit);
 
@@ -71,6 +71,11 @@ var Enemy = function(level,x,y,key)
 	this.move = function()
 	{
 		this._shouldMove = true;
+	}
+
+	this.onStaminaChanged = function(empty)
+	{
+		this._shouldMove = !empty;
 	}
 
 	this.update = function(dt)

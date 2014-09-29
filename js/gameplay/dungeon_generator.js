@@ -152,32 +152,36 @@ var Tile = function(x,y,type,grid,textures)
 
 	if (textures !== undefined)
 	{
-		wallTexture = textures.wall === undefined ? "textures/dungeons/default_dungeon/default_wall.png" : textures.wall;
-		roomTexture = textures.room === undefined ? "textures/dungeons/default_dungeon/default_room.png" : textures.room;
-		floorTexture = textures.floor === undefined ? "textures/dungeons/default_dungeon/default_floor.png" : textures.floor;
+		wallTextures = textures.wall === undefined ? ["textures/dungeons/default_dungeon/default_wall.png",1] : textures.wall;
+		roomTextures = textures.room === undefined ? ["textures/dungeons/default_dungeon/default_room.png",1] : textures.room;
+		floorTextures = textures.floor === undefined ? ["textures/dungeons/default_dungeon/default_floor.png",1] : textures.floor;
 
 		if (textures.wall_special !== undefined)
 		{
-			wallSpecial.texture = textures.wall_special[0];
-			wallSpecial.mod = textures.wall_special[1];
+			wallSpecial.textures = textures.wall_special.tiles;
+			wallSpecial.mod = textures.wall_special.modulo;
 		}
 	}
 	switch (type)
 	{
 		case DungeonTiles.Room:
-			this._tile.setTexture(roomTexture);
+			var texture = WeightedCollection.retrieve(roomTextures);
+			this._tile.setTexture(texture);
 			break;
 		case DungeonTiles.Floor:
-			this._tile.setTexture(floorTexture);
+			var texture = WeightedCollection.retrieve(floorTextures);
+			this._tile.setTexture(texture);
 			break;
 		case DungeonTiles.Wall:
-			this._tile.setTexture(wallTexture);
+			var texture = WeightedCollection.retrieve(wallTextures);
+			this._tile.setTexture(texture);
 
-			if (wallSpecial.texture !== undefined && wallSpecial.mod !== undefined)
+			if (wallSpecial.textures !== undefined && wallSpecial.mod !== undefined)
 			{
 				if (x % wallSpecial.mod == 0 && grid[x][y+1] != DungeonTiles.Empty)
 				{
-					this._tile.setTexture(wallSpecial.texture);
+					texture = WeightedCollection.retrieve(wallSpecial.textures);
+					this._tile.setTexture(texture);
 				}
 			}
 			break;
@@ -243,11 +247,17 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 		{
 			if (key != "wall_special")
 			{
-				ContentManager.unload("texture",this._definition.textures[key]);
+				for (var i = 0; i < this._definition.textures[key].length; ++i)
+				{
+					ContentManager.unload("texture",this._definition.textures[key][i][0]);
+				}
 			}
 			else
 			{
-				ContentManager.unload("texture",this._definition.textures[key][0]);
+				for (var i = 0; i < this._definition.textures[key].tiles.length; ++i)
+				{
+					ContentManager.unload("texture",this._definition.textures[key].tiles[i][0]);
+				}
 			}
 		}
 	}
@@ -258,11 +268,17 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 		{
 			if (key != "wall_special")
 			{
-				ContentManager.load("texture",this._definition.textures[key]);
+				for (var i = 0; i < this._definition.textures[key].length; ++i)
+				{
+					ContentManager.load("texture",this._definition.textures[key][i][0]);
+				}
 			}
 			else
 			{
-				ContentManager.load("texture",this._definition.textures[key][0]);
+				for (var i = 0; i < this._definition.textures[key].tiles.length; ++i)
+				{
+					ContentManager.load("texture",this._definition.textures[key].tiles[i][0]);
+				}
 			}
 		}
 		for (var x = 0; x < this._metrics.w; ++x)

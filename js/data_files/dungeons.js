@@ -10,10 +10,23 @@ var Dungeons = {
 		maxRoomHeight: 9,
 
 		textures: {
-			wall: "textures/dungeons/castle/dungeon_castle_wall.png",
-			wall_special: ["textures/dungeons/castle/dungeon_castle_wall_torch.png",4],
-			room: "textures/dungeons/castle/dungeon_castle_room.png",
-			floor: "textures/dungeons/castle/dungeon_castle_floor.png"
+			wall: [
+				["textures/dungeons/castle/dungeon_castle_wall.png",1]
+			],
+			wall_special: {
+				modulo: 4,
+				tiles: [
+					["textures/dungeons/castle/dungeon_castle_wall_torch.png",2],
+					["textures/dungeons/castle/dungeon_castle_wall_flag.png",1]
+				]
+			},
+			room: [
+				["textures/dungeons/castle/dungeon_castle_room.png",2],
+				["textures/dungeons/castle/dungeon_castle_room_cracked.png",1]
+			],
+			floor: [
+				["textures/dungeons/castle/dungeon_castle_floor.png",1]
+			]
 		},
 
 		viewRange: 9

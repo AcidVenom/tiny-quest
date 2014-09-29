@@ -1,6 +1,7 @@
 require("js/utility/math_extension");
 require("js/utility/helper");
 require("js/utility/game_object");
+require("js/utility/particle_emitter");
 require("js/utility/state_manager");
 require("js/utility/broadcaster");
 require("js/utility/mouse_area");
@@ -58,6 +59,7 @@ Game.Update = function(dt)
 	}
 
 	MouseEventManager.check();
+	ParticleProcessor.update(dt);
 	StateManager.update(dt*Game.speed);
 }
 

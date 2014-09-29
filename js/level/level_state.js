@@ -17,6 +17,7 @@ var LevelState = function()
 		ContentManager.load("texture", "textures/ui/mana_bar.png");
 		ContentManager.load("texture", "textures/ui/overhead_frame.png");
 		ContentManager.load("texture", "textures/ui/overhead_bar.png");
+		ContentManager.load("texture", "textures/pfx/out_of_stamina.png");
 		
 		ContentManager.load("texture", "textures/items/loot_overlay.png");
 

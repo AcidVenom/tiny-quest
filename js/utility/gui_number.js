@@ -22,7 +22,6 @@ var GuiNumber = function(parent)
 		{
 			this._numberString = String(number);
 		}
-
 		for (var i = 0; i < this._numberString.length; ++i)
 		{
 			var guiElement = undefined;

@@ -106,26 +106,16 @@ var Unit = function(level,x,y,type,name)
 	this._type = type;
 	this._hit = 0;
 
+	this._maxHealth, this._maxStamina, this._maxMana, this._health, this._stamina, this._mana, 
+	this._attackDamage, this._rangedDamage, this._magicDamage, this._defense = 0;
+
+
 	this._overHead = undefined;
 
 	this._state = UnitStates.Idle;
 
 	var unit = CharacterDefinitions[name];
 	this._definition = unit;
-
-	this._maxHealth = unit.hp;
-	this._maxStamina = unit.stamina;
-	this._maxMana = 10;
-
-	this._health = this._maxHealth;
-	this._stamina = this._maxStamina;
-	this._mana = this._maxMana;
-
-	this._attackDamage = unit.attackDamage;
-	this._rangedDamage = unit.rangedDamage;
-	this._magicDamage = unit.magicDamage;
-
-	this._defense = unit.defense;
 	this._projectile = undefined;
 
 	if (unit === undefined)
@@ -152,6 +142,23 @@ var Unit = function(level,x,y,type,name)
 	this._hit = 0;
 
 	this._setPosition = this.setPosition;
+
+	this.updateStats = function()
+	{
+			this._attackDamage = this._definition.attackDamage;
+			this._rangedDamage = this._definition.rangedDamage;
+			this._magicDamage = this._definition.magicDamage;
+
+			this._defense = this._definition.defense;
+
+			this._maxHealth = this._definition.hp;
+			this._maxStamina = this._definition.stamina;
+			this._maxMana = 10;
+
+			this._health = this._maxHealth;
+			this._stamina = this._maxStamina;
+			this._mana = this._maxMana;
+	}
 
 	this.type = function()
 	{
@@ -287,19 +294,38 @@ var Unit = function(level,x,y,type,name)
 		var tile = this._dungeon.tileAt(x,y);
 		if (this._state == UnitStates.Idle)
 		{
-			if (this._attackType.type == AttackType.Ranged)
+			if (this._stamina > 0)
 			{
-				this._projectile = new GameObject(16,16);
-				this._projectile.setTexture(this.getProjectile());
-				this._projectile.spawn();
-				this._projectile.setZ(900);
-				this._projectile.setPosition(this._position.x+8,this._position.y-18);
+				if (this._attackType.type == AttackType.Ranged)
+				{
+					this._projectile = new GameObject(16,16);
+					this._projectile.setTexture(this.getProjectile());
+					this._projectile.spawn();
+					this._projectile.setZ(900);
+					this._projectile.setPosition(this._position.x+8,this._position.y-18);
+				}
+				this._attacked = false;
+				this._state = UnitStates.Attacking;
+				this._target = tile;
+				this._attackTimer = 0;
+				--this._stamina;
+
+				this.onStaminaChanged(false);
 			}
-			this._attacked = false;
-			this._state = UnitStates.Attacking;
-			this._target = tile;
-			this._attackTimer = 0;
+			else
+			{
+				this.onStaminaChanged(true);
+				var particleEmitter = new ParticleEmitter(ParticleDefinitions["stamina_drained"]);
+				particleEmitter.setPosition(this._position.x,this._position.y);
+				particleEmitter.start();
+				++this._stamina;
+			}
 		}
+	}
+
+	this.onStaminaChanged = function(empty)
+	{
+
 	}
 
 	this.getProjectile = function()
@@ -429,6 +455,12 @@ var Unit = function(level,x,y,type,name)
 				this.setPosition(this._target.indices().x,this._target.indices().y);
 				this._state = UnitStates.Idle;
 				this._wobbleTimer = 0;
+				++this._stamina;
+
+				if (this._stamina > this._maxStamina)
+				{
+					this._stamina = this._maxStamina;
+				}
 				this.onArrived();
 			}
 		}
@@ -548,4 +580,5 @@ var Unit = function(level,x,y,type,name)
 	}
 
 	this.initialise();
+	this.updateStats();
 }

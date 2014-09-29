@@ -19,6 +19,7 @@ require("js/data_files/character_definitions");
 
 require("js/ui/hud");
 
+require("js/particles/particle_definitions");
 
 var Level = function(camera)
 {
@@ -30,6 +31,7 @@ var Level = function(camera)
 	this._camera = camera;
 	this._shakeDuration = 0;
 	this._shakeMagnitude = 0;
+	this._falloff = {x: 0, y: 0}
 
 	this.camera = function()
 	{
@@ -61,12 +63,11 @@ var Level = function(camera)
 		this._shakeTimer = 0;
 		this._shakeDuration = duration;
 		this._shakeMagnitude = magnitude;
+		this._falloff = {x: 0, y: 0}
 	}
 
 	this.generateDungeon = function(name)
 	{
-		CharacterDefinitions.updatePlayerStats();
-
 		Log.info("Started generating dungeon with name '" + name + "'");
 		var dungeonDefinition = Dungeons[name];
 
@@ -141,6 +142,11 @@ var Level = function(camera)
 		this._dungeon.destroy();
 	}
 
+	this.shaking = function()
+	{
+		return this._shakeTimer < 0.99;
+	}
+
 	this.update = function(dt)
 	{
 		var playerTurn = true;
@@ -167,6 +173,7 @@ var Level = function(camera)
 		var shake = {x: 0, y: 0}
 		if (this._shakeTimer < 1)
 		{
+			this._camera.setTranslation(this._player.translation().x,this._player.translation().y,this._camera.translation().z);
 			this._shakeTimer += dt/this._shakeDuration;
 			shake = Math.shake(this._shakeMagnitude,this._shakeTimer);
 		}

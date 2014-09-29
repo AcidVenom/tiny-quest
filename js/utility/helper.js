@@ -38,7 +38,6 @@ Enum.prototype.toString = function()
 function enumerator(name, enumerations)
 {
 	_GLOBAL_[name] = new Enum(name,enumerations);
-	
 }
 
 /// Draws a rectangle

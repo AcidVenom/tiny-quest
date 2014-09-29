@@ -104,6 +104,7 @@ var StateManager = StateManager ||
 	{
 		MouseEventManager.clear();
 		Broadcaster.clear();
+		ParticleProcessor.clear();
 
 		if (this._currentState == undefined)
 			return;
