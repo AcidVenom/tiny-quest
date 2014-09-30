@@ -1,4 +1,5 @@
 require("js/data_files/character_definitions");
+require("js/gameplay/characters/bonushandler");
 
 enumerator("UnitStates",[
 	"Moving",
@@ -106,6 +107,7 @@ var Unit = function(level,x,y,type,name)
 	this._type = type;
 	this._hit = 0;
 	this._hidden = false;
+	this._bonusHandler = new BonusHandler(this);
 
 	this._maxHealth, this._maxStamina, this._maxMana, this._health, this._stamina, this._mana, 
 	this._attackDamage, this._rangedDamage, this._magicDamage, this._defense = 0;
@@ -155,10 +157,15 @@ var Unit = function(level,x,y,type,name)
 			this._maxHealth = this._definition.hp;
 			this._maxStamina = this._definition.stamina;
 			this._maxMana = 10;
+	}
 
-			this._health = this._maxHealth;
-			this._stamina = this._maxStamina;
-			this._mana = this._maxMana;
+	this.applyEffects = function(effects)
+	{
+		for (var key in effects)
+		{
+			this["_" + key] = effects[key];
+		}
+		//Log.error(this._attackDamage);
 	}
 
 	this.type = function()
@@ -194,6 +201,31 @@ var Unit = function(level,x,y,type,name)
 	this.mana = function()
 	{
 		return this._mana;
+	}
+
+	this.attackDamage = function()
+	{
+		return this._attackDamage;
+	}
+
+	this.rangedDamage = function()
+	{
+		return this._rangedDamage;
+	}
+
+	this.magicDamage = function()
+	{
+		return this._magicDamage;
+	}
+
+	this.defense = function()
+	{
+		return this._defense;
+	}
+
+	this.stamina = function()
+	{
+		return this._stamina;
 	}
 
 	this.tile = function()
@@ -400,6 +432,9 @@ var Unit = function(level,x,y,type,name)
 
 	this.updateMovement = function(dt)
 	{
+		this.updateStats();
+		this._bonusHandler.update();
+
 		if (this._health == 0 && this._state != UnitStates.Dying)
 		{
 			this._alpha = 1;
@@ -591,4 +626,8 @@ var Unit = function(level,x,y,type,name)
 
 	this.initialise();
 	this.updateStats();
+
+	this._health = this._maxHealth;
+	this._stamina = this._maxStamina;
+	this._mana = this._maxMana;
 }

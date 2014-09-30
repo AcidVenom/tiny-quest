@@ -42,6 +42,8 @@ var Player = function(level,x,y)
 		this._rangedDamage = stats.rangedDamage;
 		this._magicDamage = stats.magicDamage;
 		this._maxStamina = stats.stamina;
+		this._maxHealth = this._definition.hp;
+		this._maxMana = 10;
 		this._defense = stats.defense;
 	}
 
@@ -366,4 +368,6 @@ var Player = function(level,x,y)
 	this.updateStats();
 	this._stamina = this._maxStamina;
 	this._overHead.setZ(140);
+
+	this._bonusHandler.setUnit(this);
 }

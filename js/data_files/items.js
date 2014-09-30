@@ -37,8 +37,11 @@ var Items = {
 		texture: "textures/items/trainee_sword.png",
 		stackable: false,
 		equip = {
+			apply:
+			{
+				attackDamage: 2
+			},
 			slot: ItemSlot.MainHand,
-			attackDamage: 2,
 			range: false
 		}
 
@@ -50,7 +53,7 @@ var Items = {
 		texture: "textures/items/rat_meat.png",
 		stackable: false,
 		use = {
-			health = 3;
+			health = 3
 		}
 
 		canSell = true,

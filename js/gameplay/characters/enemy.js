@@ -166,5 +166,6 @@ var Enemy = function(level,x,y,key)
 		return this._shouldMove;
 	}
 
+	this._bonusHandler.setUnit(this);
 	Broadcaster.register(this,Events.PlayerTurnEnded,this.move)
 }
