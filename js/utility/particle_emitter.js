@@ -41,7 +41,9 @@ var Particle = function(x,y,z,w,h,texture,emitter)
 	this.velocity = {x: 0, y: 0}
 	this.size = {w: 1, h: 1}
 	this._scale = {w: w, h: h}
-	emitter.spawnFunction(this);
+	this.params = emitter.params || {}
+
+	emitter.spawnFunction(this,this.params);
 
 	this._destroy = this.destroy;
 	this.destroy = function()
@@ -61,12 +63,12 @@ var Particle = function(x,y,z,w,h,texture,emitter)
 		this.setPosition(this.position.x,this.position.y);
 		this.setScale(this._scale.w*this.size.w, 0, this._scale.h*this.size.h);
 
-		if (this.lifeTime <= 1)
+		if (this.lifeTime <= this.maxLifeTime)
 		{
-			emitter.timeFunction(this,this.lifeTime);
+			emitter.timeFunction(this,this.lifeTime,this.params,dt);
 			this.position.x += this.velocity.x*dt;
 			this.position.y += this.velocity.y*dt;
-			this.lifeTime += dt / this.maxLifeTime
+			this.lifeTime += dt
 		}
 		else
 		{
@@ -98,6 +100,7 @@ var ParticleEmitter = function(params)
 	this._destroyed = false;
 	this._loop = params.loop;
 	this._destroyOnEnd = params.destroyOnEnd || false;
+	this._params = params.params || {}
 
 	this.setZ = function(z)
 	{
@@ -135,6 +138,16 @@ var ParticleEmitter = function(params)
 		return this._lifeTime;
 	}
 
+	this.params = function()
+	{
+		return this._params;
+	}
+
+	this.setParameter = function(name,value)
+	{
+		this._params[name] = value;
+	}
+
 	this.emit = function()
 	{
 		if (this._type == ParticleType.SpawnCount)
@@ -164,7 +177,7 @@ var ParticleEmitter = function(params)
 	{
 		if (this._time <= 1)
 		{
-			this._time += dt/this._lifeTime;
+			this._time += dt;
 
 			if (this._type == ParticleType.OverTime)
 			{

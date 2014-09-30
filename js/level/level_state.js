@@ -17,7 +17,9 @@ var LevelState = function()
 		ContentManager.load("texture", "textures/ui/mana_bar.png");
 		ContentManager.load("texture", "textures/ui/overhead_frame.png");
 		ContentManager.load("texture", "textures/ui/overhead_bar.png");
+
 		ContentManager.load("texture", "textures/pfx/out_of_stamina.png");
+		ContentManager.load("texture", "textures/pfx/on_hit.png");
 		
 		ContentManager.load("texture", "textures/items/loot_overlay.png");
 
@@ -63,5 +65,20 @@ var LevelState = function()
 		UnitIDs = {}
 		this._level.destroy();
 		this._level.dungeon().unload();
+
+		ContentManager.unload("texture", "textures/ui/frames.png");
+		ContentManager.unload("texture", "textures/ui/hp_bar.png");
+		ContentManager.unload("texture", "textures/ui/hp_icon.png");
+		ContentManager.unload("texture", "textures/ui/stamina_bar.png");
+		ContentManager.unload("texture", "textures/ui/stamina_icon.png");
+		ContentManager.unload("texture", "textures/ui/mana_icon.png");
+		ContentManager.unload("texture", "textures/ui/mana_bar.png");
+		ContentManager.unload("texture", "textures/ui/overhead_frame.png");
+		ContentManager.unload("texture", "textures/ui/overhead_bar.png");
+		
+		ContentManager.unload("texture", "textures/pfx/out_of_stamina.png");
+		ContentManager.unload("texture", "textures/pfx/on_hit.png");
+		
+		ContentManager.unload("texture", "textures/items/loot_overlay.png");
 	}
 }

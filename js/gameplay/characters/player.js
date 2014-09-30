@@ -97,7 +97,7 @@ var Player = function(level,x,y)
 	this.onArrived = function()
 	{
 		this.updateView(this._viewWidth,this._viewHeight);
-		this._actualHealth += 0.6;
+		this._actualHealth += 0.4;
 
 		if (this._actualHealth > this._maxHealth)
 		{

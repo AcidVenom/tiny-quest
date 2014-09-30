@@ -59,7 +59,7 @@ Game.Update = function(dt)
 	}
 
 	MouseEventManager.check();
-	ParticleProcessor.update(dt);
+	ParticleProcessor.update(dt*Game.speed);
 	StateManager.update(dt*Game.speed);
 }
 

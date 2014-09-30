@@ -105,6 +105,7 @@ var Unit = function(level,x,y,type,name)
 	this._attackType = {type: AttackType.Melee, texture: undefined};
 	this._type = type;
 	this._hit = 0;
+	this._hidden = false;
 
 	this._maxHealth, this._maxStamina, this._maxMana, this._health, this._stamina, this._mana, 
 	this._attackDamage, this._rangedDamage, this._magicDamage, this._defense = 0;
@@ -381,6 +382,9 @@ var Unit = function(level,x,y,type,name)
 		this._damageTimer = 0;
 		this._level.shakeCamera(5,0.4);
 
+		var particleEmitter = new ParticleEmitter(ParticleDefinitions["on_hit"]);
+		particleEmitter.setPosition(this._position.x,this._position.y);
+		particleEmitter.start();
 		this.onHit(damage);
 	}
 
@@ -442,6 +446,12 @@ var Unit = function(level,x,y,type,name)
 			if (this._jumpTimer < 1)
 			{
 				this._jumpTimer += dt*4.5;
+
+				if (this._hidden == true)
+				{
+					this._jumpTimer = 1;
+				}
+				
 				var x = Math.lerp(this._position.x,this._target.position().x,this._jumpTimer);
 				var y = Math.lerp(this._position.y,this._target.position().y,this._jumpTimer);
 

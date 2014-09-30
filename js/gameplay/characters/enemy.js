@@ -3,7 +3,7 @@ var Enemy = function(level,x,y,key)
 	this.__unit = new Unit(level,x,y,UnitTypes.Enemy,key);
 	this._camera = level.camera();
 	this._shouldMove = false;
-	this._maxRange = 9;
+	this._maxRange = 25;
 	
 	extend(this,this.__unit);
 
@@ -33,11 +33,13 @@ var Enemy = function(level,x,y,key)
 		if (this._tile.visible())
 		{
 			this.spawn();
+			this._hidden = false;
 			this._overHead.spawn();
 		}
 		else
 		{
 			this.destroy();
+			this._hidden = true;
 			this._overHead.destroy();
 		}
 
