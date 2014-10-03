@@ -1,3 +1,10 @@
+enumerator("ItemSlot",[
+	"MainHand",
+	"OffHand",
+	"Helmet",
+	"Body",
+	"Consumable"])
+
 /*
 	Structure:
 	texture: "path/to/texture.png",
@@ -33,30 +40,30 @@
 */
 
 var Items = {
-	trainee_sword = {
-		texture: "textures/items/trainee_sword.png",
+	wooden_sword: {
+		texture: "textures/items/wooden_sword.png",
 		stackable: false,
-		equip = {
+		equip: {
 			apply:
 			{
-				attackDamage: 2
+				attackDamage: [2,"Increase"]
 			},
 			slot: ItemSlot.MainHand,
 			range: false
-		}
+		},
 
 		canSell: true,
 		value: 4
-	}
+	},
 
-	rat_meat = {
+	rat_meat: {
 		texture: "textures/items/rat_meat.png",
 		stackable: false,
-		use = {
-			health = 3
-		}
+		use: {
+			health: 3
+		},
 
-		canSell = true,
+		canSell: true,
 		value: 1
 	}
 }

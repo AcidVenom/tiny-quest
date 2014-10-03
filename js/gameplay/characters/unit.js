@@ -425,6 +425,11 @@ var Unit = function(level,x,y,type,name)
 
 	}
 
+	this.bonusHandler = function()
+	{
+		return this._bonusHandler;
+	}
+
 	this.update = function(dt)
 	{
 		this.updateMovement(dt);

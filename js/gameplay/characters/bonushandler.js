@@ -70,7 +70,7 @@ var BonusHandler = function(unit)
 		{
 			var bonus = this._bonusses[i];
 
-			if (bonus.evaluate(unit) == true)
+			if (bonus.evaluate(this._unit) == true)
 			{
 				if (bonus.type() == BonusTypes.Multiply)
 				{
@@ -80,6 +80,10 @@ var BonusHandler = function(unit)
 
 				var mod = bonus.type() == BonusTypes.Increase ? 1 : -1;
 				effects[bonus.name()] += bonus.value() * mod;
+			}
+			else
+			{
+				this._bonusses.splice(i,1);
 			}
 		}
 

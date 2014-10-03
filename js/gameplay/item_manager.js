@@ -1,14 +1,17 @@
 require("js/data_files/items");
+require("js/gameplay/characters/item_inventory");
+require("js/gameplay/characters/equipment");
 
 enumerator("ItemType",[
 	"Equip",
 	"Use"]);
 
-var Item = function(defintion)
+var Item = function(definition)
 {
-	for (var key in definition)
+	var def = Items[definition];
+	for (var key in def)
 	{
-		this["_" + key] = definition[key];
+		this["_" + key] = def[key];
 	}
 
 	this._type = ItemType.Use;
@@ -16,6 +19,7 @@ var Item = function(defintion)
 	if (this._equip !== undefined)
 	{
 		this._type = ItemType.Equip;
+		this._slot = this._equip.slot;
 	}
 
 	this.isStackable = function()
@@ -34,12 +38,13 @@ var Item = function(defintion)
 		{
 			for (var key in this._equip.apply)
 			{
-				unit.applyEffect(key,this._equip.apply[key]);
+				var value = this._equip.apply[key];
+				unit.bonusHandler().addBonus(key,value[0],BonusTypes[value[1]]);
 			}
 		}
 		else
 		{
-			
+			Log.fatal("Apply of use items not implemented yet");
 		}
 	}
 }

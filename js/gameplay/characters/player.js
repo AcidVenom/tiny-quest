@@ -1,3 +1,5 @@
+require("js/gameplay/item_manager");
+
 var Player = function(level,x,y)
 {	
 	this._camera = level.camera();
@@ -26,6 +28,9 @@ var Player = function(level,x,y)
 	this._hair.setOffset(0.5,0,0.5);
 	this._hair.setShader("shaders/unitshading.fx");
 	this._oldHit = 0;
+	this._canHeal = true;
+	this._inMenu = false;
+	this._itemInventory = new ItemInventory(this,10);
 
 	this.setBlend(Character.blend[0],Character.blend[1],Character.blend[2]);
 
@@ -33,6 +38,11 @@ var Player = function(level,x,y)
 	{
 		this._hair.spawn();
 		this._hair.setTexture("textures/characters/hero/hero_hair_" + String(Character.hair) + ".png");
+	}
+
+	this.inventory = function()
+	{
+		return this._itemInventory;
 	}
 
 	this.updateStats = function()
@@ -99,14 +109,18 @@ var Player = function(level,x,y)
 	this.onArrived = function()
 	{
 		this.updateView(this._viewWidth,this._viewHeight);
-		this._actualHealth += 0.4;
 
-		if (this._actualHealth > this._maxHealth)
+		if (this._canHeal == true)
 		{
-			this._actualHealth = this._maxHealth;
-		}
+			this._actualHealth += 0.6;
 
-		this._health = Math.floor(this._actualHealth);
+			if (this._actualHealth > this._maxHealth)
+			{
+				this._actualHealth = this._maxHealth;
+			}
+
+			this._health = Math.floor(this._actualHealth);
+		}
 		Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
 	}
 
@@ -117,6 +131,11 @@ var Player = function(level,x,y)
 			Log.debug("Player attacked target " + target.worldName());
 		}
 		Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
+	}
+
+	this.setCanHeal = function(value)
+	{
+		this._canHeal = value;
 	}
 
 	this.onStaminaChanged = function(empty)
@@ -131,6 +150,23 @@ var Player = function(level,x,y)
 	this.update = function(dt)
 	{
 		this.updateMovement(dt);
+
+		var translation = this.translation();
+		this._hair.setTranslation(translation.x,translation.y,translation.z+0.01);
+
+		var scale = this.scale();
+		this._hair.setScale(scale.x,scale.y,scale.z);
+
+		this._hair.setAlpha(this.alpha());
+
+		var rotation = this.rotation();
+		this._hair.setRotation(0,0,-rotation.z)
+
+		if (this._oldHit != this._hit)
+		{
+			this._hair.setUniform("float", "Hit", this._hit);
+			this._oldHit = this._hit;
+		}
 
 		if (this._heart !== undefined)
 		{
@@ -179,6 +215,17 @@ var Player = function(level,x,y)
 			this._timer = 1;
 		}
 
+		if (Keyboard.isReleased("I"))
+		{
+			this._level.hud().toggleOverlay();
+			this._inMenu = !this._inMenu;
+		}
+
+		if (this._inMenu == true)
+		{
+			return;
+		}
+		
 		if (this._level.turn() == TurnTypes.Player)
 		{
 			var jumpTo = undefined;
@@ -345,23 +392,6 @@ var Player = function(level,x,y)
 				}
 			}
 		}
-
-		var translation = this.translation();
-		this._hair.setTranslation(translation.x,translation.y,translation.z+0.01);
-
-		var scale = this.scale();
-		this._hair.setScale(scale.x,scale.y,scale.z);
-
-		this._hair.setAlpha(this.alpha());
-
-		var rotation = this.rotation();
-		this._hair.setRotation(0,0,-rotation.z)
-
-		if (this._oldHit != this._hit)
-		{
-			this._hair.setUniform("float", "Hit", this._hit);
-			this._oldHit = this._hit;
-		}
 	}
 
 	this.updateView(this._viewWidth,this._viewHeight);
@@ -370,4 +400,5 @@ var Player = function(level,x,y)
 	this._overHead.setZ(140);
 
 	this._bonusHandler.setUnit(this);
+	player = this;
 }

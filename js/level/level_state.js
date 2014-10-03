@@ -17,6 +17,9 @@ var LevelState = function()
 		ContentManager.load("texture", "textures/ui/mana_bar.png");
 		ContentManager.load("texture", "textures/ui/overhead_frame.png");
 		ContentManager.load("texture", "textures/ui/overhead_bar.png");
+		ContentManager.load("texture", "textures/ui/inventory_slot.png");
+		ContentManager.load("texture", "textures/ui/inventory_slot_selected.png");
+		ContentManager.load("texture", "textures/ui/inventory_ui.png");
 
 		ContentManager.load("texture", "textures/pfx/out_of_stamina.png");
 		ContentManager.load("texture", "textures/pfx/on_hit.png");
@@ -75,6 +78,9 @@ var LevelState = function()
 		ContentManager.unload("texture", "textures/ui/mana_bar.png");
 		ContentManager.unload("texture", "textures/ui/overhead_frame.png");
 		ContentManager.unload("texture", "textures/ui/overhead_bar.png");
+		ContentManager.unload("texture", "textures/ui/inventory_slot.png");
+		ContentManager.unload("texture", "textures/ui/inventory_slot_selected.png");
+		ContentManager.unload("texture", "textures/ui/inventory_ui.png");
 		
 		ContentManager.unload("texture", "textures/pfx/out_of_stamina.png");
 		ContentManager.unload("texture", "textures/pfx/on_hit.png");

@@ -161,6 +161,11 @@ var Enemy = function(level,x,y,key)
 		}
 	}
 
+	this.hidden = function()
+	{
+		return this._hidden;
+	}
+
 	this.shouldMove = function()
 	{
 		return this._shouldMove;
