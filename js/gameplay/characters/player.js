@@ -31,6 +31,7 @@ var Player = function(level,x,y)
 	this._canHeal = true;
 	this._inMenu = false;
 	this._itemInventory = new ItemInventory(this,10);
+	this._equipment = new Equipment(this);
 
 	this.setBlend(Character.blend[0],Character.blend[1],Character.blend[2]);
 
@@ -43,6 +44,16 @@ var Player = function(level,x,y)
 	this.inventory = function()
 	{
 		return this._itemInventory;
+	}
+
+	this.equipment = function()
+	{
+		return this._equipment;
+	}
+
+	this.isEquipped = function(item)
+	{
+		return this._equipment.hasItem(item);
 	}
 
 	this.updateStats = function()
@@ -400,5 +411,13 @@ var Player = function(level,x,y)
 	this._overHead.setZ(140);
 
 	this._bonusHandler.setUnit(this);
+
+	for (var i = 0; i < 10; ++i)
+	{
+		this._itemInventory.addItem(new Item("wooden_sword"));
+	}
+
+	this._equipment.addItem(new Item("broken_sword"));
+	
 	player = this;
 }

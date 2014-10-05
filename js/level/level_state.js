@@ -26,6 +26,8 @@ var LevelState = function()
 		
 		ContentManager.load("texture", "textures/items/loot_overlay.png");
 
+		ItemManager.loadAllTextures();
+
 		this._camera = Camera.new("orthographic");
 		this._level = new Level(this._camera);
 
@@ -66,7 +68,6 @@ var LevelState = function()
 	{
 		LoadedUnitTextures = {}
 		UnitIDs = {}
-		this._level.destroy();
 		this._level.dungeon().unload();
 
 		ContentManager.unload("texture", "textures/ui/frames.png");
@@ -86,5 +87,7 @@ var LevelState = function()
 		ContentManager.unload("texture", "textures/pfx/on_hit.png");
 		
 		ContentManager.unload("texture", "textures/items/loot_overlay.png");
+
+		ItemManager.unloadAllTextures();
 	}
 }

@@ -203,16 +203,5 @@ var Level = function(camera)
 		}
 	}
 
-	this.destroy = function()
-	{
-		this._hud.destroy();
-		for (var i = 0; i < this._units.length; ++i)
-		{
-			this._units[i].destroy();
-		}
-
-		this._dungeon.destroy();
-	}
-
 	Broadcaster.register(this,Events.PlayerTurnEnded,this.setTurn)
 }

@@ -42,6 +42,7 @@ var MenuState = function()
 
 	this.destroy = function()
 	{
+		this._menu.destroy();
 		ContentManager.unload("texture","textures/menu/background.png");
 		ContentManager.unload("texture","textures/menu/background_night.png");
 		

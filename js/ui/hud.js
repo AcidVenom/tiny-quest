@@ -1,4 +1,5 @@
 require("js/ui/bar");
+require("js/ui/inventory_slot");
 
 var HUD = function(player)
 {
@@ -9,6 +10,13 @@ var HUD = function(player)
 	this._overlayVisible = false;
 	this._inventorySlots = [];
 	this._inventory = undefined;
+
+	this._equipmentSlots = [];
+
+	this.player = function()
+	{
+		return this._player;
+	}
 
 	this.initialise = function()
 	{
@@ -34,25 +42,56 @@ var HUD = function(player)
 
 		for (var i = 0; i < 10; ++i)
 		{
-			var slot = Widget.new(this._inventory);
-			slot.setScale(38,0,38);
-			slot.setTexture("textures/ui/inventory_slot.png");
-			slot.setAlpha(0);
-			slot.spawn();
+			var slot = new InventorySlotUI(this._inventory);
+			slot.widget().idx = i;
+			var mouseArea = new MouseArea(-300+7+i*40,69,38,38,slot.widget());
 
-			var mouseArea = new MouseArea(-300+7+i*40,69,38,38,slot);
-
-			mouseArea.on("enter",function(callee)
+			mouseArea.on("down", function(callee)
 			{
-				if (callee.alpha() > 0)
+				if (callee.hidden == false)
+				{
+					callee.setAlpha(0.7);
+				}
+			});
+
+			var hud = this;
+			mouseArea.on("released", function(callee)
+			{
+				if (callee.hidden == false)
+				{
+					callee.setAlpha(1);
+					var item = hud.player().inventory().getSlot(callee.idx).item();
+					if (item !== undefined)
+					{
+						item.apply(hud.player());
+						if(hud.player().equipment().addItem(item) == true)
+						{
+							hud.player().inventory().removeItemByItem(item);
+						}
+						else
+						{
+							var secondItem = hud.player().equipment().getSlot(item.slot()).item();
+							hud.player().inventory().removeItemByItem(item);
+							hud.player().equipment().removeItem(item.slot());
+							hud.player().inventory().addItem(secondItem);
+							hud.player().equipment().addItem(item);
+						}
+					}
+				}
+			});
+
+			mouseArea.on("enter", function(callee)
+			{
+				if (callee.hidden == false)
 				{
 					callee.setTexture("textures/ui/inventory_slot_selected.png");
 				}
 			});
 
-			mouseArea.on("leave",function(callee)
+			mouseArea.on("leave", function(callee)
 			{
 				callee.setTexture("textures/ui/inventory_slot.png");
+				callee.setAlpha(1);
 			});
 
 			if (i <= 4)
@@ -66,19 +105,71 @@ var HUD = function(player)
 			}
 
 			slot.mouseArea = mouseArea;
-
-			var item = Widget.new(slot);
-
-			item.setScale(32,0,32);
-			item.setBlend(1,0,0);
-			item.setAlpha(0);
-			item.spawn();
-
-			item.setTranslation(3,3,910);
-
-			slot.item = item;
-
 			this._inventorySlots.push(slot);
+		}
+
+		for (var i = 0; i < 5; ++i)
+		{
+			var slot = new InventorySlotUI(this._inventory);
+			slot.widget().idx = i;
+			var mouseArea = new MouseArea(-65+i*40,69,38,38,slot.widget());
+
+			mouseArea.on("down", function(callee)
+			{
+				if (callee.hidden == false)
+				{
+					callee.setAlpha(0.7);
+				}
+			});
+
+			var hud = this;
+			mouseArea.on("released", function(callee)
+			{
+				if (callee.hidden == false)
+				{
+					callee.setAlpha(1);
+					var item = hud.player().equipment().getSlot(callee.idx).item();
+
+					if (item !== undefined)
+					{
+						if (hud.player().inventory().addItem(item) == true)
+						{
+							hud.player().equipment().removeItem(item.slot());
+						}
+						else
+						{
+							Log.debug("No inventory space");
+						}
+					}
+				}
+			});
+
+			mouseArea.on("enter",function(callee)
+			{
+				if (callee.hidden == false)
+				{
+					callee.setTexture("textures/ui/inventory_slot_selected.png");
+				}
+			});
+
+			mouseArea.on("leave",function(callee)
+			{
+				callee.setTexture("textures/ui/inventory_slot.png");
+				callee.setAlpha(1);
+			});
+
+			if (i <= 2)
+			{
+				slot.setTranslation(235+i*40,80,900);
+			}
+			else
+			{
+				slot.setTranslation(215+(i-2)*40,40,900);
+				mouseArea.setPosition(-85+(i-2)*40,29);
+			}
+
+			slot.mouseArea = mouseArea;
+			this._equipmentSlots.push(slot);
 		}
 
 		this._inventory.setAnchorLeft();
@@ -110,11 +201,26 @@ var HUD = function(player)
 
 			if (!slot.free())
 			{
-				this._inventorySlots[i].item.setAlpha(this._inventory.alpha());
+				this._inventorySlots[i].setItem(slot.item());
 			}
 			else
 			{
-				this._inventorySlots[i].item.setAlpha(0);
+				this._inventorySlots[i].removeItem();
+			}
+		}
+
+		for (var i = 0; i < 5; ++i)
+		{
+			var equipment = this._player.equipment();
+			var slot = equipment.getSlot(i);
+
+			if (!slot.free())
+			{
+				this._equipmentSlots[i].setItem(slot.item());
+			}
+			else
+			{
+				this._equipmentSlots[i].removeItem();
 			}
 		}
 	}
@@ -127,6 +233,20 @@ var HUD = function(player)
 		{
 			this._bars[i].destroy();
 		}
+
+		this._overlay.destroy();
+
+		this._inventory.destroy();
+
+		for (var i = 0; i < this._inventorySlots.length; ++i)
+		{
+			this._inventorySlots[i].destroy();
+		}
+
+		for (var i = 0; i < this._equipmentSlots.length; ++i)
+		{
+			this._equipmentSlots[i].destroy();
+		}
 	}
 
 	this.toggleOverlay = function()
@@ -137,7 +257,12 @@ var HUD = function(player)
 			this._overlay.setAlpha(0.7)
 			for (var i = 0; i < this._inventorySlots.length; ++i)
 			{
-				this._inventorySlots[i].setAlpha(1);
+				this._inventorySlots[i].show();
+
+				if (i < 5)
+				{
+					this._equipmentSlots[i].show();
+				}
 			}
 			this._inventory.setAlpha(1);
 		}
@@ -146,7 +271,12 @@ var HUD = function(player)
 			this._overlay.setAlpha(0);
 			for (var i = 0; i < this._inventorySlots.length; ++i)
 			{
-				this._inventorySlots[i].setAlpha(0);
+				this._inventorySlots[i].hide();
+
+				if (i < 5)
+				{
+					this._equipmentSlots[i].hide();
+				}
 			}
 			this._inventory.setAlpha(0);
 		}

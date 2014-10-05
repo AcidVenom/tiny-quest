@@ -28,7 +28,8 @@ var ItemInventory = function(unit,slotSize)
 
 	this.addItem = function(item)
 	{
-		var slot = this.findFirstSlot(item._slot);
+		Log.watch("Item",item);
+		var slot = this.findFirstSlot(item.slot());
 		if (slot === undefined)
 		{
 			return false;
@@ -42,6 +43,25 @@ var ItemInventory = function(unit,slotSize)
 	this.removeItem = function(slot)
 	{
 		this._slots[slot].removeItem();
+	}
+
+	this.removeItemByItem = function(item)
+	{
+		if (item === undefined)
+		{
+			return false;
+		}
+
+		for (var i = 0; i < this._slots.length; ++i)
+		{
+			if (this._slots[i].item() == item)
+			{
+				this._slots[i].removeItem();
+				break;
+			}
+		}
+
+		return true;
 	}
 
 	this.onAdd = function(item)

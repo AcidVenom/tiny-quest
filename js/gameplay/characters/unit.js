@@ -628,7 +628,7 @@ var Unit = function(level,x,y,type,name)
 	{
 		return this._removed;
 	}
-
+	
 	this.initialise();
 	this.updateStats();
 

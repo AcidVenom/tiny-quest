@@ -183,14 +183,6 @@ var Menu = function()
 
 	this.destroy = function()
 	{
-
-		for (var i = 0; i < this._clouds.length; ++i)
-		{
-			var cloud = this._clouds[i];
-			cloud.destroy();
-			cloud.night.destroy();
-		}
-
 		StateManager.switchState(CharacterCreationState);
 		Log.debug("Destroyed the menu");
 	}

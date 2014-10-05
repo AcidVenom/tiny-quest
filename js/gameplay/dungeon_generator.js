@@ -26,6 +26,11 @@ var Tile = function(x,y,type,grid,textures)
 	this._lootOverlay = undefined;
 	this._bestItem = -1;
 
+	this.destroy = function()
+	{
+		this._tile.destroy();
+	}
+
 	this.hide = function()
 	{
 		if (this._visible == true)
@@ -235,7 +240,7 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 			{
 				if (this._grid[x][y] != DungeonTiles.Empty)
 				{
-					this._grid[x][y].hide();
+					this._grid[x][y].destroy();
 				}
 			}
 		}

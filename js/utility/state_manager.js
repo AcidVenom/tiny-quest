@@ -17,6 +17,8 @@ var StateManager = StateManager ||
 
 	doSwitch: function()
 	{
+		Game.clearRenderer();
+		ParticleProcessor.clear();
 		MouseEventManager.clear();
 		Broadcaster.clear();
 
@@ -44,7 +46,7 @@ var StateManager = StateManager ||
 				{
 					this._currentState[i] = null;
 				}
-				delete this._currentState;
+
 				Log.info("[StateManager] Destroyed the state '" + name + "'");
 			}
 

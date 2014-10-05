@@ -41,7 +41,7 @@ enumerator("ItemSlot",[
 
 var Items = {
 	wooden_sword: {
-		texture: "textures/items/wooden_sword.png",
+		texture: "textures/items/common/wooden_sword.png",
 		stackable: false,
 		equip: {
 			apply:
@@ -56,8 +56,24 @@ var Items = {
 		value: 4
 	},
 
+	broken_sword: {
+		texture: "textures/items/common/broken_sword.png",
+		stackable: false,
+		equip: {
+			apply:
+			{
+				attackDamage: [1,"Increase"]
+			},
+			slot: ItemSlot.MainHand,
+			range: false
+		},
+
+		canSell: true,
+		value: 1
+	},
+
 	rat_meat: {
-		texture: "textures/items/rat_meat.png",
+		texture: "textures/items/common/wooden_sword.png",
 		stackable: false,
 		use: {
 			health: 3

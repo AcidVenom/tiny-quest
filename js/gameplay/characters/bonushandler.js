@@ -44,7 +44,21 @@ var BonusHandler = function(unit)
 
 	this.addBonus = function(name,value,type,condition)
 	{
-		this._bonusses.push(new Bonus(name,value,type,condition));
+		var toApply = new Bonus(name,value,type,condition);
+		this._bonusses.push(toApply);
+		return toApply;
+	}
+
+	this.removeBonus = function(bonus)
+	{
+		var idx = this._bonusses.indexOf(bonus);
+		if (idx == -1)
+		{
+			Log.error("Bonus does not exist in the bonus handler!");
+			return;
+		}
+
+		this._bonusses.splice(idx,1);
 	}
 
 	this.update = function()
@@ -94,7 +108,8 @@ var BonusHandler = function(unit)
 
 		for (var i = 0; i < doLast.length; ++i)
 		{
-			effects[bonus.name()] *= bonus.value();
+			var toDo = doLast[i];
+			effects[toDo.name()] *= toDo.value();
 		}
 
 		this._unit.applyEffects(effects);
