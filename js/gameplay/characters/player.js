@@ -27,6 +27,7 @@ var Player = function(level,x,y)
 	this._hair = new GameObject(32,32);
 	this._hair.setOffset(0.5,0,0.5);
 	this._hair.setShader("shaders/unitshading.fx");
+	this._hair.setUniform("float", "Hit", 0);
 	this._oldHit = 0;
 	this._canHeal = true;
 	this._inMenu = false;
