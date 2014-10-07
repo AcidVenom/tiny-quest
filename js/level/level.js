@@ -7,7 +7,10 @@ enumerator("TurnTypes",[
 
 enumerator("Events",[
 	"PlayerTurnEnded",
-	"EnemyTurnEnded"
+	"EnemyTurnEnded",
+	"PlayerDied",
+	"EnemyAttacked",
+	"Regenerate"
 	]);
 
 require("js/gameplay/characters/unit");
@@ -32,6 +35,8 @@ var Level = function(camera)
 	this._shakeDuration = 0;
 	this._shakeMagnitude = 0;
 	this._falloff = {x: 0, y: 0}
+	this._deathTimer = 2;
+	this._stopped = false;
 
 	this.camera = function()
 	{
@@ -87,6 +92,7 @@ var Level = function(camera)
 			dungeonDefinition.maxRoomWidth,
 			dungeonDefinition.maxRoomHeight);
 
+		dungeonDefinition.key = name;
 		this._dungeon.setDefinition(dungeonDefinition);
 		this._dungeon.generate();
 
@@ -130,6 +136,8 @@ var Level = function(camera)
 				}
 			}
 		}
+
+		this._hud.fadeIn();
 	}
 
 	this.dungeon = function()
@@ -147,10 +155,34 @@ var Level = function(camera)
 		return this._shakeTimer < 0.99;
 	}
 
+	this.onAttacked = function()
+	{
+		this._alreadyAttacked = true;
+	}
+
+	this.alreadyAttacked = function()
+	{
+		return this._alreadyAttacked;
+	}
+
 	this.update = function(dt)
 	{
+		if (this._stopped == true)
+		{
+			return;
+		}
+		if (this._deathTimer < 1)
+		{
+			this._deathTimer += dt/2;
+		}
+		else if (this._deathTimer != 2)
+		{
+			Broadcaster.broadcast(Events.Regenerate,{key: this._dungeon.definition().key});
+			this._stopped = true;
+		}
 		var playerTurn = true;
 		var foundHealBlock = false;
+		this._alreadyAttacked = false;
 
 		for (var i = 0; i < this._units.length; ++i)
 		{
@@ -203,5 +235,13 @@ var Level = function(camera)
 		}
 	}
 
-	Broadcaster.register(this,Events.PlayerTurnEnded,this.setTurn)
+	this.onPlayerDied = function()
+	{
+		this._hud.fadeOut();
+		this._deathTimer = 0;
+	}
+
+	Broadcaster.register(this,Events.PlayerTurnEnded,this.setTurn);
+	Broadcaster.register(this,Events.PlayerDied,this.onPlayerDied);
+	Broadcaster.register(this,Events.EnemyAttacked,this.onAttacked);
 }

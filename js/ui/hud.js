@@ -1,6 +1,10 @@
 require("js/ui/bar");
 require("js/ui/inventory_slot");
 
+enumerator("Fade", [
+	"In",
+	"Out"]);
+
 var HUD = function(player)
 {
 	this._barFrame = undefined;
@@ -10,12 +14,27 @@ var HUD = function(player)
 	this._overlayVisible = false;
 	this._inventorySlots = [];
 	this._inventory = undefined;
+	this._fade = undefined;
+	this._shouldFade = false;
+	this._fadeTimer = 0;
 
 	this._equipmentSlots = [];
 
 	this.player = function()
 	{
 		return this._player;
+	}
+
+	this.fadeIn = function()
+	{
+		this._shouldFade = Fade.In;
+		this._fadeTimer = 0;
+	}
+
+	this.fadeOut = function()
+	{
+		this._shouldFade = Fade.Out;
+		this._fadeTimer = 0;
 	}
 
 	this.initialise = function()
@@ -35,6 +54,13 @@ var HUD = function(player)
 		this._overlay.setTranslation(0,0,800);
 		this._overlay.setBlend(0,0,0);
 		this._overlay.spawn();
+
+		this._fade = Widget.new();
+		this._fade.setScale(640,0,480);
+		this._fade.setOffset(-0.5,-0.5,-0.5);
+		this._fade.setTranslation(0,0,999);
+		this._fade.setBlend(0,0,0);
+		this._fade.spawn();
 
 		this._inventory = Widget.new();
 		this._inventory.setScale(366,0,150);
@@ -190,6 +216,18 @@ var HUD = function(player)
 
 	this.update = function(dt)
 	{
+		if (this._shouldFade !== false && this._fadeTimer < 1)
+		{
+			this._fadeTimer += dt/2;
+			var a = this._shouldFade == Fade.In ? Math.lerp(1,0,this._fadeTimer) : Math.lerp(0,1,this._fadeTimer);
+			this._fade.setAlpha(a);
+		}
+		else
+		{
+			var a = this._shouldFade == Fade.In ? 0 : 1;
+			this._fade.setAlpha(a);
+		}
+
 		this._bars[0].setMinMax(this._player.health(),this._player.maxHealth());
 		this._bars[1].setMinMax(this._player.stamina(),this._player.maxStamina());
 		this._bars[2].setMinMax(this._player.mana(),this._player.maxMana());

@@ -10,6 +10,16 @@ var Character = Character || {
 		stamina: 0
 	},
 
+	equipped:
+	[
+		"wooden_sword"
+	],
+
+	inventory: 
+	[
+		"broken_sword"
+	],
+
 	blend: [1,1,1],
 	sliderRgb: [0.8,0.8,0.8],
 	hair: 0

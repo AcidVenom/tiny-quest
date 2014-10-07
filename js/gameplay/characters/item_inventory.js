@@ -28,7 +28,7 @@ var ItemInventory = function(unit,slotSize)
 
 	this.addItem = function(item)
 	{
-		Log.watch("Item",item);
+		item = new Item(item);
 		var slot = this.findFirstSlot(item.slot());
 		if (slot === undefined)
 		{

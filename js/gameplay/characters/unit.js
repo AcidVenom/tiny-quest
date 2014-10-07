@@ -460,7 +460,6 @@ var Unit = function(level,x,y,type,name)
 			}
 			else if (this._removed == false)
 			{
-				Log.info("Unit with name " + this.worldName() + " died");
 				this.removeFromPlay();
 			}
 		}
@@ -609,12 +608,15 @@ var Unit = function(level,x,y,type,name)
 		Log.success("Created a unit with name " + name);
 	}
 
+	this.onDeath = function()
+	{
+		Log.info("Unit with name " + this.worldName() + " died");
+	}
+
 	this.removeFromPlay = function()
 	{
-		if (this._type == UnitTypes.Enemy)
-		{
-			//Drop something here
-		}
+		this.onDeath();
+		
 		if (this._tile)
 		{
 			this._tile.removeUnit();
@@ -628,7 +630,7 @@ var Unit = function(level,x,y,type,name)
 	{
 		return this._removed;
 	}
-	
+
 	this.initialise();
 	this.updateStats();
 

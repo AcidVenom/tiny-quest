@@ -152,7 +152,11 @@ var Enemy = function(level,x,y,key)
 			}
 			else if (range < this._maxRange)
 			{
-				this.attackNode(this._level.player().tile().indices().x,this._level.player().tile().indices().y);
+				if (this._level.alreadyAttacked() == false)
+				{
+					this.attackNode(this._level.player().tile().indices().x,this._level.player().tile().indices().y);
+					Broadcaster.broadcast(Events.EnemyAttacked,{});
+				}
 			}
 			else
 			{

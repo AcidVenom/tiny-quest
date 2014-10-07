@@ -158,6 +158,33 @@ var Player = function(level,x,y)
 		}
 	}
 
+	this.setInventory = function()
+	{
+		for (var i = 0; i < 10; ++i)
+		{
+			if (i < 5)
+			{
+				if (Character.equipped[i] !== undefined)
+				{
+					this._equipment.addItem(Character.equipped[i]);
+				}
+			}
+
+			if (Character.inventory[i] !== undefined)
+			{
+				this._itemInventory.addItem(Character.inventory[i]);
+			}
+		}
+	}
+
+	this.onDeath = function()
+	{
+		var particleEmitter = new ParticleEmitter(ParticleDefinitions["on_death"]);
+		particleEmitter.setPosition(this._tile.position().x,this._tile.position().y);
+		particleEmitter.start();
+		Broadcaster.broadcast(Events.PlayerDied,{});
+	}
+
 	this.update = function(dt)
 	{
 		this.updateMovement(dt);
@@ -411,13 +438,5 @@ var Player = function(level,x,y)
 	this._overHead.setZ(140);
 
 	this._bonusHandler.setUnit(this);
-
-	for (var i = 0; i < 10; ++i)
-	{
-		this._itemInventory.addItem(new Item("wooden_sword"));
-	}
-
-	this._equipment.addItem(new Item("broken_sword"));
-	
-	player = this;
+	this.setInventory();
 }

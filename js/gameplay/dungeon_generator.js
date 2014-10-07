@@ -150,22 +150,28 @@ var Tile = function(x,y,type,grid,textures)
 	this._tile.setPosition(x*32,y*32);
 	this._tile.setZ(y/100);
 
-	var wallTexture = undefined;
+	var wallTextures = undefined;
 	var wallSpecial = {texture: undefined, mod: undefined};
-	var floorTexture = undefined;
-	var roomTexture = undefined;
+	var floorTextures = undefined;
+	var roomTextures = undefined;
 
 	if (textures !== undefined)
 	{
-		wallTextures = textures.wall === undefined ? ["textures/dungeons/default_dungeon/default_wall.png",1] : textures.wall;
-		roomTextures = textures.room === undefined ? ["textures/dungeons/default_dungeon/default_room.png",1] : textures.room;
-		floorTextures = textures.floor === undefined ? ["textures/dungeons/default_dungeon/default_floor.png",1] : textures.floor;
+		wallTextures = textures.wall === undefined ? [["textures/dungeons/default_dungeon/default_wall.png",1]] : textures.wall;
+		roomTextures = textures.room === undefined ? [["textures/dungeons/default_dungeon/default_room.png",1]] : textures.room;
+		floorTextures = textures.floor === undefined ? [["textures/dungeons/default_dungeon/default_floor.png",1]] : textures.floor;
 
 		if (textures.wall_special !== undefined)
 		{
 			wallSpecial.textures = textures.wall_special.tiles;
 			wallSpecial.mod = textures.wall_special.modulo;
 		}
+	}
+	else
+	{
+		wallTextures = [["textures/dungeons/default_dungeon/default_wall.png",1]];
+		roomTextures = [["textures/dungeons/default_dungeon/default_room.png",1]];
+		floorTextures = [["textures/dungeons/default_dungeon/default_floor.png",1]];
 	}
 	switch (type)
 	{

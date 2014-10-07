@@ -40,6 +40,8 @@ var Particle = function(x,y,z,w,h,texture,emitter)
 	this.spawn();
 	this.velocity = {x: 0, y: 0}
 	this.size = {w: 1, h: 1}
+	this.rotation = {x: 0, y: 0, z: 0}
+	this.alpha = 1;
 	this._scale = {w: w, h: h}
 	this.params = emitter.params || {}
 
@@ -62,10 +64,12 @@ var Particle = function(x,y,z,w,h,texture,emitter)
 		this.setOffset(this.offset.x,0,this.offset.y);
 		this.setPosition(this.position.x,this.position.y);
 		this.setScale(this._scale.w*this.size.w, 0, this._scale.h*this.size.h);
+		this.setRotation(this.rotation.x,this.rotation.y,this.rotation.z);
+		this.setAlpha(this.alpha);
 
 		if (this.lifeTime <= this.maxLifeTime)
 		{
-			emitter.timeFunction(this,this.lifeTime,this.params,dt);
+			emitter.timeFunction(this,this.lifeTime/this.maxLifeTime,this.params,dt);
 			this.position.x += this.velocity.x*dt;
 			this.position.y += this.velocity.y*dt;
 			this.lifeTime += dt

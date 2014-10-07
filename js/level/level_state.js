@@ -23,6 +23,7 @@ var LevelState = function()
 
 		ContentManager.load("texture", "textures/pfx/out_of_stamina.png");
 		ContentManager.load("texture", "textures/pfx/on_hit.png");
+		ContentManager.load("texture", "textures/pfx/on_death.png");
 		
 		ContentManager.load("texture", "textures/items/loot_overlay.png");
 
@@ -31,7 +32,7 @@ var LevelState = function()
 		this._camera = Camera.new("orthographic");
 		this._level = new Level(this._camera);
 
-		this._level.generateDungeon("debug_dungeon");
+		this._level.generateDungeon("default");
 	}
 
 	this.update = function(dt)
@@ -58,10 +59,18 @@ var LevelState = function()
 	{
 		LoadedUnitTextures = {}
 		UnitIDs = {}
-		this._level.destroy();
 		this._level.reload();
+		var key = this._level.dungeon().definition().key
 		this._level = new Level(this._camera);
-		this._level.generateDungeon("debug_dungeon");
+		this._level.generateDungeon(key);
+		Broadcaster.register(this,Events.Regenerate,this.regenerate);
+	}
+
+	this.regenerate = function(params)
+	{
+		Game.clearRenderer();
+		this._level = new Level(this._camera);
+		this._level.generateDungeon(params.key);
 	}
 
 	this.destroy = function()
@@ -85,9 +94,12 @@ var LevelState = function()
 		
 		ContentManager.unload("texture", "textures/pfx/out_of_stamina.png");
 		ContentManager.unload("texture", "textures/pfx/on_hit.png");
+		ContentManager.unload("texture", "textures/pfx/on_death.png");
 		
 		ContentManager.unload("texture", "textures/items/loot_overlay.png");
 
 		ItemManager.unloadAllTextures();
 	}
+
+	Broadcaster.register(this,Events.Regenerate,this.regenerate);
 }
