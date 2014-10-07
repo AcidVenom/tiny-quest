@@ -412,7 +412,6 @@ var Unit = function(level,x,y,type,name)
 		this.setUniform("float", "Hit", 1);
 		this._hit = 1;
 		this._damageTimer = 0;
-		this._level.shakeCamera(5,0.4);
 
 		var particleEmitter = new ParticleEmitter(ParticleDefinitions["on_hit"]);
 		particleEmitter.setPosition(this._position.x,this._position.y);
