@@ -10,7 +10,8 @@ enumerator("Events",[
 	"EnemyTurnEnded",
 	"PlayerDied",
 	"EnemyAttacked",
-	"Regenerate"
+	"Regenerate",
+	"EquipmentChanged"
 	]);
 
 require("js/gameplay/characters/unit");

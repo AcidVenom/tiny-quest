@@ -46,6 +46,7 @@ var InventorySlotUI = function(parent)
 	this.setItem = function(item)
 	{
 		this._item = item;
+
 		this._widget.item.setTexture(this._item.texture());
 		this._widget.item.spawn();
 	}

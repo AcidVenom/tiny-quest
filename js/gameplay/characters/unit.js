@@ -398,6 +398,7 @@ var Unit = function(level,x,y,type,name)
 
 	this.damage = function(amount)
 	{
+		this._level.shakeCamera(5,0.5);
 		var damage = amount - this._defense;
 
 		if (damage <= 0)

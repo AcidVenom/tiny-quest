@@ -33,4 +33,9 @@ var Equipment = function(unit)
 
 		return false;
 	}
+
+	this.onAdd = function(item)
+	{
+		Broadcaster.broadcast(Events.EquipmentChanged,{slot: item.slot(), texture: item.texture()});
+	}
 }

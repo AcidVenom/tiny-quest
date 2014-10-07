@@ -24,10 +24,28 @@ var Player = function(level,x,y)
 	this._camera.setTranslation(this.translation().x,this.translation().y,this._camera.translation().z);
 	this._translateFrom = {x: this._camera.translation().x, y: this._camera.translation().y}
 	this._actualHealth = this._health;
+
+	this._body = new GameObject(32,32);
+	this._body.setOffset(0.5,0,0.5);
+	this._body.setShader("shaders/unitshading.fx");
+	this._body.setUniform("float", "Hit", 0);
+	this._body.spawn();
+	this._body.setAlpha(0);
+
 	this._hair = new GameObject(32,32);
 	this._hair.setOffset(0.5,0,0.5);
 	this._hair.setShader("shaders/unitshading.fx");
 	this._hair.setUniform("float", "Hit", 0);
+	this._hair.spawn();
+	this._hair.setAlpha(0);
+
+	this._weapon = new GameObject(32,32);
+	this._weapon.setOffset(0,0,0.5);
+	this._weapon.setShader("shaders/unitshading.fx");
+	this._weapon.setUniform("float", "Hit", 0);
+	this._weapon.spawn();
+	this._weapon.setAlpha(0);
+
 	this._oldHit = 0;
 	this._canHeal = true;
 	this._inMenu = false;
@@ -38,7 +56,6 @@ var Player = function(level,x,y)
 
 	if (Character.hair != 0)
 	{
-		this._hair.spawn();
 		this._hair.setTexture("textures/characters/hero/hero_hair_" + String(Character.hair) + ".png");
 	}
 
@@ -167,13 +184,13 @@ var Player = function(level,x,y)
 			{
 				if (Character.equipped[i] !== undefined)
 				{
-					this._equipment.addItem(Character.equipped[i]);
+					this._equipment.addItem(new Item(Character.equipped[i]));
 				}
 			}
 
 			if (Character.inventory[i] !== undefined)
 			{
-				this._itemInventory.addItem(Character.inventory[i]);
+				this._itemInventory.addItem(new Item(Character.inventory[i]));
 			}
 		}
 	}
@@ -186,24 +203,81 @@ var Player = function(level,x,y)
 		Broadcaster.broadcast(Events.PlayerDied,{});
 	}
 
+	this.onEquipmentChanged = function(params)
+	{
+		if (params.slot == ItemSlot.Body)
+		{
+			this._body.setTexture(params.texture);
+		}
+		if (params.slot == ItemSlot.Helmet)
+		{
+			this._hair.setTexture(params.texture);
+		}
+		if (params.slot == ItemSlot.MainHand)
+		{
+			this._weapon.setTexture(params.texture);
+		}
+	}
+
 	this.update = function(dt)
 	{
 		this.updateMovement(dt);
 
-		var translation = this.translation();
-		this._hair.setTranslation(translation.x,translation.y,translation.z+0.01);
-
+		var time = this._state == UnitStates.Attacking ? this._attackTimer : 0;
+		
 		var scale = this.scale();
-		this._hair.setScale(scale.x,scale.y,scale.z);
+		var translation = this.translation();
+		var multiplier = scale.x/Math.abs(scale.x);
+		this._hair.setTranslation(translation.x,translation.y,translation.z+0.001);
+		this._body.setTranslation(translation.x,translation.y,translation.z+0.0009);
+		this._weapon.setTranslation(translation.x-(16*multiplier)+Math.sin(time)*(10*multiplier),translation.y+Math.sin(this._wobbleTimer)*2,translation.z+0.0015);
 
-		this._hair.setAlpha(this.alpha());
+		this._hair.setScale(scale.x,scale.y,scale.z);
+		this._body.setScale(scale.x,scale.y,scale.z);
+		this._weapon.setScale(scale.x,scale.y,scale.z);
+
+		if (this._equipment.getSlot(ItemSlot.Helmet).free() == false || Character.hair != 0)
+		{
+			if (Character.hair != 0 && this._equipment.getSlot(ItemSlot.Helmet).free() == true)
+			{
+				this._hair.setTexture("textures/characters/hero/hero_hair_" + String(Character.hair) + ".png");
+			}
+			this._hair.setAlpha(this.alpha());
+		}
+		else
+		{
+			this._hair.setAlpha(0);
+		}
+
+		if (this._equipment.getSlot(ItemSlot.Body).free() == false)
+		{
+			this._body.setAlpha(this.alpha());
+		}
+		else
+		{
+			this._body.setAlpha(0);
+		}
+
+		if (this._equipment.getSlot(ItemSlot.MainHand).free() == false)
+		{
+			this._weapon.setAlpha(this.alpha());
+		}
+		else
+		{
+			this._weapon.setAlpha(0);
+		}
 
 		var rotation = this.rotation();
-		this._hair.setRotation(0,0,-rotation.z)
+		this._hair.setRotation(0,0,-rotation.z);
+		this._body.setRotation(0,0,-rotation.z);
+		
+		this._weapon.setRotation(0,0,-rotation.z+Math.sin(this._wobbleTimer)*0.1+Math.sin(time)*2*multiplier);
 
 		if (this._oldHit != this._hit)
 		{
 			this._hair.setUniform("float", "Hit", this._hit);
+			this._body.setUniform("float", "Hit", this._hit);
+			this._weapon.setUniform("float", "Hit", this._hit);
 			this._oldHit = this._hit;
 		}
 
@@ -247,7 +321,7 @@ var Player = function(level,x,y)
 			var y = Math.lerp(this._translateFrom.y,this.translation().y,this._timer)
 
 			this._camera.setTranslation(x,y,translation.z);
-			this._timer += dt * distance / 50;
+			this._timer += dt * distance / 90;
 		}
 		else
 		{
@@ -440,4 +514,6 @@ var Player = function(level,x,y)
 
 	this._bonusHandler.setUnit(this);
 	this.setInventory();
+
+	Broadcaster.register(this,Events.EquipmentChanged,this.onEquipmentChanged);
 }

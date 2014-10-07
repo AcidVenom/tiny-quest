@@ -3,7 +3,7 @@ var Enemy = function(level,x,y,key)
 	this.__unit = new Unit(level,x,y,UnitTypes.Enemy,key);
 	this._camera = level.camera();
 	this._shouldMove = false;
-	this._maxRange = 25;
+	this._maxRange = 10;
 	
 	extend(this,this.__unit);
 

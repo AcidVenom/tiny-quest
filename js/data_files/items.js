@@ -56,6 +56,38 @@ var Items = {
 		value: 4
 	},
 
+	leather_helmet: {
+		texture: "textures/items/common/leather_helmet.png",
+		stackable: false,
+		equip: {
+			apply:
+			{
+				maxHealth: [2,"Increase"],
+				defense: [1,"Increase"]
+			},
+			slot: ItemSlot.Helmet
+		},
+
+		canSell: true,
+		value: 7
+	},
+
+	leather_body: {
+		texture: "textures/items/common/leather_body.png",
+		stackable: false,
+		equip: {
+			apply:
+			{
+				maxHealth: [5,"Increase"],
+				defense: [2,"Increase"]
+			},
+			slot: ItemSlot.Body
+		},
+
+		canSell: true,
+		value: 12
+	},
+
 	broken_sword: {
 		texture: "textures/items/common/broken_sword.png",
 		stackable: false,

@@ -17,7 +17,9 @@ var Character = Character || {
 
 	inventory: 
 	[
-		"broken_sword"
+		"broken_sword",
+		"leather_body",
+		"leather_helmet"
 	],
 
 	blend: [1,1,1],

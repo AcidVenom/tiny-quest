@@ -28,7 +28,6 @@ var ItemInventory = function(unit,slotSize)
 
 	this.addItem = function(item)
 	{
-		item = new Item(item);
 		var slot = this.findFirstSlot(item.slot());
 		if (slot === undefined)
 		{
