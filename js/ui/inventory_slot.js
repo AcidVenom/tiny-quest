@@ -23,6 +23,15 @@ var InventorySlotUI = function(parent)
 
 	this._widget.item = item;
 
+	var stack = new GuiNumber(this._widget);
+	stack.setTranslation(28,4,999);
+	stack.setAlpha(0);
+	stack.setAlign(NumberAlign.Right);
+	stack.visible = false;
+	stack.setBlend(1,1,0.5);
+
+	this._widget.stack = stack;
+
 	this.destroy = function()
 	{
 		this._widget.destroy();
@@ -34,6 +43,12 @@ var InventorySlotUI = function(parent)
 		this._widget.hidden = false;
 		this._widget.spawn();
 		this._widget.item.setAlpha(1);
+		this._widget.stack.setAlpha(1);
+
+		if (this._widget.stack.visible == false)
+		{
+			this._widget.stack.setAlpha(0);
+		}
 	}
 
 	this.hide = function()
@@ -41,6 +56,7 @@ var InventorySlotUI = function(parent)
 		this._widget.hidden = true;
 		this._widget.destroy();
 		this._widget.item.setAlpha(0);
+		this._widget.stack.setAlpha(0);
 	}
 
 	this.setItem = function(item)
@@ -65,5 +81,15 @@ var InventorySlotUI = function(parent)
 	this.setTranslation = function(x,y,z)
 	{
 		this._widget.setTranslation(x,y,z);
+	}
+
+	this.setStackVisible = function(bool)
+	{
+		this._widget.stack.visible = bool;
+	}
+
+	this.setQuantity = function(val)
+	{
+		this._widget.stack.setValue(val);
 	}
 }

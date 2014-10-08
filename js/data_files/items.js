@@ -108,7 +108,18 @@ var Items = {
 		texture: "textures/items/common/wooden_sword.png",
 		stackable: false,
 		use: {
-			health: 3
+			health: 1
+		},
+
+		canSell: true,
+		value: 1
+	},
+
+	minor_health_potion: {
+		texture: "textures/items/common/minor_health_potion.png",
+		stackable: true,
+		use: {
+			health: 5
 		},
 
 		canSell: true,

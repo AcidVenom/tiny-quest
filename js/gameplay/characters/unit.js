@@ -382,6 +382,34 @@ var Unit = function(level,x,y,type,name)
 		{
 			this._health += amount;
 		}
+
+		var particleEmitter = new ParticleEmitter(ParticleDefinitions["on_heal"]);
+		particleEmitter.setPosition(this._position.x,this._position.y);
+		particleEmitter.start();
+	}
+
+	this.increaseStamina = function(amount)
+	{
+		if (this._stamina + amount > this._maxStamina)
+		{
+			this._stamina = this._maxStamina;
+		}
+		else
+		{
+			this._stamina += amount;
+		}
+	}
+
+	this.increaseMana = function(amount)
+	{
+		if (this._mana + amount > this._maxMana)
+		{
+			this._mana = this._maxMana;
+		}
+		else
+		{
+			this._mana += amount;
+		}
 	}
 
 	this.decreaseHealth = function(amount)
@@ -396,10 +424,15 @@ var Unit = function(level,x,y,type,name)
 		}
 	}
 
-	this.damage = function(amount)
+	this.damage = function(amount,truedamage)
 	{
 		this._level.shakeCamera(5,0.5);
 		var damage = amount - this._defense;
+
+		if (truedamage == true)
+		{
+			damage = amount;
+		}
 
 		if (damage <= 0)
 		{

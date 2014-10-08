@@ -12,12 +12,16 @@ var ItemInventory = function(unit,slotSize)
 		return this._slots[idx];
 	}
 
-	this.findFirstSlot = function(type)
+	this.findFirstSlot = function(type,key)
 	{
 		for (var i = 0; i < this._slots.length; ++i)
 		{
 			var slot = this._slots[i];
 			if (slot.free())
+			{
+				return slot;
+			}
+			else if (!slot.free() && slot.item().key() == key && slot.item().isStackable())
 			{
 				return slot;
 			}
@@ -28,7 +32,7 @@ var ItemInventory = function(unit,slotSize)
 
 	this.addItem = function(item)
 	{
-		var slot = this.findFirstSlot(item.slot());
+		var slot = this.findFirstSlot(item.slot(),item.key());
 		if (slot === undefined)
 		{
 			return false;
@@ -74,6 +78,7 @@ var InventorySlot = function()
 	this._free = true;
 	this._item = undefined;
 	this._type = undefined;
+	this._quantity = 0;
 
 	this.free = function()
 	{
@@ -94,12 +99,23 @@ var InventorySlot = function()
 	{
 		this._item = item;
 		this._free = false;
+		++this._quantity;
 	}
 
 	this.removeItem = function()
 	{
-		this._item = undefined;
-		this._free = true;
+		--this._quantity;
+
+		if (this._quantity == 0)
+		{
+			this._item = undefined;
+			this._free = true;
+		}
+	}
+
+	this.quantity = function()
+	{
+		return this._quantity;
 	}
 
 	this.setType = function(type)

@@ -90,17 +90,25 @@ var HUD = function(player)
 					if (item !== undefined)
 					{
 						item.apply(hud.player());
-						if(hud.player().equipment().addItem(item) == true)
+
+						if (item.type() == ItemType.Equip)
 						{
-							hud.player().inventory().removeItemByItem(item);
+							if(hud.player().equipment().addItem(item) == true)
+							{
+								hud.player().inventory().removeItemByItem(item);
+							}
+							else
+							{
+								var secondItem = hud.player().equipment().getSlot(item.slot()).item();
+								hud.player().inventory().removeItemByItem(item);
+								hud.player().equipment().removeItem(item.slot());
+								hud.player().inventory().addItem(secondItem);
+								hud.player().equipment().addItem(item);
+							}
 						}
 						else
 						{
-							var secondItem = hud.player().equipment().getSlot(item.slot()).item();
 							hud.player().inventory().removeItemByItem(item);
-							hud.player().equipment().removeItem(item.slot());
-							hud.player().inventory().addItem(secondItem);
-							hud.player().equipment().addItem(item);
 						}
 					}
 				}
@@ -236,14 +244,30 @@ var HUD = function(player)
 		{
 			var inventory = this._player.inventory();
 			var slot = inventory.getSlot(i);
+			var inventSlot = this._inventorySlots[i];
 
 			if (!slot.free())
 			{
-				this._inventorySlots[i].setItem(slot.item());
+				inventSlot.setItem(slot.item());
+				if (slot.item().isStackable())
+				{
+					inventSlot.setStackVisible(true);
+					inventSlot.setQuantity(slot.quantity());
+
+					if (this._overlayVisible == true)
+					{
+						inventSlot.widget().stack.setAlpha(1);
+					}
+				}
+				else
+				{
+					inventSlot.setStackVisible(false);
+				}
 			}
 			else
 			{
-				this._inventorySlots[i].removeItem();
+				inventSlot.removeItem();
+				inventSlot.setStackVisible(false);
 			}
 		}
 
@@ -320,5 +344,14 @@ var HUD = function(player)
 		}
 	}
 
+	this.onTurnEnd = function()
+	{
+		if (this._overlayVisible == true)
+		{
+			this.toggleOverlay();
+		}
+	}
+
 	this.initialise();
+	Broadcaster.register(this,Events.PlayerTurnEnded,this.onTurnEnd);
 }

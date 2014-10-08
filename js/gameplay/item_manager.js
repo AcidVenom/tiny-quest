@@ -43,12 +43,23 @@ var Item = function(definition)
 		this["_" + key] = def[key];
 	}
 
+	this._key = definition;
 	this._type = ItemType.Use;
 
 	if (this._equip !== undefined)
 	{
 		this._type = ItemType.Equip;
 		this._slot = this._equip.slot;
+	}
+
+	this.key = function()
+	{
+		return this._key;
+	}
+
+	this.type = function()
+	{
+		return this._type;
 	}
 
 	this.isStackable = function()
@@ -87,7 +98,51 @@ var Item = function(definition)
 		}
 		else
 		{
-			Log.fatal("Apply of use items not implemented yet");
+			for (var key in this._use)
+			{
+				var value = this._use[key];
+				switch(key)
+				{
+					case "health":
+						if (value < 0)
+						{
+							unit.damage(Math.abs(value),true);
+						}
+						else
+						{
+							unit.increaseHealth(value);
+						}
+					break;
+
+					case "stamina":
+						if (value >= 0)
+						{
+							unit.increaseStamina(value);
+						}
+						else
+						{
+							unit.decreaseStamina(Math.abs(value));
+						}
+					break;
+
+					case "mana":
+						if (value >= 0)
+						{
+							unit.increaseMana(value);
+						}
+						else
+						{
+							unit.decreaseMana(Math.abs(value));
+						}
+					break;
+
+					default:
+						Log.error("Use for item " + key + " does not exist!");
+					break;
+				}
+			}
+
+			Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
 		}
 	}
 }

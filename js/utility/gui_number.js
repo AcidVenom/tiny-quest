@@ -1,7 +1,15 @@
+enumerator("NumberAlign", [
+	"Left",
+	"Right"]);
+
 var GuiNumber = function(parent)
 {
 	this._numberString = "";
 	this._guiElements = [];
+	this._alpha = 1;
+	this._align = NumberAlign.Left;
+	this._translation = {x: 0, y: 0, z: 0}
+	this._blend = {r: 1, g: 1, b: 1}
 
 	if (parent !== undefined)
 	{
@@ -41,6 +49,8 @@ var GuiNumber = function(parent)
 			{
 				guiElement = this._guiElements[i];
 			}
+
+			guiElement.setBlend(this._blend.r,this._blend.g,this._blend.b);
 
 			var val = 0;
 
@@ -83,7 +93,7 @@ var GuiNumber = function(parent)
 		}
 		for (var i = 0; i < this._guiElements.length; ++i)
 		{
-			this._guiElements[i].setAlpha(1)
+			this._guiElements[i].setAlpha(1*this._alpha);
 		}
 
 		if (this._guiElements.length > this._numberString.length)
@@ -95,6 +105,8 @@ var GuiNumber = function(parent)
 				this._guiElements[i].setAlpha(0)
 			}
 		}
+
+		this.setTranslation(this._translation.x,this._translation.y,this._translation.z);
 	}
 
 	this.destroy = function()
@@ -114,11 +126,28 @@ var GuiNumber = function(parent)
 
 	this.setTranslation = function(x,y,z)
 	{
-		this._root.setTranslation(x,y,z);
+		this._translation = {x: x, y: y, z: z};
+
+		if (this._align == NumberAlign.Left)
+		{
+			this._root.setTranslation(x,y,z);
+		}
+		else
+		{
+			this._root.setTranslation(6+x-this._numberString.length*6,y,z);
+		}
+
+		for (var i = 0; i < this._guiElements.length; ++i)
+		{
+			var trans = this._guiElements[i].translation();
+
+			this._guiElements[i].setTranslation(trans.x,trans.y,z);
+		}
 	}
 
 	this.setBlend = function(r,g,b)
 	{
+		this._blend = {r: r, g: g, b: b}
 		for (var i = 0; i < this._guiElements.length; ++i)
 		{
 			this._guiElements[i].setBlend(r,g,b);
@@ -127,9 +156,15 @@ var GuiNumber = function(parent)
 
 	this.setAlpha = function(a)
 	{
+		this._alpha = a;
 		for (var i = 0; i < this._guiElements.length; ++i)
 		{
 			this._guiElements[i].setAlpha(a);
 		}
+	}
+
+	this.setAlign = function(align)
+	{
+		this._align = align;
 	}
 }

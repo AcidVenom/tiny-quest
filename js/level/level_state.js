@@ -24,6 +24,7 @@ var LevelState = function()
 		ContentManager.load("texture", "textures/pfx/out_of_stamina.png");
 		ContentManager.load("texture", "textures/pfx/on_hit.png");
 		ContentManager.load("texture", "textures/pfx/on_death.png");
+		ContentManager.load("texture", "textures/pfx/on_heal.png");
 		
 		ContentManager.load("texture", "textures/items/loot_overlay.png");
 
@@ -95,6 +96,7 @@ var LevelState = function()
 		ContentManager.unload("texture", "textures/pfx/out_of_stamina.png");
 		ContentManager.unload("texture", "textures/pfx/on_hit.png");
 		ContentManager.unload("texture", "textures/pfx/on_death.png");
+		ContentManager.unload("texture", "textures/pfx/on_heal.png");
 		
 		ContentManager.unload("texture", "textures/items/loot_overlay.png");
 

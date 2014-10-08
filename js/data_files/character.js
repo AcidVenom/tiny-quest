@@ -19,7 +19,13 @@ var Character = Character || {
 	[
 		"broken_sword",
 		"leather_body",
-		"leather_helmet"
+		"leather_helmet",
+		"minor_health_potion",
+		"minor_health_potion",
+		"minor_health_potion",
+		"minor_health_potion",
+		"minor_health_potion",
+		"minor_health_potion"
 	],
 
 	blend: [1,1,1],

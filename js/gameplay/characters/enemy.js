@@ -4,6 +4,7 @@ var Enemy = function(level,x,y,key)
 	this._camera = level.camera();
 	this._shouldMove = false;
 	this._maxRange = 10;
+	this._drops = CharacterDefinitions[key].drops;
 	
 	extend(this,this.__unit);
 
@@ -15,6 +16,33 @@ var Enemy = function(level,x,y,key)
 		{
 			tiles.push(tile);
 		}
+	}
+
+	this.onDeath = function()
+	{
+		if (this._drops === undefined)
+		{
+			return;
+		}
+
+		for (var i = 0; i < this._drops.length; ++i)
+		{
+			var drop = this._drops[i];
+			var dropTable = [];
+			var tuples = [];
+
+			if (drop[1] == "Always")
+			{
+				dropTable.push(drop[0]);
+			}
+			else
+			{
+				tuples.push(drop);
+			}
+		}
+
+		var drop = WeightedCollection.retrieveAsTuple(tuples);
+
 	}
 
 	this.onArrived = function()

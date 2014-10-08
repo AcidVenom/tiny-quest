@@ -9,7 +9,7 @@ var Equipment = function(unit)
 		this._slots[i].setType(i);
 	}
 
-	this.findFirstSlot = function(type)
+	this.findFirstSlot = function(type, key)
 	{
 		for (var i = 0; i < this._slots.length; ++i)
 		{
@@ -17,6 +17,10 @@ var Equipment = function(unit)
 			if (slot.free() && slot.type() == type)
 			{
 				return slot;
+			}
+			else if (!slot.free() && slot.item().key() == key && slot.item().isStackable() && slot.type() == type)
+			{
+				
 			}
 		}
 	}

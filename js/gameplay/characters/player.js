@@ -23,7 +23,6 @@ var Player = function(level,x,y)
 	this._foundTarget = false;
 	this._camera.setTranslation(this.translation().x,this.translation().y,this._camera.translation().z);
 	this._translateFrom = {x: this._camera.translation().x, y: this._camera.translation().y}
-	this._actualHealth = this._health;
 
 	this._body = new GameObject(32,32);
 	this._body.setOffset(0.5,0,0.5);
@@ -115,12 +114,6 @@ var Player = function(level,x,y)
 		this._translateFrom = {x: trans.x, y: trans.y}
 
 		this.sizeHeart(1.5);
-		this._actualHealth -= damage;
-
-		if (this._actualHealth < 0)
-		{
-			this._actualHealth = 0;
-		}
 	}
 
 	this.sizeHeart = function(scale)
@@ -138,18 +131,6 @@ var Player = function(level,x,y)
 	this.onArrived = function()
 	{
 		this.updateView(this._viewWidth,this._viewHeight);
-
-		if (this._canHeal == true)
-		{
-			this._actualHealth += 0.6;
-
-			if (this._actualHealth > this._maxHealth)
-			{
-				this._actualHealth = this._maxHealth;
-			}
-
-			this._health = Math.floor(this._actualHealth);
-		}
 		Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
 	}
 
@@ -160,11 +141,6 @@ var Player = function(level,x,y)
 			Log.debug("Player attacked target " + target.worldName());
 		}
 		Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
-	}
-
-	this.setCanHeal = function(value)
-	{
-		this._canHeal = value;
 	}
 
 	this.onStaminaChanged = function(empty)
@@ -217,6 +193,11 @@ var Player = function(level,x,y)
 		{
 			this._weapon.setTexture(params.texture);
 		}
+	}
+
+	this.resetInMenu = function()
+	{
+		this._inMenu = false;
 	}
 
 	this.update = function(dt)
@@ -328,7 +309,7 @@ var Player = function(level,x,y)
 			this._timer = 1;
 		}
 
-		if (Keyboard.isReleased("I"))
+		if (Keyboard.isReleased("I") && this._state == UnitStates.Idle)
 		{
 			this._level.hud().toggleOverlay();
 			this._inMenu = !this._inMenu;
@@ -513,7 +494,10 @@ var Player = function(level,x,y)
 	this._overHead.setZ(140);
 
 	this._bonusHandler.setUnit(this);
-	this.setInventory();
 
 	Broadcaster.register(this,Events.EquipmentChanged,this.onEquipmentChanged);
+	Broadcaster.register(this,Events.PlayerTurnEnded,this.resetInMenu);
+	this.setInventory();
+
+	player = this;
 }

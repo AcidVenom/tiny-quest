@@ -182,7 +182,6 @@ var Level = function(camera)
 			this._stopped = true;
 		}
 		var playerTurn = true;
-		var foundHealBlock = false;
 		this._alreadyAttacked = false;
 
 		for (var i = 0; i < this._units.length; ++i)
@@ -192,23 +191,12 @@ var Level = function(camera)
 				playerTurn = false;
 			}
 
-			if (this._units[i].type() != UnitTypes.Player && this._units[i].hidden() == false)
-			{
-				this._player.setCanHeal(false);
-				foundHealBlock = true;
-			}
-
 			this._units[i].update(dt);
 
 			if (this._units[i].removed())
 			{
 				this._units.splice(i,1);
 				--i;
-			}
-
-			if (foundHealBlock == false)
-			{
-				this._player.setCanHeal(true);
 			}
 		}
 
