@@ -49,6 +49,7 @@ var Tile = function(x,y,type,grid,textures)
 	this._drops = [];
 	this._lootOverlay = undefined;
 	this._bestItem = -1;
+	this._grid = grid;
 
 	this.destroy = function()
 	{
@@ -96,9 +97,23 @@ var Tile = function(x,y,type,grid,textures)
 				{
 					this._drops[i].show();
 				}
+
+				this.showWallTile();
 			}
 
 			this._visible = true;
+		}
+	}
+
+	this.showWallTile = function()
+	{
+		var wallTile = this._grid[this._indices.x][this._indices.y+1];
+		if (wallTile != DungeonTiles.Empty)
+		{
+			if (wallTile.type() == DungeonTiles.Wall)
+			{
+				wallTile.setAlpha(0.5);
+			}
 		}
 	}
 
@@ -146,7 +161,9 @@ var Tile = function(x,y,type,grid,textures)
 
 		this._lootOverlay.setBlend(col.r,col.g,col.b);
 		this._lootOverlay.spawn();
-		this._lootOverlay.setZ(this._tile.z()+0.000005)
+		this._lootOverlay.setZ(this._tile.z()+0.000005);
+
+		this.showWallTile();
 	}
 
 	this.rarityToColour = function(rarity)
@@ -248,6 +265,11 @@ var Tile = function(x,y,type,grid,textures)
 	this.unit = function()
 	{
 		return this._unit;
+	}
+
+	this.setAlpha = function(a)
+	{
+		this._tile.setAlpha(a);
 	}
 	
 	if (type == DungeonTiles.Wall)

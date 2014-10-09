@@ -108,6 +108,7 @@ var Unit = function(level,x,y,type,name)
 	this._hit = 0;
 	this._hidden = false;
 	this._bonusHandler = new BonusHandler(this);
+	this._wallTile = undefined;
 
 	this._maxHealth, this._maxStamina, this._maxMana, this._health, this._stamina, this._mana, 
 	this._attackDamage, this._rangedDamage, this._magicDamage, this._defense = 0;
@@ -241,6 +242,12 @@ var Unit = function(level,x,y,type,name)
 	this.setPosition = function(x,y)
 	{
 		this._tile = this._dungeon.tileAt(x,y);
+		this._wallTile = this._dungeon.tileAt(x,y+1);
+
+		if (this._wallTile.type() == DungeonTiles.Wall)
+		{
+			this._wallTile.setAlpha(0.5);
+		}
 		this._tile.setUnit(this);
 
 		this._position.x = this._tile.position().x;
@@ -264,6 +271,11 @@ var Unit = function(level,x,y,type,name)
 			if (this._tile !== undefined)
 			{
 				this._tile.removeUnit();
+			}
+
+			if (this._wallTile !== undefined && this._tile !== undefined && !this._tile.hasDrops())
+			{
+				this._wallTile.setAlpha(1);
 			}
 			tile.setUnit(this);
 
@@ -648,11 +660,15 @@ var Unit = function(level,x,y,type,name)
 
 	this.removeFromPlay = function()
 	{
-		this.onDeath();
+		var dropped = this.onDeath();
 		
 		if (this._tile)
 		{
 			this._tile.removeUnit();
+		}
+		if (this._wallTile && dropped == false || dropped === undefined)
+		{
+			this._wallTile.setAlpha(1);
 		}
 		this._removed = true;
 		this._overHead.destroy();

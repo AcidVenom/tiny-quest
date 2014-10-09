@@ -33,7 +33,7 @@ var LevelState = function()
 		this._camera = Camera.new("orthographic");
 		this._level = new Level(this._camera);
 
-		this._level.generateDungeon("default");
+		this._level.generateDungeon("castle");
 	}
 
 	this.update = function(dt)

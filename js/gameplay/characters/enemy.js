@@ -60,6 +60,13 @@ var Enemy = function(level,x,y,key)
 			}
 		}
 		this._tile.addDrops(dropTable);
+
+		if (dropTable.length > 0)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	this.onArrived = function()

@@ -12,7 +12,7 @@ var Dungeons = {
 		viewRange: 9
 	},
 
-	debug_dungeon:
+	castle:
 	{
 		width: 50,
 		height: 50,
