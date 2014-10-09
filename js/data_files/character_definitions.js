@@ -37,9 +37,10 @@ var CharacterDefinitions = {
 		magicDamage: 0,
 		defense: 1,
 		drops: [
-			["coins",1,[3,3]],
+			["coins",1,[1,3]],
 			["rat_meat","Always",[1,1]]
-		]
+		],
+		dropChance: 0.8
 	},
 
 	slime_blue:
@@ -69,7 +70,8 @@ var CharacterDefinitions = {
 		defense: 2,
 		drops: [
 			["coins",1,[1,9]]
-		]
+		],
+		dropChance: 0.5
 	},
 
 	beetle_brown:

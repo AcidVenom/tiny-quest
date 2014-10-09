@@ -5,6 +5,7 @@ var Enemy = function(level,x,y,key)
 	this._shouldMove = false;
 	this._maxRange = 10;
 	this._drops = CharacterDefinitions[key].drops;
+	this._dropChance = CharacterDefinitions[key].dropChance || 1;
 	
 	extend(this,this.__unit);
 
@@ -50,7 +51,7 @@ var Enemy = function(level,x,y,key)
 
 		var chance = Math.random();
 
-		if (chance < 0.2)
+		if (chance < this._dropChance)
 		{
 			if (tuples.length > 0)
 			{

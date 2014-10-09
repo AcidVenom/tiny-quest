@@ -17,6 +17,11 @@ var Drop = function(x,y,item,quantity)
 		return this._quantity;
 	}
 
+	this.reduceQuantity = function(quant)
+	{
+		this._quantity -= quant;
+	}
+
 	this.show = function()
 	{
 		this._object.spawn();
@@ -153,11 +158,11 @@ var Tile = function(x,y,type,grid,textures)
 			case ItemRarity.Uncommon:
 				return {r: 0, g: 1, b: 0}
 			case ItemRarity.Rare:
-				return {r: 0, g: 0, b: 1}
+				return {r: 0.5, g: 0, b: 1}
 			case ItemRarity.Artifact:
-				return {r: 1, g: 0.5, b: 0}
+				return {r: 1, g: 1, b: 0}
 			case ItemRarity.Legendary:
-				return {r: 1, g: 0, b: 0}
+				return {r: 1, g: 0.5, b: 0}
 			default:
 				return {r: 0, g: 0, b: 0}
 		}
@@ -171,32 +176,43 @@ var Tile = function(x,y,type,grid,textures)
 	this.pickUpDrops = function(player)
 	{
 		var inventory = player.inventory();
-		for (var i = 0; i < this._drops.length; ++i)
+		for (var i = this._drops.length-1; i >= 0; --i)
 		{
+			var result = true;
+			var reduceBy = 0;
 			for (var j = 0; j < this._drops[i].quantity(); ++j)
 			{
-				if (inventory.findFirstSlot() == -1)
+				if(this._drops[i].item().key() == "coins")
+				{
+					player.addCoins(1);
+				}
+				else if (inventory.findFirstSlot() === undefined)
 				{
 					Log.debug("Inventory full");
+					result = false;
 				}
 				else
 				{
-					if (this._drops[i].item().key() != "coins")
-					{
-						inventory.addItem(this._drops[i].item());
-					}
-					else
-					{
-						player.addCoins(1);
-					}
+					inventory.addItem(this._drops[i].item());
+					++reduceBy;
 				}
 			}
 
-			this._drops[i].hide();
+			if (result == true)
+			{
+				this._drops[i].hide();
+				this._drops.splice(i,1);
+			}
+			else
+			{
+				this._drops[i].reduceQuantity(reduceBy);
+			}
 		}
 
-		this._drops = [];
-		this._lootOverlay.destroy();
+		if (this._drops.length == 0)
+		{
+			this._lootOverlay.destroy();
+		}
 	}	
 
 	this.setUnit = function(unit)

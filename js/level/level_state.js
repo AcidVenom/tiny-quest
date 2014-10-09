@@ -58,6 +58,7 @@ var LevelState = function()
 
 	this.reload = function()
 	{
+		Game.clearRenderer();
 		LoadedUnitTextures = {}
 		UnitIDs = {}
 		this._level.reload();
