@@ -116,14 +116,14 @@ var Tile = function(x,y,type,grid,textures)
 	{
 		if (dropTable.length == 0)
 			return;
-		
+
 		var dropsToObjects = [];
 		var rarest, rarity, drop, dropObj = undefined;
 		for (var i = 0; i < dropTable.length; ++i)
 		{
 			drop = dropTable[i];
 			dropObj = new Drop(this._position.x,this._position.y,drop.item,drop.quantity);
-			dropObj.setZ(this._tile.z()+0.00001);
+			dropObj.setZ(this._tile.z()+0.00001*(i+1));
 			dropsToObjects.push(dropObj);
 
 			rarity = dropObj.item().rarity();
