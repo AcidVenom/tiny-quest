@@ -116,7 +116,7 @@ var Items = {
 	},
 
 	rat_meat: {
-		texture: "textures/items/common/wooden_sword.png",
+		texture: "textures/items/common/rat_meat.png",
 		stackable: false,
 		rarity: ItemRarity.Common,
 		use: {

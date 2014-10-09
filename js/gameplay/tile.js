@@ -114,6 +114,9 @@ var Tile = function(x,y,type,grid,textures)
 
 	this.addDrops = function(dropTable)
 	{
+		if (dropTable.length == 0)
+			return;
+		
 		var dropsToObjects = [];
 		var rarest, rarity, drop, dropObj = undefined;
 		for (var i = 0; i < dropTable.length; ++i)
