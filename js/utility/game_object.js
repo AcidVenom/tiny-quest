@@ -6,6 +6,7 @@
 var GameObject = function(w,h,texture)
 {
 	this.__quad = Quad.new();
+	this._z = 0;
 	if(texture !== undefined)
 	{
 		this.__quad.setTexture(texture);
@@ -21,6 +22,13 @@ var GameObject = function(w,h,texture)
 	{
 		var translation = this.translation();
 		this.setTranslation(translation.x,translation.y,z);
+		this._z = z;
+	}
+
+	/// Returns the Z index of this object
+	this.z = function()
+	{
+		return this._z;
 	}
 
 	/// Sets the x and y position of this object

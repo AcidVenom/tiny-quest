@@ -23,6 +23,7 @@ var Player = function(level,x,y)
 	this._foundTarget = false;
 	this._camera.setTranslation(this.translation().x,this.translation().y,this._camera.translation().z);
 	this._translateFrom = {x: this._camera.translation().x, y: this._camera.translation().y}
+	this._coins = Character.coins;
 
 	this._body = new GameObject(32,32);
 	this._body.setOffset(0.5,0,0.5);
@@ -56,6 +57,23 @@ var Player = function(level,x,y)
 	if (Character.hair != 0)
 	{
 		this._hair.setTexture("textures/characters/hero/hero_hair_" + String(Character.hair) + ".png");
+	}
+
+	this.addCoins = function(num)
+	{
+		this._coins += num;
+		Character.coins = this._coins;
+	}
+
+	this.removeCoins = function(num)
+	{
+		this._coins -= num;
+		Character.coins = this._coins;
+	}
+
+	this.coins = function()
+	{
+		return this._coins;
 	}
 
 	this.inventory = function()
@@ -131,6 +149,12 @@ var Player = function(level,x,y)
 	this.onArrived = function()
 	{
 		this.updateView(this._viewWidth,this._viewHeight);
+
+		if (this._tile.hasDrops())
+		{
+			this._tile.pickUpDrops(this);
+		}
+
 		Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
 	}
 

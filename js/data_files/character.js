@@ -28,6 +28,7 @@ var Character = Character || {
 		"minor_health_potion"
 	],
 
+	coins: 0,
 	blend: [1,1,1],
 	sliderRgb: [0.8,0.8,0.8],
 	hair: 0

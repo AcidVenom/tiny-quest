@@ -5,6 +5,13 @@ enumerator("ItemSlot",[
 	"Body",
 	"Consumable"])
 
+enumerator("ItemRarity",[
+	"Common",
+	"Uncommon",
+	"Rare",
+	"Artifact",
+	"Legendary"])
+
 /*
 	Structure:
 	texture: "path/to/texture.png",
@@ -43,6 +50,7 @@ var Items = {
 	wooden_sword: {
 		texture: "textures/items/common/wooden_sword.png",
 		stackable: false,
+		rarity: ItemRarity.Common,
 		equip: {
 			apply:
 			{
@@ -59,6 +67,7 @@ var Items = {
 	leather_helmet: {
 		texture: "textures/items/common/leather_helmet.png",
 		stackable: false,
+		rarity: ItemRarity.Common,
 		equip: {
 			apply:
 			{
@@ -75,6 +84,7 @@ var Items = {
 	leather_body: {
 		texture: "textures/items/common/leather_body.png",
 		stackable: false,
+		rarity: ItemRarity.Common,
 		equip: {
 			apply:
 			{
@@ -91,6 +101,7 @@ var Items = {
 	broken_sword: {
 		texture: "textures/items/common/broken_sword.png",
 		stackable: false,
+		rarity: ItemRarity.Common,
 		equip: {
 			apply:
 			{
@@ -107,6 +118,7 @@ var Items = {
 	rat_meat: {
 		texture: "textures/items/common/wooden_sword.png",
 		stackable: false,
+		rarity: ItemRarity.Common,
 		use: {
 			health: 1
 		},
@@ -118,11 +130,23 @@ var Items = {
 	minor_health_potion: {
 		texture: "textures/items/common/minor_health_potion.png",
 		stackable: true,
+		rarity: ItemRarity.Common,
 		use: {
 			health: 5
 		},
 
 		canSell: true,
+		value: 2
+	},
+
+	coins: {
+		texture: "textures/items/coins.png",
+		stackable: true,
+		rarity: ItemRarity.Common,
+		use: {
+
+		},
+		canSell: false,
 		value: 1
 	}
 }

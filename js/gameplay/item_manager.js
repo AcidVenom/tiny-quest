@@ -52,6 +52,16 @@ var Item = function(definition)
 		this._slot = this._equip.slot;
 	}
 
+	this.rarity = function()
+	{
+		return this._rarity;
+	}
+
+	this.value = function()
+	{
+		return this._value;
+	}
+
 	this.key = function()
 	{
 		return this._key;

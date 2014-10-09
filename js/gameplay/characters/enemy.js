@@ -25,15 +25,22 @@ var Enemy = function(level,x,y,key)
 			return;
 		}
 
+		var dropTable = [];
+		var tuples = [];
+
 		for (var i = 0; i < this._drops.length; ++i)
 		{
 			var drop = this._drops[i];
-			var dropTable = [];
-			var tuples = [];
 
 			if (drop[1] == "Always")
 			{
-				dropTable.push(drop[0]);
+				var quantity = 1;
+
+				if (drop[2] !== undefined)
+				{
+					quantity = Math.randomRange(drop[2][0],drop[2][1]);
+				}
+				dropTable.push({item: drop[0], quantity: quantity});
 			}
 			else
 			{
@@ -41,8 +48,17 @@ var Enemy = function(level,x,y,key)
 			}
 		}
 
-		var drop = WeightedCollection.retrieveAsTuple(tuples);
+		var chance = Math.random();
 
+		if (chance < 0.2)
+		{
+			if (tuples.length > 0)
+			{
+				var drop = WeightedCollection.retrieveAsTuple(tuples);
+				dropTable.push({item: drop[0], quantity: Math.randomRange(drop[2][0],drop[2][1])});
+			}
+		}
+		this._tile.addDrops(dropTable);
 	}
 
 	this.onArrived = function()

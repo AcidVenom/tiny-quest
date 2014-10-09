@@ -22,7 +22,7 @@ var CharacterDefinitions = {
 		magicDamage: 0,
 		defense: 1,
 		drops: [
-			["rat_meat","Always"]
+			["rat_meat","Always",[1,1]]
 		]
 	},
 
@@ -37,8 +37,8 @@ var CharacterDefinitions = {
 		magicDamage: 0,
 		defense: 1,
 		drops: [
-			["coins",1,3],
-			["rat_meat","Always"]
+			["coins",1,[3,3]],
+			["rat_meat","Always",[1,1]]
 		]
 	},
 
