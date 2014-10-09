@@ -3,8 +3,8 @@ ParticleDefinitions["on_heal"] = {
 	type: ParticleType.SpawnCount,
 	z: 999,
 	texture: "textures/pfx/on_heal.png",
-	spawnCount: 4,
-	lifeTime: 0.4,
+	spawnCount: 5,
+	lifeTime: 1,
 	loop: false,
 	spawnFunction: function(particle,params)
 	{
