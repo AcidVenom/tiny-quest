@@ -97,47 +97,21 @@ var Level = function(camera)
 		this._dungeon.setDefinition(dungeonDefinition);
 		this._dungeon.generate();
 
-		var found = false;
+		var indices = this._dungeon.getPlayerTile();
+		this._player = new Player(this,indices.x,indices.y)
+		this._units.push(this._player);
 
-		for (var x = 0; x < dungeonDefinition.width; ++x)
+		if(dungeonDefinition.shopKeeper > Math.random())
 		{
-			if (found == true)
-			{
-				break;
-			}
-			for (var y = 0; y < dungeonDefinition.height; ++y)
-			{
-				if (this._dungeon.tileAt(x,y).type !== undefined && this._dungeon.tileAt(x,y).type() == DungeonTiles.Room)
-				{
-					this._units.push(new Player(this,x,y));
-					this._player = this._units[0];
-					this._hud = new HUD(this._player);
-					found = true;
-					break;
-				}
-			}
+			Log.info("Started searching for a shopkeeper location");
+			this._dungeon.placeShopKeeper(indices.x,indices.y,40);
+		}
+		else
+		{
+			Log.info("No shopkeeper will be placed for this dungeon");
 		}
 
-		for (var x = 0; x < dungeonDefinition.width; ++x)
-		{
-			for (var y = 0; y < dungeonDefinition.height; ++y)
-			{
-				if (this._dungeon.tileAt(x,y).type !== undefined && this._dungeon.tileAt(x,y).type() == DungeonTiles.Room)
-				{
-					var shouldPlace = Math.random();
-					if (shouldPlace < 0.05)
-					{
-						var randomTable = ["mouse_brown", "mouse_grey", "slime_blue", "slime_green"];
-
-						var rand = Math.floor(Math.random()*randomTable.length);
-						var result = randomTable[rand];
-
-						this._units.push(new Enemy(this,x,y,result));
-					}
-				}
-			}
-		}
-
+		this._hud = new HUD(this._player);
 		this._hud.fadeIn();
 	}
 

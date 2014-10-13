@@ -50,6 +50,7 @@ var Tile = function(x,y,type,grid,textures)
 	this._lootOverlay = undefined;
 	this._bestItem = -1;
 	this._grid = grid;
+	this._rarestDrop = undefined;
 
 	this.destroy = function()
 	{
@@ -117,6 +118,11 @@ var Tile = function(x,y,type,grid,textures)
 		}
 	}
 
+	this.setType = function(type)
+	{
+		this._type = type;
+	}
+
 	this.visible = function()
 	{
 		return this._visible;
@@ -156,8 +162,18 @@ var Tile = function(x,y,type,grid,textures)
 				rarest = rarity;
 			}
 		}
-		this._drops = dropsToObjects;
-		var col = this.rarityToColour(rarest);
+
+		for (var i = 0; i < dropsToObjects.length; ++i)
+		{
+			this._drops.push(dropsToObjects[i]);
+		}
+
+		if (this._rarestDrop === undefined || rarest > this._rarestDrop)
+		{
+			this._rarestDrop = rarest;
+		}
+		
+		var col = this.rarityToColour(this._rarestDrop);
 
 		this._lootOverlay.setBlend(col.r,col.g,col.b);
 		this._lootOverlay.spawn();
@@ -210,7 +226,10 @@ var Tile = function(x,y,type,grid,textures)
 				}
 				else
 				{
-					inventory.addItem(this._drops[i].item());
+					inventory.addItem(new Item(this._drops[i].item().key()));
+					var particleEmitter = new ParticleEmitter(ParticleDefinitions["loot"],{texture: this._drops[i].item().texture()});
+					particleEmitter.setPosition(this._position.x,this._position.y);
+					particleEmitter.start();
 					++reduceBy;
 				}
 			}
@@ -229,6 +248,7 @@ var Tile = function(x,y,type,grid,textures)
 		if (this._drops.length == 0)
 		{
 			this._lootOverlay.destroy();
+			this._rarestDrop = undefined;
 		}
 	}	
 

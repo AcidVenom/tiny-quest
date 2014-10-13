@@ -124,6 +124,11 @@ var GuiNumber = function(parent)
 		this._guiElements = [];
 	}
 
+	this.root = function()
+	{
+		return this._root;
+	}
+
 	this.setTranslation = function(x,y,z)
 	{
 		this._translation = {x: x, y: y, z: z};

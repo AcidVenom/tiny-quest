@@ -7,10 +7,31 @@ Math.lerp = function(a, b, ratio)
 }
 
 /// Eases elastic out
-Math.easeOutElastic = function(t, b, c, d) {
+Math.easeOutElastic = function(t, b, c, d) 
+{
 	var ts=(t/=d)*t;
 	var tc=ts*t;
 	return b+c*(33*tc*ts + -106*ts*ts + 126*tc + -67*ts + 15*t);
+}
+
+/// Eases quadratic in
+Math.easeInQuadratic = function(t, b, c, d)
+{
+	t /= d;
+	return b+c*(t*t);
+}
+
+/// Eases quadratic in
+Math.easeOutQuadratic = function(t, b, c, d)
+{
+	t /= d;
+	return b - c*(t*(t-2));
+}
+
+/// Converts an easing function to an interpolation
+Math.easeToInterpolation = function(a, b, e)
+{
+	return a * (1-e) + b * e;
 }
 
 /// Returns the distance between 2 points

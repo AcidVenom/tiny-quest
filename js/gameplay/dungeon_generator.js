@@ -164,12 +164,6 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 
 			if (!failed)
 			{
-				var color = [
-					Math.random(),
-					Math.random(),
-					Math.random()
-				]
-
 				this._rooms.push(new Room(x,y,w,h));
 
 				for (var xx = x; xx < x+w; ++xx)
@@ -192,23 +186,6 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 		Log.info("Fitting room took " + String(attempts) + " attempt(s)");
 	}
 
-	this.drawConnections = function(dt)
-	{
-		for (var i = 0; i < this._rooms.length; ++i)
-		{
-			var roomA = this._rooms[i];
-			
-			for (var j = 0; j < roomA.connections.length; ++j)
-			{
-				var roomB = roomA.connections[j];
-				var centerA = this.roomCenter(roomA);
-				var centerB = this.roomCenter(roomB);
-
-				Line.draw(centerA.x*4-_GLOBAL_["RenderWidth"]/2,_GLOBAL_["RenderHeight"]/2-centerA.y*4,100,1,0,0,centerB.x*4-_GLOBAL_["RenderWidth"]/2,_GLOBAL_["RenderHeight"]/2-centerB.y*4,100,1,0,0);
-			}
-		}
-	}
-
 	this.roomCenter = function(room)
 	{
 		return {x: Math.floor(room.x+room.w/2), y: Math.floor(room.y+room.h/2)}
@@ -221,10 +198,11 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 		var centerA = this.roomCenter(roomA);
 		var centerB = undefined;
 		var distance = 0;
+		var roomB;
 
 		for (var i = 0; i < this._rooms.length; ++i)
 		{
-			var roomB = this._rooms[i];
+			roomB = this._rooms[i];
 
 			if (roomB == roomA)
 			{
@@ -279,15 +257,17 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 			return true;
 		}
 
+		var roomA,roomB,position,target;
+
 		for (var i = 0; i < this._rooms.length; ++i)
 		{
-			var roomA = this._rooms[i];
+			roomA = this._rooms[i];
 
 			if (roomA.connections.length < 3)
 			{
 				for (var i = 0; i < 3; ++i)
 				{
-					var roomB = this.findNearestRoom(roomA,condition);
+					roomB = this.findNearestRoom(roomA,condition);
 		
 					roomA.connections.push(roomB);
 					roomB.connections.push(roomA);
@@ -301,13 +281,13 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 
 		for (var i = 0; i < this._rooms.length; ++i)
 		{
-			var roomA = this._rooms[i];
+			roomA = this._rooms[i];
 
 			for (var c = 0; c < roomA.connections.length; ++c)
 			{
-				var roomB = roomA.connections[c];
-				var position = this.roomCenter(roomA);
-				var target = this.roomCenter(roomB);
+				roomB = roomA.connections[c];
+				position = this.roomCenter(roomA);
+				target = this.roomCenter(roomB);
 
 				while (position.x != target.x)
 				{
@@ -414,11 +394,13 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 			endY = this._grid[0].length;
 		}
 		
+		var tile;
+
 		for (var xx = startX; xx < endX; ++xx)
 		{
 			for (var yy = startY; yy < endY; ++yy)
 			{
-				var tile = this.tileAt(xx,yy);
+				tile = this.tileAt(xx,yy);
 				if (tile != DungeonTiles.Empty)
 				{
 					chunk.push(tile);
@@ -427,5 +409,58 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 		}
 
 		return chunk;
+	}
+
+	this.getPlayerTile = function()
+	{
+		var found = false;
+		for (var y = 0; y < this._grid[0].length; ++y)
+		{
+			if (found !== false)
+			{
+				break;
+			}
+			for (var x = 0; x < this._grid.length; ++x)
+			{
+				if (this._grid[x][y] != DungeonTiles.Empty && this._grid[x][y].type() == DungeonTiles.Room)
+				{
+					found = {x: x, y: y}
+					break;
+				}
+			}
+		}
+
+		return found;
+	}
+
+	this.tileDistance = function(x1,y1,x2,y2)
+	{
+		return Math.abs(x2 - x1) + Math.abs(y2 - y1);
+	}
+
+	this.placeShopKeeper = function(x,y,minDistance)
+	{
+		minDistance = minDistance || 50;
+		var room, center, found = false;
+		for (var i = 0; i < this._rooms.length; ++i)
+		{
+			room = this._rooms[i];
+			center = this.roomCenter(room);
+			if (this.tileDistance(x,y,center.x,center.y) > minDistance)
+			{
+				found = true;
+				break;
+			}
+		}
+
+		if (found == true)
+		{
+			Log.success("Found a room for the shopkeeper");
+			var tile = this._grid[center.x][center.y];
+		}
+		else
+		{
+			Log.info("Found no room for the shopkeeper");
+		}
 	}
 }

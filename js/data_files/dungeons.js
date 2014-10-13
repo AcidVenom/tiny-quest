@@ -42,6 +42,7 @@ var Dungeons = {
 			]
 		},
 
-		viewRange: 9
+		viewRange: 9,
+		shopKeeper: 0.5
 	}
 }

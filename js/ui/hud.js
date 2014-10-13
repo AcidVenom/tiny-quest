@@ -17,6 +17,7 @@ var HUD = function(player)
 	this._fade = undefined;
 	this._shouldFade = false;
 	this._fadeTimer = 0;
+	this._coinText = undefined;
 
 	this._equipmentSlots = [];
 
@@ -65,6 +66,13 @@ var HUD = function(player)
 		this._inventory = Widget.new();
 		this._inventory.setScale(366,0,150);
 		this._inventory.setTexture("textures/ui/inventory_ui.png");
+
+		this._coinText = new GuiNumber(this._inventory);
+		this._coinText.setValue(0);
+		this._coinText.root().setAnchorBottom();
+		this._coinText.setTranslation(97,28,1000);
+		this._coinText.setBlend(1,1,1);
+		this._coinText.setAlpha(0);
 
 		for (var i = 0; i < 10; ++i)
 		{
@@ -240,6 +248,8 @@ var HUD = function(player)
 		this._bars[1].setMinMax(this._player.stamina(),this._player.maxStamina());
 		this._bars[2].setMinMax(this._player.mana(),this._player.maxMana());
 
+		this._coinText.setValue(this._player.coins());
+		
 		for (var i = 0; i < 10; ++i)
 		{
 			var inventory = this._player.inventory();
@@ -326,6 +336,7 @@ var HUD = function(player)
 					this._equipmentSlots[i].show();
 				}
 			}
+			this._coinText.setAlpha(1);
 			this._inventory.setAlpha(1);
 		}
 		else
@@ -340,6 +351,7 @@ var HUD = function(player)
 					this._equipmentSlots[i].hide();
 				}
 			}
+			this._coinText.setAlpha(0);
 			this._inventory.setAlpha(0);
 		}
 	}

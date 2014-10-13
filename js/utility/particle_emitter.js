@@ -43,7 +43,7 @@ var Particle = function(x,y,z,w,h,texture,emitter)
 	this.rotation = {x: 0, y: 0, z: 0}
 	this.alpha = 1;
 	this._scale = {w: w, h: h}
-	this.params = emitter.params || {}
+	this.params = emitter.params() || {}
 
 	emitter.spawnFunction(this,this.params);
 
@@ -86,25 +86,25 @@ enumerator("ParticleType", [
 	"SpawnCount"
 	]);
 
-var ParticleEmitter = function(params)
+var ParticleEmitter = function(definition,params)
 {
-	this._type = params.type;
-	this._position = params.position || {x: 0, y: 0};
-	this._z = params.z;
-	this._size = params.size || {w: 32, h: 32};
-	this._texture = params.texture || undefined;
-	this.spawnFunction = params.spawnFunction || function(){};
-	this.timeFunction = params.timeFunction || function(){};
+	this._type = definition.type;
+	this._position = definition.position || {x: 0, y: 0};
+	this._z = definition.z;
+	this._size = definition.size || {w: 32, h: 32};
+	this._texture = definition.texture || undefined;
+	this.spawnFunction = definition.spawnFunction || function(){};
+	this.timeFunction = definition.timeFunction || function(){};
 	this._time = 0;
-	this._lifeTime = params.lifeTime;
+	this._lifeTime = definition.lifeTime;
 	this._particles = [];
-	this._spawnCount = params.spawnCount;
+	this._spawnCount = definition.spawnCount;
 	this._spawnOn = 0;
 	this._started = false;
 	this._destroyed = false;
-	this._loop = params.loop;
-	this._destroyOnEnd = params.destroyOnEnd || false;
-	this._params = params.params || {}
+	this._loop = definition.loop;
+	this._destroyOnEnd = definition.destroyOnEnd || false;
+	this._params = params || {}
 
 	this.setZ = function(z)
 	{
