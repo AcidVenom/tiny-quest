@@ -38,6 +38,9 @@ var Level = function(camera)
 	this._falloff = {x: 0, y: 0}
 	this._deathTimer = 2;
 	this._stopped = false;
+	this._shopKeeper = undefined;
+	this._shopKeeperY = undefined;
+	this._timer = 0;
 
 	this.camera = function()
 	{
@@ -98,13 +101,16 @@ var Level = function(camera)
 		this._dungeon.generate();
 
 		var indices = this._dungeon.getPlayerTile();
-		this._player = new Player(this,indices.x,indices.y)
+		this._player = new Player(this,indices.x,indices.y);
 		this._units.push(this._player);
 
+		this._shopKeeper = undefined;
 		if(dungeonDefinition.shopKeeper > Math.random())
 		{
 			Log.info("Started searching for a shopkeeper location");
-			this._dungeon.placeShopKeeper(indices.x,indices.y,40);
+			this._shopKeeper = this._dungeon.placeShopKeeper(indices.x,indices.y,40);
+
+			this._shopKeeperY = this._shopKeeper.position().y;
 		}
 		else
 		{
@@ -142,6 +148,18 @@ var Level = function(camera)
 
 	this.update = function(dt)
 	{
+		this._timer += dt;
+
+		if (this._timer > Math.PI*2)
+		{
+			this._timer = 0;
+		}
+
+		if (this._shopKeeper !== undefined)
+		{
+			var pos = this._shopKeeper.position();
+			this._shopKeeper.setPosition(pos.x,this._shopKeeperY - Math.abs(Math.sin(this._timer*4))*3);
+		}
 		if (this._stopped == true)
 		{
 			return;

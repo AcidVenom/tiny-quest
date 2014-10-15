@@ -158,6 +158,11 @@ var Unit = function(level,x,y,type,name)
 			this._maxHealth = this._definition.hp;
 			this._maxStamina = this._definition.stamina;
 			this._maxMana = 10;
+
+			if (this._health > this._maxHealth)
+			{
+				this._health = this._maxHealth;
+			}
 	}
 
 	this.applyEffects = function(effects)
@@ -234,6 +239,7 @@ var Unit = function(level,x,y,type,name)
 		return this._tile;
 	}
 
+	this._position = this.position;
 	this.position = function()
 	{
 		return this._position;

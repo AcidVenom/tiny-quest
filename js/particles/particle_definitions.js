@@ -5,3 +5,4 @@ require("js/particles/particle_on_hit");
 require("js/particles/particle_on_death");
 require("js/particles/particle_on_heal");
 require("js/particles/particle_loot");
+require("js/particles/particle_smoke");

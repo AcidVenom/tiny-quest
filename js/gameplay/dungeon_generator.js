@@ -453,14 +453,19 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 			}
 		}
 
+		shopKeeper = undefined;
 		if (found == true)
 		{
 			Log.success("Found a room for the shopkeeper");
 			var tile = this._grid[center.x][center.y];
+
+			shopKeeper = tile.addShopKeeper();
 		}
 		else
 		{
 			Log.info("Found no room for the shopkeeper");
 		}
+
+		return shopKeeper;
 	}
 }

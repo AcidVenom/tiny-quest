@@ -25,8 +25,12 @@ var LevelState = function()
 		ContentManager.load("texture", "textures/pfx/on_hit.png");
 		ContentManager.load("texture", "textures/pfx/on_death.png");
 		ContentManager.load("texture", "textures/pfx/on_heal.png");
+		ContentManager.load("texture", "textures/pfx/smoke_puff.png");
 		
 		ContentManager.load("texture", "textures/items/loot_overlay.png");
+
+		ContentManager.load("texture", "textures/characters/shop_keeper.png");
+		ContentManager.load("texture", "textures/dungeons/shop_rug.png");
 
 		ItemManager.loadAllTextures();
 

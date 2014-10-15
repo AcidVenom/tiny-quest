@@ -181,7 +181,7 @@ var ParticleEmitter = function(definition,params)
 	{
 		if (this._time <= 1)
 		{
-			this._time += dt;
+			this._time += dt/this._lifeTime;
 
 			if (this._type == ParticleType.OverTime)
 			{

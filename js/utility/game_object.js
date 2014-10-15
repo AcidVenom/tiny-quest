@@ -7,6 +7,7 @@ var GameObject = function(w,h,texture)
 {
 	this.__quad = Quad.new();
 	this._z = 0;
+	this.__position = {x: 0, y: 0}
 	if(texture !== undefined)
 	{
 		this.__quad.setTexture(texture);
@@ -35,7 +36,14 @@ var GameObject = function(w,h,texture)
 	this.setPosition = function(x,y)
 	{
 		var translation = this.translation();
+		this.__position.x = x;
+		this.__position.y = y;
 		this.setTranslation(-_GLOBAL_["RenderWidth"]/2+x,_GLOBAL_["RenderHeight"]/2-y,translation.z);
+	}
+
+	this.position = function()
+	{
+		return this.__position;
 	}
 
 	this._setRotation = this.setRotation;

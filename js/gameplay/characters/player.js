@@ -227,7 +227,6 @@ var Player = function(level,x,y)
 	this.update = function(dt)
 	{
 		this.updateMovement(dt);
-
 		var time = this._state == UnitStates.Attacking ? this._attackTimer : 0;
 		
 		var scale = this.scale();
@@ -522,6 +521,4 @@ var Player = function(level,x,y)
 	Broadcaster.register(this,Events.EquipmentChanged,this.onEquipmentChanged);
 	Broadcaster.register(this,Events.PlayerTurnEnded,this.resetInMenu);
 	this.setInventory();
-
-	player = this;
 }

@@ -51,6 +51,9 @@ var Tile = function(x,y,type,grid,textures)
 	this._bestItem = -1;
 	this._grid = grid;
 	this._rarestDrop = undefined;
+	this._shopKeeper = undefined;
+	this._smokeParticle = undefined;
+	this._rug = undefined;
 
 	this.destroy = function()
 	{
@@ -73,6 +76,16 @@ var Tile = function(x,y,type,grid,textures)
 			for (var i = 0; i < this._drops.length; ++i)
 			{
 				this._drops[i].hide();
+			}
+
+			if (this._shopKeeper !== undefined)
+			{
+				this._shopKeeper.destroy();
+			}
+
+			if (this._rug !== undefined)
+			{
+				this._rug.destroy();
 			}
 
 			this._visible = false;
@@ -100,6 +113,16 @@ var Tile = function(x,y,type,grid,textures)
 				}
 
 				this.showWallTile();
+			}
+
+			if (this._shopKeeper !== undefined)
+			{
+				this._shopKeeper.spawn();
+			}
+
+			if (this._rug !== undefined)
+			{
+				this._rug.spawn();
 			}
 
 			this._visible = true;
@@ -272,6 +295,41 @@ var Tile = function(x,y,type,grid,textures)
 		this._tile.setBlend(1,1,1);
 	}
 
+	this.addShopKeeper = function()
+	{
+		this._shopKeeper = new GameObject(32,32,"textures/characters/shop_keeper.png");
+		this._shopKeeper.setPosition(this._position.x,this._position.y-10);
+		this._shopKeeper.setZ(this._tile.z()+0.0001);
+
+		this._smokeParticle = new ParticleEmitter(ParticleDefinitions["smoke"]);
+		this._smokeParticle.start();
+
+		this._smokeParticle.setPosition(this._position.x,this._position.y-15);
+
+		Log.success("Placed shop keeper!");
+		this.setType(DungeonTiles.Wall);
+		this._tile.setBlend(1,1,0);
+
+		for (var i = 0; i < 3; ++i)
+		{
+			this._grid[this._indices.x-1+i][this._indices.y+1].addRug();
+		}
+
+		return this._shopKeeper;
+	}
+
+	this.addRug = function()
+	{
+		this._rug = new GameObject(32,32,"textures/dungeons/shop_rug.png");
+		this._rug.setPosition(this.position().x,this.position().y);
+		this._rug.setZ(this.z()+0.0001);
+	}
+
+	this.z = function()
+	{
+		return this._tile.z();
+	}
+
 	this.type = function()
 	{
 		return this._type;
@@ -289,6 +347,10 @@ var Tile = function(x,y,type,grid,textures)
 
 	this.setAlpha = function(a)
 	{
+		if (this._shopKeeper !== undefined)
+		{
+			return;
+		}
 		this._tile.setAlpha(a);
 	}
 	
