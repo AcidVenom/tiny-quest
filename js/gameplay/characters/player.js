@@ -155,6 +155,15 @@ var Player = function(level,x,y)
 			this._tile.pickUpDrops(this);
 		}
 
+		if (this._tile.rugItem() !== undefined && this._tile.rugItem().item !== undefined)
+		{
+			this._level.hud().showShop(this._tile.rugItem().item);
+		}
+		else
+		{
+			this._level.hud().hideShop();
+		}
+
 		Broadcaster.broadcast(Events.PlayerTurnEnded,{turn: TurnTypes.Enemy});
 	}
 
@@ -341,6 +350,21 @@ var Player = function(level,x,y)
 		if (this._inMenu == true)
 		{
 			return;
+		}
+
+		if (Keyboard.isReleased("Z") && this._tile.rugItem() !== undefined && this._tile.rugItem().item !== undefined)
+		{
+			var item = this._tile.rugItem().item;
+
+			if (item.value() <= this._coins)
+			{
+				if (this._itemInventory.addItem(item) == true)
+				{
+					this._tile.removeRugItem();
+					this._coins -= item.value();
+					this._level.hud().hideShop();
+				}
+			}
 		}
 		
 		if (this._level.turn() == TurnTypes.Player)

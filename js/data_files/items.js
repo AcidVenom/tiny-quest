@@ -60,7 +60,6 @@ var Items = {
 			range: false
 		},
 
-		canSell: true,
 		value: 4
 	},
 
@@ -77,7 +76,6 @@ var Items = {
 			slot: ItemSlot.Helmet
 		},
 
-		canSell: true,
 		value: 7
 	},
 
@@ -94,7 +92,6 @@ var Items = {
 			slot: ItemSlot.Body
 		},
 
-		canSell: true,
 		value: 12
 	},
 
@@ -111,7 +108,6 @@ var Items = {
 			range: false
 		},
 
-		canSell: true,
 		value: 1
 	},
 
@@ -123,7 +119,6 @@ var Items = {
 			health: 1
 		},
 
-		canSell: true,
 		value: 1
 	},
 
@@ -135,7 +130,6 @@ var Items = {
 			health: 5
 		},
 
-		canSell: true,
 		value: 2
 	},
 
@@ -146,7 +140,6 @@ var Items = {
 		use: {
 
 		},
-		canSell: false,
 		value: 1
 	}
 }

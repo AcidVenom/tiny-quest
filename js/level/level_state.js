@@ -20,6 +20,9 @@ var LevelState = function()
 		ContentManager.load("texture", "textures/ui/inventory_slot.png");
 		ContentManager.load("texture", "textures/ui/inventory_slot_selected.png");
 		ContentManager.load("texture", "textures/ui/inventory_ui.png");
+		ContentManager.load("texture", "textures/ui/shop_interface.png");
+		ContentManager.load("texture", "textures/ui/shop_able.png");
+		ContentManager.load("texture", "textures/ui/shop_unable.png");
 
 		ContentManager.load("texture", "textures/pfx/out_of_stamina.png");
 		ContentManager.load("texture", "textures/pfx/on_hit.png");

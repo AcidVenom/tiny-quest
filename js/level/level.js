@@ -119,6 +119,23 @@ var Level = function(camera)
 
 		this._hud = new HUD(this._player);
 		this._hud.fadeIn();
+
+		// for (var x = 0; x < this._dungeon.grid().length; ++x)
+		// {
+		// 	for (var y = 0; y < this._dungeon.grid()[x].length; ++y)
+		// 	{
+		// 		var random = Math.random()
+
+		// 		if (random < 0.05)
+		// 		{
+		// 			var randTable = ["mouse_brown","mouse_grey","slime_blue","slime_green"]
+		// 			if (this._dungeon.tileAt(x,y) != DungeonTiles.Empty && this._dungeon.tileAt(x,y).type() != DungeonTiles.Wall)
+		// 			{
+		// 				this._units.push(new Enemy(this,x,y,randTable[Math.floor(Math.random()*randTable.length)]));
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 
 	this.dungeon = function()

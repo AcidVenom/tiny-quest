@@ -1,6 +1,7 @@
 enumerator("NumberAlign", [
 	"Left",
-	"Right"]);
+	"Right",
+	"Center"]);
 
 var GuiNumber = function(parent)
 {
@@ -137,9 +138,13 @@ var GuiNumber = function(parent)
 		{
 			this._root.setTranslation(x,y,z);
 		}
-		else
+		else if (this._align == NumberAlign.Right)
 		{
 			this._root.setTranslation(6+x-this._numberString.length*6,y,z);
+		}
+		else
+		{
+			this._root.setTranslation(x-(this._numberString.length*6/2),y,z);
 		}
 
 		for (var i = 0; i < this._guiElements.length; ++i)

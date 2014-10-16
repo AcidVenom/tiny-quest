@@ -38,7 +38,7 @@ var Drop = function(x,y,item,quantity)
 	}
 }
 
-var Tile = function(x,y,type,grid,textures)
+var Tile = function(x,y,type,dungeon,textures)
 {
 	this._type = type;
 	this._tile = undefined;
@@ -49,11 +49,13 @@ var Tile = function(x,y,type,grid,textures)
 	this._drops = [];
 	this._lootOverlay = undefined;
 	this._bestItem = -1;
-	this._grid = grid;
+	this._grid = dungeon.grid();
+	this._dungeon = dungeon;
 	this._rarestDrop = undefined;
 	this._shopKeeper = undefined;
 	this._smokeParticle = undefined;
 	this._rug = undefined;
+	this._rugItem = undefined;
 
 	this.destroy = function()
 	{
@@ -86,6 +88,7 @@ var Tile = function(x,y,type,grid,textures)
 			if (this._rug !== undefined)
 			{
 				this._rug.destroy();
+				this._rugItem.destroy();
 			}
 
 			this._visible = false;
@@ -123,6 +126,10 @@ var Tile = function(x,y,type,grid,textures)
 			if (this._rug !== undefined)
 			{
 				this._rug.spawn();
+				if (this._rugItem.item !== undefined)
+				{
+					this._rugItem.spawn();
+				}
 			}
 
 			this._visible = true;
@@ -302,9 +309,8 @@ var Tile = function(x,y,type,grid,textures)
 		this._shopKeeper.setZ(this._tile.z()+0.0001);
 
 		this._smokeParticle = new ParticleEmitter(ParticleDefinitions["smoke"]);
-		this._smokeParticle.start();
-
 		this._smokeParticle.setPosition(this._position.x,this._position.y-15);
+		this._smokeParticle.start();
 
 		Log.success("Placed shop keeper!");
 		this.setType(DungeonTiles.Wall);
@@ -323,6 +329,29 @@ var Tile = function(x,y,type,grid,textures)
 		this._rug = new GameObject(32,32,"textures/dungeons/shop_rug.png");
 		this._rug.setPosition(this.position().x,this.position().y);
 		this._rug.setZ(this.z()+0.0001);
+
+		var item = new Item(WeightedCollection.retrieve(this._dungeon.shopItems()));
+		this._rugItem = new GameObject(32,32,item.texture());
+		this._rugItem.setPosition(this.position().x,this.position().y);
+		this._rugItem.setZ(this.z()+0.00011);
+
+		this._rugItem.item = item;
+	}
+
+	this.rugItem = function()
+	{
+		return this._rugItem;
+	}
+
+	this.removeRugItem = function()
+	{
+		if (this._rugItem === undefined)
+		{
+			return;
+		}
+
+		this._rugItem.destroy();
+		this._rugItem.item = undefined;
 	}
 
 	this.z = function()
@@ -405,7 +434,7 @@ var Tile = function(x,y,type,grid,textures)
 
 			if (wallSpecial.textures !== undefined && wallSpecial.mod !== undefined)
 			{
-				if (x % wallSpecial.mod == 0 && grid[x][y+1] != DungeonTiles.Empty)
+				if (x % wallSpecial.mod == 0 && this._grid[x][y+1] != DungeonTiles.Empty)
 				{
 					texture = WeightedCollection.retrieve(wallSpecial.textures);
 					this._tile.setTexture(texture);

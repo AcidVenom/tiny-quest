@@ -31,6 +31,7 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 	this._rooms = [];
 
 	this._chunk = undefined;
+	this._shopItems = undefined;
 
 	this.tileAt = function(x,y)
 	{
@@ -44,6 +45,7 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 	this.setDefinition = function(def)
 	{
 		this._definition = def;
+		this._shopItems = this._definition.shopItems;
 	}
 
 	this.definition = function()
@@ -84,6 +86,16 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 				}
 			}
 		}
+	}
+
+	this.grid = function()
+	{
+		return this._grid;
+	}
+
+	this.shopItems = function()
+	{
+		return this._shopItems;
 	}
 
 	this.generate = function()
@@ -236,7 +248,7 @@ var DungeonGenerator = function(w,h,tileW,tileH,noRooms,minRoomW,minRoomH,maxRoo
 
 	this.placeTile = function(x,y,type)
 	{
-		var tile = new Tile(x,y,type,this._grid,this._definition.textures);
+		var tile = new Tile(x,y,type,this,this._definition.textures);
 		this._grid[x][y] = tile;
 
 		return tile;

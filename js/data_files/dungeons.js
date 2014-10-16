@@ -43,6 +43,14 @@ var Dungeons = {
 		},
 
 		viewRange: 9,
-		shopKeeper: 0.5
+		shopKeeper: 1,
+		shopItems: [
+			["wooden_sword",5],
+			["broken_sword",6],
+			["rat_meat",4],
+			["leather_helmet",2],
+			["leather_body",1],
+			["minor_health_potion",3]
+		]
 	}
 }

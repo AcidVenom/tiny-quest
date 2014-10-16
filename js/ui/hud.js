@@ -18,6 +18,10 @@ var HUD = function(player)
 	this._shouldFade = false;
 	this._fadeTimer = 0;
 	this._coinText = undefined;
+	this._shop = undefined;
+	this._shopItem = undefined;
+	this._shopText = undefined;
+	this._shopIndicator = undefined;
 
 	this._equipmentSlots = [];
 
@@ -47,6 +51,38 @@ var HUD = function(player)
 		this._barFrame.setAnchorTop();
 		this._barFrame.setTranslation(20,-20,0);
 		this._barFrame.spawn();
+
+		this._shop = Widget.new();
+		this._shop.setScale(68,0,60);
+		this._shop.setTranslation(-20,-20,700);
+		this._shop.setAnchorRight();
+		this._shop.setAnchorTop();
+		this._shop.spawn();
+		this._shop.setTexture("textures/ui/shop_interface.png");
+		this._shop.setAlpha(0);
+
+		this._shopItem = Widget.new(this._shop);
+		this._shopItem.setScale(32,0,32);
+		this._shopItem.setTranslation(27,25,710);
+		this._shopItem.setAlpha(0);
+		this._shopItem.spawn();
+
+		this._shopText = new GuiNumber(this._shop);
+		this._shopText.setValue(1000);
+		this._shopText.setTranslation(23,6,710);
+		this._shopText.setAlpha(0);
+
+		this._shopValue = new GuiNumber(this._shop);
+		this._shopValue.setAlign(NumberAlign.Center);
+		this._shopValue.setValue(1000);
+		this._shopValue.setTranslation(42,64,710);
+		this._shopValue.setAlpha(0);
+
+		this._shopIndicator = Widget.new(this._shop);
+		this._shopIndicator.setTranslation(35,-20,710);
+		this._shopIndicator.setScale(15,0,14);
+		this._shopIndicator.spawn();
+		this._shopIndicator.setAlpha(0);
 
 		this._overlay = Widget.new();
 		this._overlay.setScale(640,0,480);
@@ -319,6 +355,34 @@ var HUD = function(player)
 		{
 			this._equipmentSlots[i].destroy();
 		}
+	}
+
+	this.showShop = function(item)
+	{
+		this._shop.setAlpha(1);
+		this._shopItem.setAlpha(1);
+		this._shopText.setAlpha(1);
+		this._shopIndicator.setAlpha(1);
+		this._shopValue.setAlpha(1);
+
+		this._shopItem.setTexture(item.texture());
+		this._shopText.setValue(this._player.coins());
+		this._shopValue.setValue(item.value());
+
+		var check = item.value() <= this._player.coins();
+		var col = check == true ? [0.5,1,0.5] : [1,0.5,0.5]
+
+		this._shopText.setBlend(col[0],col[1],col[2]);
+		this._shopIndicator.setTexture(check ? "textures/ui/shop_able.png" : "textures/ui/shop_unable.png");
+	}
+
+	this.hideShop = function()
+	{
+		this._shop.setAlpha(0);
+		this._shopItem.setAlpha(0);
+		this._shopText.setAlpha(0);
+		this._shopIndicator.setAlpha(0);
+		this._shopValue.setAlpha(0);
 	}
 
 	this.toggleOverlay = function()
