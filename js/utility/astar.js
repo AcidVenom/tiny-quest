@@ -79,7 +79,7 @@ var AStar =
 	{
 
 		var neighbours = getNeighbours(current.data);
-		var col = Math.random();
+
 		for (var i = 0; i < neighbours.length; ++i)
 		{
 			if (this.validateNeighbour(neighbours[i]) == true)
